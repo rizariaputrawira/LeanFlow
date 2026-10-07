@@ -45,7 +45,7 @@ Existing `.workflow/` records and explicitly supplied `.planning/` or `.ar-wf/` 
 
 ## Install
 
-Requires Antigravity CLI. Node.js and `npx` are needed for the bundled hooks and optional MCP servers. GitHub MCP authentication uses your own `GITHUB_TOKEN`; no token is supplied.
+Requires Antigravity CLI and Node.js (also used to safely merge privacy settings). `npx` is needed for the optional MCP servers. GitHub MCP authentication uses your own `GITHUB_TOKEN`; no token is supplied.
 
 From a local clone:
 
@@ -69,7 +69,29 @@ curl -fsSL https://raw.githubusercontent.com/rizariaputrawira/antigravity-cli-co
 irm https://raw.githubusercontent.com/rizariaputrawira/antigravity-cli-config/main/install.ps1 | iex
 ```
 
-Both installers deploy agents under `~/.gemini/config/agents/<name>/agent.md`. They back up existing configuration, preserve existing `config.json`, `mcp_config.json`, and CLI `settings.json`, and retain unrelated agent directories. Shipped rules, hooks, skills, and agent definitions are updated. A conflicting flat agent file stops installation without overwriting it. Fresh settings leave trusted workspaces empty, select Gemini 3.8 Flash (Medium), and use native `request-review` tool permissions; existing settings are not changed. Restart the CLI to load updated assets.
+Both installers deploy agents under `~/.gemini/config/agents/<name>/agent.md`. They back up existing configuration, preserve unrelated settings and agent directories, and apply the privacy changes below to fresh and existing installations. Shipped rules, hooks, skills, and agent definitions are updated. A conflicting flat agent file or malformed privacy-target JSON stops installation without overwriting it. Fresh settings leave trusted workspaces empty, select Gemini 3.8 Flash (Medium), and use native `request-review` tool permissions; existing model routing and permissions are unchanged. Restart the CLI to load updated assets.
+
+### Privacy defaults and required account action
+
+Installation automatically applies these verified controls:
+
+| Mechanism | Installed control |
+| --- | --- |
+| Feedback surveys | `showFeedbackSurvey: false` in CLI settings |
+| Context7 OpenTelemetry instrumentation/exporters | `OTEL_SDK_DISABLED=true` in its MCP environment |
+| CodeGraph anonymous usage reporting | `CODEGRAPH_TELEMETRY=0` and `DO_NOT_TRACK=1` in its MCP environment |
+| Brainstorm companion remote branding/version image | Existing `SUPERPOWERS_DISABLE_TELEMETRY` opt-out enabled by its launcher and defaulted on for direct server launches |
+
+The shared `scripts/apply-privacy.cjs` merges only these settings, including recognized version-qualified or renamed MCP entries. Custom servers, API keys, GitHub token wiring, models, permissions, and workspace settings remain intact. Opt-outs are stored in MCP configuration rather than relying on shell profiles; unrelated applications' environments are not modified. Backups are saved under `~/.gemini.bak.<timestamp>.<unique-suffix>/`.
+
+**Native CLI telemetry requires an account action:** start `agy`, open `/config` (or `/settings`), and set **Enable Telemetry** to **Off**. Check it again after signing in with a different account or upgrading. Installers print this requirement; they do not claim native telemetry is automatically disabled.
+
+The [official settings documentation](https://antigravity.google/docs/settings.md) lists `enableTelemetry`, but inspected CLI **1.3.1** explicitly excludes `EnableTelemetry` from JSON persistence (`json:"-"`) and exposes backend getter/setter methods. No supported telemetry automation flag/subcommand was found. Adding `enableTelemetry: false` to a template would not establish a working opt-out, so this repository does not do so. Native/account state and its default cannot be safely guaranteed by this installer. A sandbox model smoke invocation still logged an attempted `recordTrajectoryAnalytics` request; the all-optional-telemetry-disabled target therefore remains **unverified until the account control is turned off and checked**.
+
+These changes do not block authentication, provider/model requests, updates/downloads, explicit network tools, security checks, or local troubleshooting logs. The native account control does not control provider-side content retention or API project privacy settings. No proxy, firewall, TLS bypass, SDK removal, or model/agent/plugin redesign is introduced. Future `@latest` MCP packages and independently installed plugins or remote MCP services require version-specific reinspection; this is not a device-wide no-telemetry guarantee.
+
+Verification: `node --test tests/privacy-install.test.cjs` exercises real Bash fresh/existing installs, dry-run, preference/auth preservation, telemetry opt-in migration, repeat installation, BOM handling, and malformed JSON rejection. Runtime checks against CLI 1.3.1 confirmed startup/authentication and a normal model response; cached Context7 4.1.2 and CodeGraph 1.6.2 completed MCP initialization with their opt-outs, and the live companion served a screen without the remote image. Windows PowerShell 5.1 parsing was checked; full Windows installation was not exercised (host script execution policy and absent Windows Node.js). No packet capture or exhaustive SDK-egress proof was performed.
+
 
 ## Safety and maintenance
 

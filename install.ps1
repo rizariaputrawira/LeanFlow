@@ -55,7 +55,7 @@ Write-Host "Running pre-flight environment checks..." -ForegroundColor Cyan
 if (Get-Command node -ErrorAction SilentlyContinue) {
     Write-Host "  Node.js detected: $(node -v)" -ForegroundColor Green
 } else {
-    Write-Host "  Warning: 'node' is not found in PATH. MCP servers and hooks require Node.js." -ForegroundColor Yellow
+    throw "'node' is required to safely merge privacy settings and run bundled hooks."
 }
 
 if (Get-Command npx -ErrorAction SilentlyContinue) {
@@ -84,6 +84,10 @@ $CliDir = Join-Path $GeminiDir "antigravity-cli"
 # Normalize workspace path for JSON formatting (forward slashes prevent JSON escaping issues)
 $NormalizedWorkspace = $Workspace.Replace("\", "/")
 
+# Validate before any mutation; malformed settings must not fall back to telemetry defaults.
+& node (Join-Path $SrcDir "scripts\apply-privacy.cjs") (Join-Path $CliDir "settings.json") (Join-Path $ConfigDir "mcp_config.json") --check
+if ($LASTEXITCODE -ne 0) { throw "Privacy settings preflight failed." }
+
 if ($DryRun) {
     Write-Host ""
     Write-Host "[DRY RUN] Target directories:" -ForegroundColor Yellow
@@ -100,6 +104,7 @@ if ($DryRun) {
     Write-Host "   - config.json.template -> $ConfigDir\config.json (hostname: $DetectedHostname)"
     Write-Host "   - mcp_config.json.template -> $ConfigDir\mcp_config.json (workspace: $NormalizedWorkspace)"
     Write-Host "   - settings.json.template -> $CliDir\settings.json (if missing)"
+    Write-Host "[DRY RUN] Would disable feedback surveys and recognized MCP telemetry, preserving unrelated settings." -ForegroundColor Yellow
     Write-Host "[DRY RUN] Would copy agents, skills, hooks, and AGENTS.md." -ForegroundColor Yellow
     Write-Host ""
     Write-Host "Dry run completed successfully. Zero changes were made." -ForegroundColor Green
@@ -125,12 +130,14 @@ if (Test-Path $SourceAgentsDir) {
 }
 
 # Backup existing configuration if present
-if (Test-Path $ConfigDir) {
+if ((Test-Path $ConfigDir) -or (Test-Path (Join-Path $CliDir "settings.json"))) {
     $Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $BackupDir = Join-Path $HOME (".gemini.bak." + $Timestamp)
+    $BackupDir = Join-Path $HOME (".gemini.bak." + $Timestamp + "." + [System.Guid]::NewGuid().ToString("N"))
     Write-Host "Creating backup of existing configuration to $BackupDir..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Path $BackupDir -Force | Out-Null
-    Copy-Item -Path $ConfigDir -Destination (Join-Path $BackupDir "config") -Recurse -Force
+    if (Test-Path $ConfigDir) {
+        Copy-Item -Path $ConfigDir -Destination (Join-Path $BackupDir "config") -Recurse -Force
+    }
     
     $ExistingSettings = Join-Path $CliDir "settings.json"
     if (Test-Path $ExistingSettings) {
@@ -170,6 +177,8 @@ if (-not (Test-Path $TargetSettingsPath)) {
 } else {
     Write-Host "Existing settings.json preserved at $TargetSettingsPath" -ForegroundColor Gray
 }
+& node (Join-Path $SrcDir "scripts\apply-privacy.cjs") $TargetSettingsPath $McpPath
+if ($LASTEXITCODE -ne 0) { throw "Failed to disable optional CLI telemetry." }
 
 # 5. Copy Assets
 Write-Host "Copying global rules, agents, hooks, and skills..." -ForegroundColor Cyan
@@ -215,3 +224,5 @@ Write-Host "============================================================" -Foreg
 Write-Host "Global Config: $ConfigDir"
 Write-Host ""
 Write-Host "You can now run 'agy' or 'antigravity' in your terminal." -ForegroundColor Cyan
+Write-Host "Privacy action required: in agy, open /config and set Enable Telemetry to off." -ForegroundColor Yellow
+Write-Host "agy 1.3.1 stores this control through its backend, not settings.json; this installer cannot verify or automate it." -ForegroundColor Yellow

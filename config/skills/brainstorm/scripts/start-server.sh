@@ -19,6 +19,9 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Use the companion's supported opt-out for its remote branding/version image.
+export SUPERPOWERS_DISABLE_TELEMETRY=1
+
 # Parse arguments
 PROJECT_DIR=""
 FOREGROUND="false"

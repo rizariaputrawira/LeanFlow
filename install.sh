@@ -98,8 +98,8 @@ echo "🔍 Running pre-flight environment checks..."
 MISSING_PREREQS=0
 
 if ! command -v node >/dev/null 2>&1; then
-  echo "  ⚠️ Warning: 'node' is not found in PATH. MCP servers and hooks require Node.js."
-  MISSING_PREREQS=$((MISSING_PREREQS + 1))
+  echo "❌ Error: 'node' is required to safely merge privacy settings and run bundled hooks." >&2
+  exit 1
 else
   echo "  ✅ Node.js detected: $(node -v)"
 fi
@@ -139,6 +139,9 @@ for agent_dir in "${SRC_DIR}/config/agents/"*; do
   fi
 done
 
+# Validate before any mutation; malformed settings must not fall back to telemetry defaults.
+node "${SRC_DIR}/scripts/apply-privacy.cjs" "${CLI_DIR}/settings.json" "${CONFIG_DIR}/mcp_config.json" --check
+
 if [ "${DRY_RUN}" = true ]; then
   echo ""
   echo "🔎 [DRY RUN] Would create directories:"
@@ -154,6 +157,7 @@ if [ "${DRY_RUN}" = true ]; then
   echo "   - config.json.template -> ${CONFIG_DIR}/config.json (hostname: $(hostname))"
   echo "   - mcp_config.json.template -> ${CONFIG_DIR}/mcp_config.json (workspace: ${TARGET_WORKSPACE})"
   echo "   - settings.json.template -> ${CLI_DIR}/settings.json (if missing)"
+  echo "🔎 [DRY RUN] Would disable feedback surveys and recognized MCP telemetry, preserving unrelated settings."
   echo "🔎 [DRY RUN] Would copy skills ($(ls -1 "${SRC_DIR}/config/skills" 2>/dev/null | wc -l) skills), hooks, and AGENTS.md."
   echo ""
   echo "✅ Dry run completed successfully. Zero changes were made."
@@ -163,12 +167,12 @@ fi
 echo ""
 echo "🚀 Proceeding with installation..."
 
-# Create backup if existing config directory exists
-if [ -d "${CONFIG_DIR}" ] && [ "$(ls -A "${CONFIG_DIR}" 2>/dev/null)" ]; then
-  BACKUP_DIR="${HOME}/.gemini.bak.$(date +%Y%m%d_%H%M%S)"
+# Back up every file the privacy merge can change, including settings-only installs.
+if { [ -d "${CONFIG_DIR}" ] && [ "$(ls -A "${CONFIG_DIR}" 2>/dev/null)" ]; } || [ -f "${CLI_DIR}/settings.json" ]; then
+  BACKUP_DIR="$(mktemp -d "${HOME}/.gemini.bak.$(date +%Y%m%d_%H%M%S).XXXXXX")"
   echo "💾 Creating backup of existing configuration to ${BACKUP_DIR}..."
   mkdir -p "${BACKUP_DIR}"
-  cp -r "${GEMINI_DIR}/config" "${BACKUP_DIR}/"
+  [ ! -d "${CONFIG_DIR}" ] || cp -r "${CONFIG_DIR}" "${BACKUP_DIR}/"
   [ -f "${CLI_DIR}/settings.json" ] && cp "${CLI_DIR}/settings.json" "${BACKUP_DIR}/" || true
 fi
 
@@ -193,6 +197,7 @@ if [ ! -f "${CLI_DIR}/settings.json" ]; then
 else
   echo "ℹ️ Existing settings.json preserved at ${CLI_DIR}/settings.json"
 fi
+node "${SRC_DIR}/scripts/apply-privacy.cjs" "${CLI_DIR}/settings.json" "${CONFIG_DIR}/mcp_config.json"
 
 
 
@@ -231,3 +236,5 @@ echo "Global Config: ${CONFIG_DIR}"
 echo "Skills Count:  $(ls -1 "${CONFIG_DIR}/skills" 2>/dev/null | wc -l)"
 echo ""
 echo "You can now run 'agy' or 'antigravity' in your terminal."
+echo "Privacy action required: in agy, open /config and set Enable Telemetry to off."
+echo "agy 1.3.1 stores this control through its backend, not settings.json; this installer cannot verify or automate it."
