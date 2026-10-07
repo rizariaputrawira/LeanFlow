@@ -129,6 +129,16 @@ GEMINI_DIR="${HOME}/.gemini"
 CONFIG_DIR="${GEMINI_DIR}/config"
 CLI_DIR="${GEMINI_DIR}/antigravity-cli"
 
+# Refuse a flat legacy agent filename conflict before any installation mutation.
+for agent_dir in "${SRC_DIR}/config/agents/"*; do
+  [ -d "${agent_dir}" ] || continue
+  agent_name="$(basename "${agent_dir}")"
+  if [ -f "${CONFIG_DIR}/agents/${agent_name}.md" ]; then
+    echo "❌ Cannot install agent '${agent_name}': flat file ${CONFIG_DIR}/agents/${agent_name}.md conflicts with the directory-based agent. Preserve it and resolve the conflict manually." >&2
+    exit 1
+  fi
+done
+
 if [ "${DRY_RUN}" = true ]; then
   echo ""
   echo "🔎 [DRY RUN] Would create directories:"
@@ -165,29 +175,26 @@ fi
 # Ensure target directories exist
 mkdir -p "${CONFIG_DIR}" "${CLI_DIR}" "${TARGET_WORKSPACE}"
 
-# 4. Template Rendering (Portable stream redirection, NO sed -i)
-echo "⚙️ Rendering configuration templates..."
-
-# Render config.json
+# Render configuration files only when absent; preserve installed user settings.
+echo "⚙️ Rendering configuration templates when missing..."
 HOSTNAME_VAL="$(hostname 2>/dev/null || echo 'localhost')"
-sed "s|\${REMOTE_HOSTNAME}|${HOSTNAME_VAL}|g" \
-  < "${SRC_DIR}/config/config.json.template" \
-  > "${CONFIG_DIR}/config.json"
+if [ ! -f "${CONFIG_DIR}/config.json" ]; then
+  sed "s|\${REMOTE_HOSTNAME}|${HOSTNAME_VAL}|g" \
+    < "${SRC_DIR}/config/config.json.template" > "${CONFIG_DIR}/config.json"
+fi
+if [ ! -f "${CONFIG_DIR}/mcp_config.json" ]; then
+  sed "s|\${WORKSPACE_ROOT}|${TARGET_WORKSPACE}|g" \
+    < "${SRC_DIR}/config/mcp_config.json.template" > "${CONFIG_DIR}/mcp_config.json"
+fi
 
-# Render mcp_config.json
-sed "s|\${WORKSPACE_ROOT}|${TARGET_WORKSPACE}|g" \
-  < "${SRC_DIR}/config/mcp_config.json.template" \
-  > "${CONFIG_DIR}/mcp_config.json"
-
-# Initialize settings.json only if not already present
+# Initialize settings.json without trusting an arbitrary workspace.
 if [ ! -f "${CLI_DIR}/settings.json" ]; then
-  echo "⚙️ Initializing ${CLI_DIR}/settings.json..."
-  sed "s|\"trustedWorkspaces\": \[\]|\"trustedWorkspaces\": [\"${TARGET_WORKSPACE}\"]|g" \
-    < "${SRC_DIR}/settings/settings.json.template" \
-    > "${CLI_DIR}/settings.json"
+  cp "${SRC_DIR}/settings/settings.json.template" "${CLI_DIR}/settings.json"
 else
   echo "ℹ️ Existing settings.json preserved at ${CLI_DIR}/settings.json"
 fi
+
+
 
 # 5. Copy Static Assets
 echo "📦 Copying global rules, hooks, and skills..."
@@ -197,6 +204,17 @@ cp "${SRC_DIR}/config/hooks.json" "${CONFIG_DIR}/hooks.json"
 # Copy skills
 mkdir -p "${CONFIG_DIR}/skills"
 cp -r "${SRC_DIR}/config/skills/"* "${CONFIG_DIR}/skills/"
+
+# Copy shipped agents, preserving unrelated directories.
+if [ -d "${SRC_DIR}/config/agents" ]; then
+  mkdir -p "${CONFIG_DIR}/agents"
+  for agent_dir in "${SRC_DIR}/config/agents/"*; do
+    [ -d "${agent_dir}" ] || continue
+    agent_name="$(basename "${agent_dir}")"
+    mkdir -p "${CONFIG_DIR}/agents/${agent_name}"
+    cp -r "${agent_dir}/." "${CONFIG_DIR}/agents/${agent_name}/"
+  done
+fi
 
 # Copy utility scripts
 if [ -d "${SRC_DIR}/scripts" ]; then

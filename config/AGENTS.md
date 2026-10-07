@@ -1,18 +1,20 @@
-# .agents/ — AGY Global Rules (oh-my-antigravity style)
+# Antigravity Global Rules
 
-This directory configures AGY CLI to behave like oh-my-antigravity.
-Loaded automatically for all conversations in this workspace.
+Installed at `~/.gemini/config/AGENTS.md` for global guidance.
 
 ## SKILLS AVAILABLE
 
 | Skill | Trigger | Purpose |
 |---|---|---|
-| `orchestrate` | '/orchestrate', 'orchestrate', 'orc', 'finish completely' | Maximum-effort autonomous conductor ('God Mode') |
-| `hyperplan` | '/hyperplan', 'hyperplan', 'hpp', 'adversarial plan' | 5-member adversarial planning team |
-| `superplan` | '/superplan', 'superplan', 'spp', 'quick plan' | Fast 2-agent planning (Builder vs Red Team) for medium tasks |
-| `flashplan` | '/flashplan', 'flashplan', 'flp', 'fast plan' | Fast surgical inline planning (0 subagents) for small tasks |
-| `hyperexecution` | '/hyperexecution', 'hyperexecution', 'start work', 'resume work', 'execute plan' | Disk-persisted state tracking for multi-session execution (.workflow/) |
-| `brainstorm` | '/brainstorm', 'brainstorm', 'design spec', 'explore ideas', 'wayfinder', 'fog map' | Explore user intent, requirements, and design before implementation (including Wayfinder decision mapping) |
+| `plan` | '/plan', 'plan', 'make a plan' | Canonical planning-only workflow using the planner role; `/plan` may expand as a native built-in command, so explicitly load this skill rather than claiming override. |
+| `execute` | '/execute', 'execute plan' | Execute an explicitly supplied authorized plan using the executor role. |
+| `orchestrate` | '/orchestrate', 'orchestrate', 'orc', 'finish completely' | Compose canonical plan and execute workflows when implementation is authorized. |
+| `hyperplan` | '/hyperplan', 'hyperplan', 'hpp', 'adversarial plan' | Explicit deeper adversarial planning using five critique perspectives, plan only. |
+| `flashplan` | '/flashplan', 'flashplan', 'flp', 'fast plan' | Short alias to canonical planning workflow. |
+| `superplan` | '/superplan', 'superplan', 'spp', 'quick plan' | Short alias to canonical planning workflow. |
+| `hyperexecution` | '/hyperexecution', 'hyperexecution', 'start work', 'execute plan' | Short alias to canonical execution workflow; requires supplied plan path. |
+| `brainstorm` | '/brainstorm', 'brainstorm', 'design spec', 'explore ideas', 'wayfinder', 'fog map' | Optional collaborative design exploration when decisions are unresolved. |
+| `to-spec` | '/to-spec', 'to-spec', 'write spec', 'create spec' | Optional design-to-spec documentation step. |
 | `work-with-pr` | 'create a PR', 'implement and PR' | Full PR lifecycle with worktrees |
 | `tech-debt-audit` | 'tech debt', 'code health' | 9-dimension tech debt audit |
 | `security-research` | 'security review', 'vulnerability audit' | Parallel security audit team |
@@ -25,17 +27,11 @@ Loaded automatically for all conversations in this workspace.
 | `linux-sysadmin` | 'linux-sysadmin', 'sysadmin', 'systemd', 'journalctl', 'selinux', 'firewall' | Host diagnostics, systemd services, rollback preparation, and security baseline safety |
 | `podman-operator` | 'podman-operator', 'podman', 'quadlet', 'rootless container' | Rootless Podman container lifecycle and systemd Quadlet service management |
 | `workflow-health-check` | '/workflow-health-check', 'workflow-health-check', 'wf-doctor', 'wf-repair' | Diagnose and auto-heal workspace workflow conventions and broken/outdated skills |
-| `to-spec` | '/to-spec', 'to-spec', 'write spec', 'create spec' | Synthesize conversation or brainstorm into a structured spec at `.workflow/specs/` |
+## WORKFLOW ARTIFACTS AND COMPATIBILITY
 
-## WORKFLOW STORAGE & NAMING CONVENTIONS
+New plans live at `.workflow/plans/<SEQ>-YYYYMMDD-<slug>.md`; choose a non-colliding sequence and preserve existing artifacts. A plan is not execution evidence. Normal execution records checkbox status and verification inline in the supplied plan; no FSM, ledger, or evidence directory is required.
 
-All workflow artifacts are persisted under `.workflow/`:
-- **Plans**: `.workflow/plans/<SEQ>-YYYYMMDD-<tier>-<kebab-case>.md` (e.g. `01-20260911-flash-add-flag.md`)
-- **Brainstorm Specs**: `.workflow/brainstorm/<SEQ>-YYYYMMDD-<kebab-case>-design.md`
-- **Specs**: `.workflow/specs/<SEQ>-YYYYMMDD-<kebab-case>-spec.md`
-- **Execution FSM & Notes**: `.workflow/executions/runs/<plan-id>/state.json`, `notes.md`
-- **Verification Evidence**: `.workflow/executions/evidence/<plan-id>/task-<N>/report.txt`
-- **Audit Ledger**: `.workflow/executions/ledger.jsonl`
+Explicit legacy `.planning/` and `.ar-wf/` paths remain usable. When resuming legacy work, inspect relevant state, notes, ledger, and evidence and resolve discrepancies against current source before replaying potentially irreversible work. Do not trust status or checkboxes alone.
 
 ## CORE OPERATING PRINCIPLES
 
@@ -45,12 +41,15 @@ Never claim something works without proving it. "It looks right" is not evidence
 - A command output showing the expected result
 - A file read confirming the content
 
-### 2. Subagent Delegation
-For any task that would take >5 sequential tool calls, consider delegating to a subagent. Use parallel subagents for independent work. Always give subagents a clear, complete brief.
+### 2. Native Agent Roles
+For `/plan`, `/execute`, and `/orchestrate`, dedicated planner and executor agents perform substantive work. Main owns routing, complete handoffs, scope, and final acceptance. Reviewer is read-only and optional, used for an explicit review request or concrete security, interface/schema, cross-boundary, or difficult correctness risk. Workers do not delegate further.
 
-### 3. Atomic Commits
-Commit after each verifiable unit of work. Message format: `type(scope): description`
-Types: feat, fix, refactor, test, docs, chore, perf, style
+Ordinary requests do not require a saved plan or documentation pipeline. Keep specialist skills independently selectable when their actual trigger applies. Do not manufacture specs, state machines, review stages, or extra agents. Prefer native capabilities, reuse, and minimal changes.
+
+Use Flash-class workers by default. Difficulty, not file count or tool-call count, justifies stronger reasoning. Custom-agent model tiers do not provide verified exact Low/Medium/High effort selection.
+
+### 3. Commits
+Create commits only when the user requests them.
 
 ### 4. No Premature Stopping
 Do not stop because a task "seems done". Stop when:
@@ -58,7 +57,7 @@ Do not stop because a task "seems done". Stop when:
 - The user explicitly asks you to stop
 
 ### 5. Destructive Operations Require Confirmation
-Before any destructive operation (force push, hard reset, rm -rf, database wipe), explicitly state what will be destroyed and ask for confirmation. The `git-safety` hook will also intercept these.
+Before any destructive operation (force push, hard reset, rm -rf, database wipe), explicitly state what will be destroyed and ask for confirmation. A plan, cached grant, or runtime auto-approval is not explicit user confirmation. The `git-safety` hook requests review, but current CLI `always-proceed` can auto-approve that request; do not rely on it as a hard barrier.
 
 ### 6. Token Efficiency
 Prefer targeted reads over full-file reads when you know what you're looking for. Use `grep_search` before `view_file`. Use line ranges. Read the diff, not the whole file.
@@ -80,25 +79,12 @@ When writing plans, prompts, or documentation consumed by agents:
 ## WORK MODES
 
 ### Standard Mode (default)
-Respond thoughtfully. Ask one clarifying question if the task is ambiguous. Implement with evidence-bound QA.
+Respond thoughtfully within the user's authorization. Resolve ambiguity from supplied context and source; ask only for material missing decisions.
 
-### Orchestrate Mode (`orchestrate` or `orc`)
-Activate the orchestrate skill. Decompose → Execute → Gate check → Report. Do not stop until all criteria are proven.
+### Planning and Execution
+Use canonical plan and execute skills. Antigravity's built-in `/plan` may expand natively; explicitly load the supplied plan skill for planning-only intent and do not claim an override. `flashplan`, `superplan`, and `hyperexecution` are thin aliases. `/orchestrate` composes plan and execute only when implementation is authorized. `/hyperplan` is explicit adversarial planning only.
 
-### Hyperplan Mode (`hyperplan` or `hpp`)
-Activate the hyperplan skill. Spawn 5 adversarial subagents → synthesize defensible insights → formalize executable plan in .workflow/plans/. PLAN-ONLY: never execute code automatically; stop and wait for user.
-
-### Superplan Mode (`/superplan` or `spp`)
-Activate the superplan skill. 2-agent review (Builder vs Red Team) covering all 5 dimensions for medium tasks → synthesize lean plan persisted to .workflow/plans/. PLAN-ONLY: never execute code automatically; stop and wait for user.
-
-### Flashplan Mode (`/flashplan` or `flp`)
-Activate the flashplan skill. Instant code-grounded surgical planning (0 subagents, max 3-5 steps) persisted to .workflow/plans/. PLAN-ONLY: never execute code automatically; stop and wait for user.
-
-### Team Mode (complex tasks)
-For tasks that naturally decompose into parallel work streams, spawn specialized subagents:
-- Assign each subagent a clear role and scope
-- Use a shared workspace or pass results via messages
-- Synthesize results before presenting to user
+Native agent tool declarations and prose are not OS containment. Ambient MCP access may remain available; an empty `mcpServers` setting does not establish suppression of inherited MCP tools.
 
 ## REMOTE EXECUTION & HOST SAFETY RULES
 

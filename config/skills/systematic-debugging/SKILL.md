@@ -266,10 +266,7 @@ If you catch yourself thinking:
 ## Planning & Execution Handoff
 
 Once the root cause is confirmed and minimal hypothesis proven:
-- **Single-Component Bug (1–2 files)**: Fix directly via TDD or launch [`/flashplan`](../flashplan/SKILL.md) &rarr; `.workflow/plans/<SEQ>-YYYYMMDD-<kebab-case>.md`.
-- **Multi-Component Defect (2–6 files, state propagation, race condition)**: Launch [`/superplan`](../superplan/SKILL.md) (Builder vs Red Team).
-- **Architectural Failure (Phase 4.5: 3+ fixes failed, fundamental pattern broken)**: Halt immediately. Launch [`/brainstorm`](../brainstorm/SKILL.md) or [`/hyperplan`](../hyperplan/SKILL.md) to restructure.
-- **Evidence Standard**: Execute remediation under [`/hyperexecution`](../hyperexecution/SKILL.md) and save reproduction & green test proof to `.workflow/executions/evidence/<plan-id>/task-<N>/report.txt`.
+After confirming the root cause, fix directly when authorized or use canonical [`/plan`](../plan/SKILL.md) for a grounded plan. Execute only an explicitly authorized plan with [`/execute`](../execute/SKILL.md). If fundamental design choices remain unresolved, offer optional [`/brainstorm`](../brainstorm/SKILL.md); use [`/hyperplan`](../hyperplan/SKILL.md) only when adversarial depth is requested. Verify the reproduction and fix with appropriate evidence; do not impose size tiers or evidence-directory machinery.
 
 ## When Process Reveals "No Root Cause"
 

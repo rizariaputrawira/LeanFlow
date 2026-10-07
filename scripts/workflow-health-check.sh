@@ -80,8 +80,13 @@ migrate_dir() {
   if [ "$MODE" = "fix" ]; then
     echo "  🔧 ${fix}..."
     mkdir -p "$dest"
-    cp -rn "${src}/"* "${dest}/" 2>/dev/null || true
-    rm -rf "$src"
+    if ! cp -an "${src}/." "${dest}/"; then
+      echo "  ⚠️ Migration copy failed; preserving source '${src}' for manual recovery." >&2
+      return 0
+    fi
+    # Keep the source tree: collisions and copy semantics vary across platforms,
+    # so a successful no-clobber copy is not proof every source entry migrated.
+    echo "  ℹ️ Copied available entries without overwrite; source '${src}' retained for manual reconciliation."
     MIGRATIONS_APPLIED=$((MIGRATIONS_APPLIED + 1))
   else
     echo "  ⚠️ ${warn}"
@@ -132,7 +137,7 @@ if [ -d "${WF_DIR}" ]; then
   fi
 
   # Check .gitignore for .workflow/executions/evidence/
-  if [ -d "${TARGET_WORKSPACE}/.git" ]; then
+  if [ -d "${EXEC_DIR}/evidence" ] && [ -d "${TARGET_WORKSPACE}/.git" ]; then
     GITIGNORE="${TARGET_WORKSPACE}/.gitignore"
     if [ ! -f "${GITIGNORE}" ] || ! grep -q "\.workflow/executions/evidence" "${GITIGNORE}" 2>/dev/null; then
       ISSUES_FOUND=$((ISSUES_FOUND + 1))

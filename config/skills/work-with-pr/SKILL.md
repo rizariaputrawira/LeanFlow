@@ -1,39 +1,26 @@
 ---
 name: work-with-pr
 description: >-
-  Full PR lifecycle skill. Implements a task in a fresh git worktree, drives work through
-  orchestrate and the Planning Triad with hyperexecution, creates a reviewer-readable PR,
-  then runs an unbounded verification loop (CI checks) until the PR is merged. Decomposes large
-  tasks into the smallest atomic independently-mergeable PRs and builds independent ones
-  concurrently via parallel subagents. Use whenever implementation work needs to land as a PR.
+  User-requested PR lifecycle guidance for branch/worktree, reviewable changes, CI, and merge.
+  Uses canonical plan/execute workflows only when useful; no automatic sizing, worker fan-out, or
+  atomic checkbox commits. Use when the user explicitly requests PR delivery.
   Triggers: 'create a PR', 'implement and PR', 'work on this and make a PR', 'implement issue',
-  'land this as a PR', 'split into atomic PRs', 'parallel PRs', 'work-with-pr', 'PR workflow',
-  'implement end to end', even when user says 'implement X' if context implies PR delivery.
+  'land this as a PR', 'work-with-pr', 'PR workflow'.
 ---
 
 # Work With PR — Full PR Lifecycle
 
-You are executing a complete PR lifecycle: from fresh task-owned worktree setup, through Planning Triad and hyperexecution driven by orchestrate discipline, PR creation, and an unbounded verification loop until the PR is merged.
-
-**The unit of delivery is the smallest PR that compiles, passes, and stands on its own — not "one task, one PR."**
+When the user explicitly requests PR delivery, manage the requested branch/worktree, reviewable change, PR, and any authorized CI/merge lifecycle. Keep work within the user's requested scope; split work only when needed and agreed.
 
 ```
-Phase 0: Setup         → Split into atomic PRs, branch + worktree per PR (parallel when independent)
-Phase 1: Implement     → Plan via Planning Triad, execute via hyperexecution under orchestrate
-Phase 2: PR Creation   → Push, create reviewer-readable PR targeting the default branch
-Phase 3: Verify Loop   → Unbounded; a failing gate routes back to Phase 1
-  └─ Gate A: CI        → gh pr checks (tests, typecheck, build)
-Phase 4: Merge         → Auto-merge; wait until actually merged, then worktree cleanup
+Setup → authorized implementation → PR creation → requested CI/review and merge
 ```
 
 ## Phase 0: Setup
 
 ### 1. Decide the PR split
 
-Decompose the task into the smallest atomic PRs that each compile, pass, and deliver one reviewable slice. Prefer more small PRs over one large one.
-
-For concurrent independent PRs:
-- **Subagents** — dispatch one subagent per PR, each owning its own worktree, branch, and Phase 0→4 lifecycle.
+Split into separate PRs only when the user requests it or independent changes need separate review. Do not spawn workers by default.
 
 ### 2. Resolve repository context
 
@@ -72,20 +59,7 @@ cd "$WORKTREE_PATH"
 
 ## Phase 1: Implement
 
-Drive all implementation through `orchestrate` and the Planning Triad from inside the worktree:
-
-1. **Sizing & Plan Generation**:
-   - For small, focused changes (1–2 files, 3–5 steps): Trigger `/flashplan` (~3s inline) &rarr; `.workflow/plans/<SEQ>-YYYYMMDD-<kebab-case>.md`.
-   - For standard/medium features (2–6 files, 5–10 steps): Trigger `/superplan` (2-agent Builder vs Red Team).
-   - For large/complex PRs (6+ files): Trigger `/hyperplan` (5-agent hostile gauntlet).
-2. **Execution Engine (`hyperexecution`)**:
-   - Drive task checkpoints sequentially via `/hyperexecution` with disk-persisted state (`state.json`).
-   - Capture physical verification outputs to `.workflow/executions/evidence/<plan-id>/task-<N>/report.txt`.
-3. **Evidence-bound QA**: Every task criterion must be proven with concrete evidence (passing tests, clean linter/build, verified outputs) — not assumptions.
-4. **Atomic commits**: Commit after each completed task checkbox: `git commit -m "type(scope): description"`.
-5. **Parallel subagents**: Spawn subagents for independent sub-components within the worktree.
-
-Do NOT free-hand the work. Follow the plan checklist and verification discipline.
+Implementation may use canonical [`/plan`](../plan/SKILL.md) when a plan is useful, and [`/execute`](../execute/SKILL.md) only for a user-authorized supplied plan. Do not impose tiers, automatic state tracking, evidence directories, atomic checkbox commits, or parallel workers. Use appropriate verification and report actual outcomes.
 
 ## Phase 2: PR Creation
 

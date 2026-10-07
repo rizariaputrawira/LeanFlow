@@ -17,7 +17,7 @@
     "PreInvocation": [
       {
         "type": "command",
-        "command": "node -e \"\nconst input = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));\nif (input.invocationNum === 1) {\n  process.stdout.write(JSON.stringify({\n    injectSteps: [{ ephemeralMessage: '\u26a1 AGY | oma-mode active | orchestrate, hyperplan, security-research, tech-debt-audit, work-with-pr, ast-grep, github-triage skills available' }]\n  }));\n} else {\n  process.stdout.write(JSON.stringify({ injectSteps: [] }));\n}\n\"",
+        "command": "node -e \"\nconst input = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));\nif (input.invocationNum === 1) {\n  process.stdout.write(JSON.stringify({\n    injectSteps: [{ ephemeralMessage: 'AGY | plan: planning only | execute: existing plan | orchestrate: plan then execute | specialist skills remain optional' }]\n  }));\n} else {\n  process.stdout.write(JSON.stringify({ injectSteps: [] }));\n}\n\"",
         "timeout": 5
       }
     ]

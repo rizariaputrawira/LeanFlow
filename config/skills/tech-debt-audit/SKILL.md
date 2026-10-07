@@ -95,8 +95,4 @@ Collect all findings from all subagents. Deduplicate. Rank by impact/effort rati
 
 ## Phase 3: Remediation Handoff
 
-Once `TECH_DEBT_AUDIT.md` is delivered, route remediation into the Planning Triad:
-- **Quick Wins (<30 min, 1–2 files)**: Launch [`/flashplan`](../flashplan/SKILL.md) &rarr; `.workflow/plans/<SEQ>-YYYYMMDD-<kebab-case>.md`.
-- **Medium Refactors (2–6 files, dead code pruning, duplicate consolidation)**: Launch [`/superplan`](../superplan/SKILL.md) (Builder vs Red Team).
-- **Architectural Overhauls (Major subsystem decoupling, circular dependency elimination)**: Launch [`/brainstorm`](../brainstorm/SKILL.md) &rarr; [`/hyperplan`](../hyperplan/SKILL.md).
-- **Execution**: Drive remediation via [`/hyperexecution`](../hyperexecution/SKILL.md) under [`orchestrate`](../orchestrate/SKILL.md) discipline, capturing verification proof into `.workflow/executions/evidence/<plan-id>/task-<N>/report.txt`.
+After the audit, route selected remediation through canonical [`/plan`](../plan/SKILL.md) when useful. Execute only an explicitly authorized plan via [`/execute`](../execute/SKILL.md). Offer [`/brainstorm`](../brainstorm/SKILL.md) for unresolved design choices and use [`/hyperplan`](../hyperplan/SKILL.md) only for explicitly requested adversarial depth. Do not impose time/file thresholds, automatic execution, or extra evidence machinery.

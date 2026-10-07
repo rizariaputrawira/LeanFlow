@@ -85,9 +85,4 @@ Write `TRIAGE_REPORT.md`:
 
 ## Execution Handoff
 
-When transitioning triaged action items into implementation:
-- **Small Bugs / Quick Fixes**: Trigger [`/flashplan`](../flashplan/SKILL.md) &rarr; `.workflow/plans/<SEQ>-YYYYMMDD-<kebab-case>.md`.
-- **Feature Requests / Specs**: Explore intent and design via [`/brainstorm`](../brainstorm/SKILL.md).
-- **Medium Multi-File Issues**: Plan via [`/superplan`](../superplan/SKILL.md).
-- **Full PR Delivery**: Launch [`work-with-pr`](../work-with-pr/SKILL.md) for isolated worktree setup, planning, test verification, and PR creation.
-- **Autonomous Execution**: Execute any plan with [`/hyperexecution`](../hyperexecution/SKILL.md) under [`orchestrate`](../orchestrate/SKILL.md) discipline.
+When transitioning triaged action items into implementation, use canonical [`/plan`](../plan/SKILL.md) for planning and [`/execute`](../execute/SKILL.md) only with an explicitly authorized plan path. Optional design exploration is [`/brainstorm`](../brainstorm/SKILL.md); explicit adversarial planning is [`/hyperplan`](../hyperplan/SKILL.md). For user-requested PR lifecycle use [`work-with-pr`](../work-with-pr/SKILL.md). Do not impose scope tiers, automatic execution, or extra workers.

@@ -15,10 +15,9 @@ Safely find and remove dead code with verification at each step. Every removal m
 
 ## Safety Rules
 
-1. **Never remove code without proving it's unused first.**
-2. **Verify tests still pass after each batch of removals.**
-3. **Commit in small batches** — one category per commit.
-4. **When in doubt, flag it** — don't delete speculatively.
+1. Prove code is unused before removing it.
+2. Use relevant tests or static checks when appropriate to the repository and task constraints.
+3. Flag uncertain cases rather than deleting speculatively.
 
 ## Phase 0: Detect Language Stack
 
@@ -70,16 +69,7 @@ For each finding, confirm it's truly unused:
 
 ## Phase 3: Remove (batched with verification)
 
-For large dead code removals (>2 files or multi-category), formalize into an execution plan via [`/superplan`](../superplan/SKILL.md) executed by [`/hyperexecution`](../hyperexecution/SKILL.md).
-
-For each batch:
-1. Remove the code
-2. `npx tsc --noEmit` (or typecheck) — must pass
-3. Run test suite — must pass
-4. Capture verification output into `.workflow/executions/evidence/<plan-id>/task-<N>/report.txt` (or local evidence)
-5. `git commit -m "chore(deadcode): remove unused [category]"`
-
-If anything breaks, revert the batch and investigate.
+For multi-step work that benefits from tracking, use canonical [`/plan`](../plan/SKILL.md). Execute only an explicitly authorized plan via [`/execute`](../execute/SKILL.md). Verify removals with checks appropriate to the repository and user constraints; record outcomes in the plan when one is supplied. Do not require file-count thresholds, commits, or evidence directories. If anything breaks, stop and investigate rather than reverting unrelated work.
 
 ## Phase 4: Report
 

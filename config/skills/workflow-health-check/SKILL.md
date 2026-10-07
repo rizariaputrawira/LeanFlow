@@ -1,15 +1,14 @@
 ---
 name: workflow-health-check
 description: >-
-  Diagnoses and heals workspace workflow directories (.ar-wf -> .workflow, planning -> plans,
-  brainstorm un-nesting, runs/<plan-id>, evidence preservation) and repairs broken, deprecated,
-  or out-of-sync skills. Triggers: '/workflow-health-check', 'workflow-health-check', 'wf-doctor',
-  'wf-repair', 'repair workflow'.
+  Diagnoses legacy workflow migrations and out-of-sync skills when explicitly requested. Read-only
+  `--check` audit is the default; `--fix` requires explicit user authorization. Triggers:
+  '/workflow-health-check', 'workflow-health-check', 'wf-doctor', 'wf-repair'.
 ---
 
 # Workflow Health Check & Auto-Repair (`/workflow-health-check`)
 
-Provides unified workspace diagnostic and healing capabilities. When moving across devices, switching between repositories, or upgrading older projects, `/workflow-health-check` audits the active environment and brings all directories, references, and skills into full compliance with the latest Antigravity conventions.
+Optional diagnostics and repair for explicitly requested legacy workflow migration or skill repair. This is not part of normal plan/execute workflows.
 
 ---
 
@@ -27,10 +26,4 @@ Provides unified workspace diagnostic and healing capabilities. When moving acro
 
 ## Agent Protocol
 
-When this skill is triggered by the user:
-1. Identify the target workspace (current working directory by default).
-2. Execute `./scripts/workflow-health-check.sh --check --workspace="<target>"`:
-   - If clean (exit 0): report full health compliance.
-   - If issues found (exit 1): announce issues found, then execute `./scripts/workflow-health-check.sh --fix --workspace="<target>"`.
-3. Verify that a re-run of `--check` exits with code 0.
-4. Report the summary of resolved migrations to the user.
+When invoked, identify the target workspace and run `--check` first. Report results. Run `--fix` only when the user explicitly requested repair; a check finding issues does not authorize mutation. Do not automatically rerun checks unless requested.
