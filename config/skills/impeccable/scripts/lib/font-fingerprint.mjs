@@ -555,10 +555,3 @@ export function distance(a, b, stats = STATS, { p = 1, zClip = Z_CLIP, gross = t
   const v = d / wsum;
   return p === 1 ? v : Math.sqrt(v);
 }
-
-/** Debug: per-line metrics (base, R, xh, mode counts) for a raster. */
-export function _debugLines(img) {
-  const bin = binarize(img);
-  const { lines } = findLines(bin);
-  return lines.map((ln) => { const m = lineMetrics(bin, ln); if (!m) return { ln, m: null }; const hs = m.hs.map((h) => +(h / m.R).toFixed(2)).sort((a, b) => a - b); const hist = {}; for (const h of hs) { const b = Math.round(h * 20) / 20; hist[b] = (hist[b] || 0) + 1; } return { y0: ln.y0, y1: ln.y1, base: m.base, R: +m.R.toFixed(1), xh: m.xh && +m.xh.toFixed(1), hist }; });
-}

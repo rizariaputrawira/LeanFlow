@@ -268,17 +268,6 @@ export function dealCompositions({ scope, key, reroll = 0, mode = null, grain = 
   return driveSelection(selectApprovedCompositionsCore({ scope, key, reroll, mode, grain, platform, compositions, count }));
 }
 
-// Array-returning form, which is what every caller wanted before the match
-// report existed.
-export function selectApprovedCompositions(options) {
-  return dealCompositions(options).picks;
-}
-
-// Compatibility for callers that need a single smoke-test sample.
-export function selectApprovedComposition(options) {
-  return selectApprovedCompositions({ ...options, count: 1 })[0] ?? null;
-}
-
 export function selectApprovedChallengers({ scope, key, reroll = 0, mode = null, sourceConcepts = null }) {
   const source = sourceConcepts ?? requireLocalConcepts().concepts;
   const { approved, picks } = driveSelection(selectApprovedChallengersCore({ scope, key, reroll, mode, concepts: source }));

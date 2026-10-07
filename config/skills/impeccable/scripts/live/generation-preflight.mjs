@@ -12,11 +12,6 @@ const PREFLIGHT_TIMEOUT_MS = 15_000;
 // element or route changes; a failed resolution evicts its entry (see below).
 const sourceResolutionCache = new Map();
 
-/** Test/lifecycle hook: drop all cached source resolutions. */
-export function clearSourceResolutionCache() {
-  sourceResolutionCache.clear();
-}
-
 function targetSignature(event) {
   const isInsert = event.mode === 'insert';
   const target = isInsert ? insertTarget(event) : replaceTarget(event);

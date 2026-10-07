@@ -41,15 +41,6 @@ export const GROSS_FEATURES = ['advance', 'advTall', 'advX', 'densTall', 'densX'
 export const INDEX_FEATURES = FEATURES.filter((k) => (STATS[k] && STATS[k].w > 0) || GROSS_FEATURES.includes(k));
 
 const NULL_TOKEN = '___';
-const MAX_Q = 36 ** 3 - 1;
-
-export function packVector(fp, features = INDEX_FEATURES) {
-  return features.map((k) => {
-    const v = fp?.[k];
-    if (v == null || !Number.isFinite(v)) return NULL_TOKEN;
-    return Math.min(MAX_Q, Math.max(0, Math.round(v * 1000))).toString(36).padStart(3, '0');
-  }).join('');
-}
 
 export function unpackVector(s, features = INDEX_FEATURES) {
   const out = {};

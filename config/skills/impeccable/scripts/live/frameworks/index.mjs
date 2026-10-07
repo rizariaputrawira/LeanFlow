@@ -58,11 +58,6 @@ export const FRAMEWORKS = Object.freeze([
   staticHtml,
 ]);
 
-export const PREVIEW_MODES = Object.freeze(['source', 'component']);
-export const STYLE_MODES = Object.freeze(['scoped', 'astro-global-prefixed']);
-export const COMMENT_SYNTAXES = Object.freeze(['html', 'jsx']);
-export const INJECT_KINDS = Object.freeze(['adapter', 'tag']);
-
 export const SOURCE_TRAIT_DEFAULTS = Object.freeze({
   preview: 'source',
   styleMode: 'scoped',

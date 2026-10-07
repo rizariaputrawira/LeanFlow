@@ -9,7 +9,7 @@
  *
  * The boot check in context.mjs reports what a session can afford to measure.
  * This runs everything: git drift, per-workspace sweep, ignore-list validation
- * against the live rule registry, hook script resolution.
+ * against the live rule registry.
  *
  * `--fix` is deliberately narrow. It performs only the migrations marked
  * severity 'auto', the ones with no judgment in them: stamp the product record,
@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 
 import { loadContext, extractPlatform, resolveTargetSelection } from './context.mjs';
 import { parseTargetOptions } from './lib/target-args.mjs';
-import { IMPECCABLE_COMMAND, IMPECCABLE_PROVIDER_ID } from './lib/provider.mjs';
+import { IMPECCABLE_COMMAND } from './lib/provider.mjs';
 import { parseDesignMd } from './lib/design-parser.mjs';
 import {
   PRODUCT_SCHEMA_VERSION,
@@ -41,7 +41,6 @@ import {
   checkDesignCoverage,
   checkDesignDrift,
   checkDetectorIgnores,
-  checkHookInstallation,
   checkLegacyLiveState,
   checkWorkspaces,
   loadKnownRuleIds,
@@ -118,11 +117,6 @@ async function collect(cwd, targetOptions) {
     ...bootFindings.buildPath,
     ...checkDetectorIgnores({ projectRoot, knownRuleIds }),
     ...bootFindings.surfaceBriefs,
-    ...checkHookInstallation({
-      projectRoot,
-      repoRoot: ctx.repoRoot,
-      providerId: IMPECCABLE_PROVIDER_ID,
-    }),
     ...checkLegacyLiveState({ projectRoot }),
     ...bootFindings.projectRoots,
     ...workspaceResult.findings,

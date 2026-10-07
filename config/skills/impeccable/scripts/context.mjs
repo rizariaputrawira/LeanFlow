@@ -32,7 +32,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseTargetOptions } from './lib/target-args.mjs';
-import { IMPECCABLE_COMMAND, IMPECCABLE_PROVIDER_ID } from './lib/provider.mjs';
+import { IMPECCABLE_COMMAND } from './lib/provider.mjs';
 import { resolveSurfaceBrief } from './lib/surface-briefs.mjs';
 import { collectBootFindings, designSidecarCandidatesFor } from './lib/staleness.mjs';
 import {
@@ -1276,63 +1276,6 @@ function pathExistsForTarget(cwd, targetPath) {
   return fs.existsSync(abs);
 }
 
-const HOOK_MANIFESTS_BY_PROVIDER = Object.freeze({
-  'claude-code': ['.claude/settings.local.json', '.claude/settings.json'],
-  codex: ['.codex/hooks.json'],
-  agents: ['.codex/hooks.json'],
-  cursor: ['.cursor/hooks.json'],
-  github: ['.github/hooks/impeccable.json'],
-  grok: ['.grok/hooks/impeccable.json'],
-});
-
-function truthyEnv(value) {
-  return typeof value === 'string' && /^(1|true|yes|on)$/i.test(value.trim());
-}
-
-function valueHasHookMarker(value) {
-  if (typeof value === 'string') {
-    return value.includes('skills/impeccable/scripts/hook.mjs')
-      || value.includes('skills/impeccable/scripts/hook-before-edit.mjs');
-  }
-  if (Array.isArray(value)) return value.some(valueHasHookMarker);
-  if (value && typeof value === 'object') return Object.values(value).some(valueHasHookMarker);
-  return false;
-}
-
-function hookEnabledAt(root) {
-  if (truthyEnv(process.env.IMPECCABLE_HOOK_DISABLED)) return false;
-  let enabled = true;
-  for (const name of ['.impeccable/config.json', '.impeccable/config.local.json']) {
-    const raw = readJson(path.join(root, name));
-    if (raw?.hook && Object.prototype.hasOwnProperty.call(raw.hook, 'enabled')) {
-      enabled = raw.hook.enabled !== false;
-    }
-  }
-  return enabled;
-}
-
-const STOP_REVIEW_PROVIDERS = new Set(['claude-code', 'codex', 'agents', 'grok']);
-
-function automaticHookMode(ctx) {
-  if (ctx.platform === 'ios' || ctx.platform === 'android' || ctx.platform === 'adaptive') {
-    return 'none';
-  }
-  const activeRoot = path.resolve(ctx.projectRoot || process.cwd());
-  if (!hookEnabledAt(activeRoot)) return 'none';
-  const manifests = HOOK_MANIFESTS_BY_PROVIDER[IMPECCABLE_PROVIDER_ID] || [];
-  const roots = [...new Set([process.cwd(), ctx.projectRoot, ctx.repoRoot].filter(Boolean).map((root) => path.resolve(root)))];
-  for (const root of roots) {
-    for (const rel of manifests) {
-      const raw = readJson(path.join(root, rel));
-      if (raw?.hooks && valueHasHookMarker(raw.hooks)) {
-        return STOP_REVIEW_PROVIDERS.has(IMPECCABLE_PROVIDER_ID) ? 'stop' : 'per-edit';
-      }
-    }
-  }
-  return 'none';
-}
-
-
 // Build-path preference: a workflow setting (comp-led vs code-led), read here
 // so every session starts knowing it without a file hunt. It rides the unified
 // config beside the hook and detector settings, and the gitignored local file
@@ -1446,12 +1389,10 @@ function appendSubagentAuthorizationDirective(parts) {
   ].join(' '));
 }
 
-// reference/craft-floor.md carries the detector-blind reflexes on every build,
-// so the only gap left here is the mechanical pass. A hook covers it, per-edit
-// or Stop; a session without one has to run the detector by hand. The detector
-// reads HTML and CSS, so native projects get nothing.
+// reference/craft-floor.md carries the detector-blind reflexes on every build.
+// This Antigravity bundle uses the manual mechanical pass for web projects.
+// The detector reads HTML and CSS, so native projects get nothing.
 function appendDetectorFallback(parts, ctx) {
-  if (automaticHookMode(ctx) !== 'none') return;
   if (ctx.platform === 'ios' || ctx.platform === 'android' || ctx.platform === 'adaptive') return;
   const scriptsPath = path.dirname(fileURLToPath(import.meta.url));
   parts.push([

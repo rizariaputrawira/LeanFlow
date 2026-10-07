@@ -76,3 +76,5 @@ Both installers deploy agents under `~/.gemini/config/agents/<name>/agent.md`. T
 Destructive Git and recursive-delete confirmation, credential masking, and workspace permission boundaries remain applicable. Current CLI `always-proceed` can auto-approve a confirmation raised by the safety hook; existing users should check `/config` and `/hooks`, not assume the hook is a hard barrier. Planner/reviewer omit native edit, command, and delegation tools, but inherited MCP access is not OS containment. Custom agents use supported model tiers, not invented reasoning selectors.
 
 `/workflow-health-check` audits first. Repair requires an explicit request; conservative migration retains source trees rather than deleting possibly conflicting historical data. See the [planning guide](docs/PLANNING_GUIDE.md) for compatibility and validation details.
+
+Bundled Impeccable utilities omit unused upstream reports and helper entry points. Web work retains its manual detector fallback; native projects bypass that HTML/CSS pass. Live editing, font matching, composition selection, and existing hook administration remain available.
