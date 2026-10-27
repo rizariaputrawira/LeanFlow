@@ -2,18 +2,20 @@
 
 ## Authored contract
 
-- Five canonical skill directories under `<target>/skills/`: `leanflow-{brainstorm,plan,execute,orchestrate,to-spec}`; default target `~/.omp/agent`. Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
+- Seven canonical skill directories under `<target>/skills/`: `leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}`; default target `~/.omp/agent`. Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
 - Opt-in native Markdown/YAML `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` files under `<target>/agents/`.
 - Planner/reviewer tools: `read`, `grep`, `glob`, `web_search`; executor adds `edit`, `write`, `bash`.
 - No model field, so host selection is inherited. No global instructions, MCP, approvals, telemetry, workspace settings, or ignore-rule mutation.
 
 These are authored package/binding properties, not proof that every installed omp version parses, discovers, dispatches, or restricts them.
 
-## Current five-skill evidence
+The three native roles are unchanged. The two new Git skills are not automatic orchestration stages. Native validation of the seven-skill package and discovery/behavior of `leanflow-commit-message` and `leanflow-pr-work` remain unverified; the observations below apply only to earlier revisions.
 
-In **omp 18.13.1**, native reads from a disposable installed skill root returned all five canonical instruction bodies before the spec-first revision. Separate standalone specification/path smokes preserved source and historical artifacts. Fresh direct source-loaded orchestration checks then observed specification → plan → implementation, planning-only stopping after the plan, and required-specification persistence failure stopping before planning or implementation. Independent assertions checked consumer results, plan state, and filesystem effects. These are bounded loading/instruction-following observations, not revised delegated-role or containment evidence. See the [central current checks](../../COMPATIBILITY.md#current-five-skill-checks) for scope and limits.
+## Historical five-skill evidence
 
-## Model-selected lean guidance
+In **omp 18.13.1**, native reads from a disposable installed skill root returned all five canonical instruction bodies before the spec-first revision. Separate standalone specification/path smokes preserved source and historical artifacts. Fresh direct source-loaded orchestration checks then observed specification → plan → implementation, planning-only stopping after the plan, and required-specification persistence failure stopping before planning or implementation. Independent assertions checked consumer results, plan state, and filesystem effects. These historical five-skill observations predate the Git-skill additions and are bounded loading/instruction-following observations, not revised delegated-role or containment evidence. See the [central historical five-skill checks](../../COMPATIBILITY.md#historical-five-skill-checks) for scope and limits.
+
+## Historical five-skill model-selected lean guidance
 
 Fresh **omp 18.13.1 / openai-codex/gpt-6.1-sol** processes selected the five revised skills from ordinary-language requests against an isolated native catalog, then loaded applicable templates, simplicity, and English/Indonesian writing guidance. Additional fixtures exercised consent stops and extracted worker/review references. The [central adoption record](../../COMPATIBILITY.md) distinguishes these observations from native role dispatch, baseline improvement, and containment. The temporary catalog/configuration was not a live host installation.
 

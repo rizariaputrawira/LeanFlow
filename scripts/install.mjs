@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const manifestName = '.leanflow-manifest.json';
-const coreSkills = ['leanflow-brainstorm', 'leanflow-plan', 'leanflow-execute', 'leanflow-orchestrate', 'leanflow-to-spec'];
+const coreSkills = ['leanflow-brainstorm', 'leanflow-plan', 'leanflow-execute', 'leanflow-orchestrate', 'leanflow-to-spec', 'leanflow-commit-message', 'leanflow-pr-work'];
 const roles = ['planner', 'executor', 'reviewer'];
 const hosts = {
   omp: { target: () => path.join(os.homedir(), '.omp', 'agent'), skills: 'skills', agents: 'agents', extension: 'md' },
@@ -212,7 +212,7 @@ try {
     (args.length === 2 && Object.hasOwn(hosts, args[0]) && ['--help', '-h'].includes(args[1]));
   if (help) {
     console.log(usage);
-    console.log('Install five portable skills; add --with-agents for native roles. codex and generic require an explicit --target.');
+    console.log('Install seven portable skills; add --with-agents for native roles. codex and generic require an explicit --target.');
     process.exit(0);
   }
   const options = parseArgs(args);

@@ -13,13 +13,15 @@ node scripts/install.mjs generic --target /path/to/host/skills --update --dry-ru
 node scripts/install.mjs generic --target /path/to/host/skills --update
 ```
 
-`--target` is the **skill root itself**: the five `leanflow-{brainstorm,plan,execute,orchestrate,to-spec}/` directories go directly inside it, not under another `skills/` child. All five use the same canonical bytes as the native adapters. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. `--with-agents` is unsupported and rejected before writes. No default destination is guessed.
+`--target` is the **skill root itself**: the seven `leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}/` directories go directly inside it, not under another `skills/` child. All seven use the same canonical bytes as the native adapters. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. `--with-agents` is unsupported and rejected before writes. No default destination is guessed.
+
+`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither is an automatic orchestration stage. Native discovery and behavior of these additions remain unverified; generic copying does not provide native validation of the seven-skill package.
 
 `.leanflow-manifest.json` records schema version, harness, and installed file SHA-256 digests. Changed managed bytes require `--update`; local changes and unowned conflicts require deliberate resolution. Previously managed entries omitted from an install remain recorded and installed; this is not a removal tool. Dry-run writes nothing. Individual files are replaced atomically, but no whole-bundle rollback is promised.
 
 ## Limits and migration
 
-The installer does not establish whether the host understands `SKILL.md`, relative references, discovery, invocation, or the instructions. Verify those separately. Plain-file loading remains possible with a file-capable assistant even where native registration is unavailable; see the [quickstart](../../README.md#get-started-without-installing).
+The installer does not establish whether the host understands `SKILL.md`, relative references, discovery, invocation, or the instructions. Verify those separately. Plain-file loading remains possible with a file-capable assistant even where native registration is unavailable; see the [quickstart](../../README.md#use-without-installing).
 
 No agents, plugins, MCP services, hooks, host-global instructions, credentials, model/approval/telemetry settings, workspace settings, or ignore rules are installed. Of the former 25 optional `config/skills/` packages, `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers are removed. Skills do not grant permissions or create containment.
 

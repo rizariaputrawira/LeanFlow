@@ -1,18 +1,20 @@
 # LeanFlow Planning and Execution Guide
 
-The five sibling packages under [`skills/`](../skills/) contain four primary workflow skills and `leanflow-to-spec`. They own LeanFlow's procedures. Specification capture is optional for standalone planning but required first within orchestration. This guide explains how to use them; native adapters bind host tools and roles, not alternative workflow implementations.
+The seven sibling packages under [`skills/`](../skills/) contain five workflow skills and two optional Git workflows. They own LeanFlow's procedures. Specification capture is optional for standalone planning but required first within orchestration. This guide explains how to use them; native adapters bind host tools and roles, not alternative workflow implementations.
 
 - [`leanflow-brainstorm`](../skills/leanflow-brainstorm/SKILL.md): unresolved goals, choices, and tradeoffs.
 - [`leanflow-plan`](../skills/leanflow-plan/SKILL.md): planning methods, canonical plan format, and artifact privacy.
 - [`leanflow-execute`](../skills/leanflow-execute/SKILL.md): exact-plan implementation, verification, and resumption.
 - [`leanflow-orchestrate`](../skills/leanflow-orchestrate/SKILL.md): explicit specification-first coordination, planning, execution, integration, and acceptance.
 - [`leanflow-to-spec`](../skills/leanflow-to-spec/SKILL.md): conversation or supplied-design synthesis into a reference specification, explicitly requested standalone or invoked as orchestration's required first stage.
+- [`leanflow-commit-message`](../skills/leanflow-commit-message/SKILL.md): read-only message advice grounded in the selected diff and repository history; never commits.
+- [`leanflow-pr-work`](../skills/leanflow-pr-work/SKILL.md): bounded change preparation and draft PR material, with explicit mutation and publication boundaries.
 
 The current assistant plans and executes directly by default. Skills cannot supply tools, change model routing or permissions, register themselves, or enforce containment. The host's actual capabilities and approval boundaries remain authoritative.
 
 ## Load the workflows
 
-Use a [native adapter](../README.md#install-a-host-adapter), or consult your host's documentation and copy the five complete `skills/leanflow-<name>/` directories into its documented skill root. Preserve their sibling layout and inspect existing ownership before replacing anything. Packaging alone does not invoke `leanflow-to-spec`: a standalone specification request or explicit orchestration selects it. Native registration, file readability, command routing, and behavioral correctness are separate properties; see [compatibility](../COMPATIBILITY.md).
+Use a [native adapter](../README.md#install-a-host-adapter), or consult your host's documentation and copy the seven complete `skills/leanflow-<name>/` directories into its documented skill root. Preserve their sibling layout and inspect existing ownership before replacing anything. Packaging alone does not invoke `leanflow-to-spec`: a standalone specification request or explicit orchestration selects it. Neither Git skill becomes an automatic orchestration stage. Native registration, file readability, command routing, and behavioral correctness are separate properties; see [compatibility](../COMPATIBILITY.md).
 
 For plain-file use, ask the assistant to read the actual skill and resolve links from its containing directory:
 
@@ -34,7 +36,7 @@ Read the actual entrypoint, then its references when their stated conditions app
 - When choosing or revising an implementation approach, planning and execution use the same [simplicity owner](../skills/leanflow-execute/references/simplicity.md).
 - For English or Indonesian plans, specifications, designs, or substantial reports, load the shared [writing reference](../skills/leanflow-to-spec/references/writing.md) and apply the matching language section. Mixed-language passages retain their own idiom and audience; technical identifiers and evidence limits remain intact. Loading this reference does not select the specification workflow.
 
-These are supporting files inside the existing five skills, not additional skills or mandatory stages. Copy complete directories, including references and retained notices. Common consent and stopping rules remain in the entrypoints rather than being hidden in optional detail. Native discovery and model-selection behavior still require host/version-specific evidence.
+These are supporting files inside the workflow skills, not additional skills or mandatory stages. Copy all seven complete directories, including references and retained notices. Common consent and stopping rules remain in the entrypoints rather than being hidden in optional detail. Native discovery and model-selection behavior still require host/version-specific evidence.
 
 ## Brainstorm when choices remain
 
@@ -115,16 +117,47 @@ If delegation is unavailable, disclose the limitation and perform the authorized
 
 Review is optional when requested or justified by concrete risk, not a mandatory role stage. On `REPLAN_REQUIRED`, orchestration permits at most one automatic revision within the original authorization when replanning is permitted, preserving the old plan and completed work. Broader scope requires the user; a second material invalidation stops dependent work. Do not replay verified steps.
 
+## Optional commit-message advice
+
+Use [`leanflow-commit-message`](../skills/leanflow-commit-message/SKILL.md) to draft or improve a message without changing repository state:
+
+```text
+Read skills/leanflow-commit-message/SKILL.md with
+skills/leanflow-commit-message/ as the base for relative references.
+Draft a message for the staged changes, following repository instructions
+and recent commit style. Do not stage files or commit.
+```
+
+The assistant reads the actual diff and recent history, not just filenames or a task summary. Staged changes take precedence when present unless you explicitly select another scope; do not merge unrelated unstaged work into that message. With no staged changes, use the applicable working-tree scope and disclose what was inspected. Follow applicable repository instructions and established message conventions rather than assuming Conventional Commits or another universal format. Missing diff/history access is an evidence limit, not permission to invent change details.
+
+This skill remains read-only even when implementation has been authorized elsewhere. It does not stage, commit, amend, create branches, push, or publish PRs. A message draft is not evidence that a commit exists.
+
+## Optional bounded change and PR preparation
+
+Use [`leanflow-pr-work`](../skills/leanflow-pr-work/SKILL.md) for a supplied issue or bounded change scope, or to prepare PR material for existing changes. State whether implementation is authorized; a request for draft PR text alone does not authorize source edits.
+
+```text
+Read skills/leanflow-pr-work/SKILL.md with skills/leanflow-pr-work/
+as the base for relative references. Draft a PR title and description for
+the current branch against main. Use the repository's PR template.
+Report the compared refs, performed checks, unrun checks, and limitations.
+Do not edit files, create branches, stage, commit, push, or publish a PR.
+```
+
+Resolve the actual base/head refs and inspect their change before describing it. Follow applicable repository instructions and PR templates; preserve required sections and identify unavailable information instead of filling it with invented evidence. Tie the draft to the supplied issue or scope, distinguish observed verification from proposed or unrun checks, and disclose unavailable refs, tools, network access, or permissions. Never claim a check passed or a PR exists without evidence.
+
+Draft material is the default deliverable, not a published PR. Implementation must remain within authorized scope; branch creation, staging, committing, pushing, and creating or updating a remote PR each need explicit authorization for that action. Do not infer those permissions from a preparation request, a skill selection, or orchestration's implementation consent. Host approval policies still apply. These two Git skills are optional procedures alongside the existing workflow, not additions to its specification-first stage sequence or its three native roles.
+
 ## Resume carefully
 
 Resume only the exact explicitly supplied plan, reconciling its status with current code and evidence before acting. Preserve historical artifacts, but do not consume old execution state, notes, or ledgers as a workflow. Status alone does not authorize replaying irreversible work. If material scope, checks, or acceptance criteria are missing, report the precise blocker or `REPLAN_REQUIRED`; preserve the original and prepare a separate grounded revision only within authorization.
 
 The retired `flashplan`, `superplan`, and `hyperplan` packages have no compatibility aliases; use methods of `leanflow-plan`. All shipped user-invoked skills use the `leanflow-` prefix. A name match does not prove ownership or justify deletion.
 
-The former `config/skills/` package tree remains retired, not an available optional package collection. The to-spec procedure is the sole exception promoted into a canonical fifth package at `skills/leanflow-to-spec/`; its old path is historical provenance, not a compatibility alias. Historical helper flags, Git/PR workflows, and host dependencies are not core requirements. See [legacy configuration](LEGACY_CONFIGURATION.md) for historical context and the separate legacy configuration assets.
+The former `config/skills/` package tree remains retired, not an available optional package collection. The to-spec procedure was the sole exception promoted into the canonical fifth package at `skills/leanflow-to-spec/`; its old path is historical provenance, not a compatibility alias. The new canonical `leanflow-commit-message` and `leanflow-pr-work` packages selectively adapt KitShift procedures; they do not restore retired Git/PR packages, historical helper flags, old paths, or host dependencies. See [sources and notices](../skills/SOURCES.md) for current provenance and [legacy configuration](LEGACY_CONFIGURATION.md) for historical context and the separate legacy configuration assets.
 
 ## Verification and evidence limits
 
-Current native compatibility and any newly observed evidence belong in [`COMPATIBILITY.md`](../COMPATIBILITY.md). The [historical record](LEGACY_CONFIGURATION.md#historical-verification-record) preserves prior source-loaded method smokes, old namespace/installer checks, and Antigravity observations with their limitations. Those results predate the new adapters and do not verify their current registration, delegation, or safety behavior. Earlier four-skill evidence remains four-skill evidence; it does not establish validation of the restored fifth package.
+Current native compatibility and any newly observed evidence belong in [`COMPATIBILITY.md`](../COMPATIBILITY.md). The [historical record](LEGACY_CONFIGURATION.md#historical-verification-record) preserves prior source-loaded method smokes, old namespace/installer checks, and Antigravity observations with their limitations. Those results predate the new adapters and do not verify their current registration, delegation, or safety behavior. Earlier four-skill evidence remains four-skill evidence; it does not establish validation of the restored fifth package or the two new Git skills. Likewise, five-skill observations do not establish seven-skill native discovery or behavior.
 
 File readability, relative links, native discovery, command routing, delegation, instruction following, and safety enforcement require distinct evidence. LeanFlow supplies guidance, not a runtime enforcement layer or a demonstrated all-host effectiveness guarantee.
