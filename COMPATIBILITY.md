@@ -6,13 +6,13 @@ LeanFlow separates **portable workflow source**, **host packaging**, **native di
 
 | Target | Destination | Optional native agents | Current evidence boundary |
 | --- | --- | --- | --- |
-| [`omp`](harnesses/omp/README.md) | `~/.omp/agent`, or custom agent root | Three Markdown/YAML definitions in `agents/`; model omitted to inherit | Installed skill loading and one native project reviewer dispatch completed in omp 18.13.1; planner/executor native dispatch and full parallel execution remain unverified. |
-| [`agy`](harnesses/agy/README.md) | `~/.gemini/config/plugins/leanflow`, or custom plugin root | Three plugin agent definitions; `model: inherit` | Strict native plugin validation passed in agy 1.4.7: four skills, three agents, no findings. Model-driven dispatch remains unverified. |
-| [`claude`](harnesses/claude/README.md) | `~/.claude`, or custom `.claude`-style root | Three native Markdown/YAML subagents; `model: inherit` | Official documented layout; executable unavailable during this change, so no native validation claimed. |
-| [`codex`](harnesses/codex/README.md) | Explicit project root; `.agents/skills/` | Three standalone `.codex/agents/*.toml`; model/effort inherited | Official documented layout; executable unavailable during this change, so no native validation claimed. No `config.toml` registry changes. |
-| [`generic`](harnesses/generic/README.md) | Required explicit skill root; four directories directly inside | None; `--with-agents` rejected before writes | File installation only; no host discovery, agent dispatch, or runtime compatibility claim. |
+| [`omp`](harnesses/omp/README.md) | `~/.omp/agent`, or custom agent root | Three Markdown/YAML definitions in `agents/`; model omitted to inherit | All five installed skill bodies loaded through native reads in omp 18.13.1. Native reviewer dispatch has separate historical four-skill evidence; planner/executor dispatch and full parallel execution remain unverified. |
+| [`agy`](harnesses/agy/README.md) | `~/.gemini/config/plugins/leanflow`, or custom plugin root | Three plugin agent definitions; `model: inherit` | Current five-skill plugin passed strict native validation in agy 1.4.7 with three agents and no findings. Model-driven dispatch remains unverified. |
+| [`claude`](harnesses/claude/README.md) | `~/.claude`, or custom `.claude`-style root | Three native Markdown/YAML subagents; `model: inherit` | Official documented layout; executable unavailable during the historical adapter checks, so no native validation claimed. |
+| [`codex`](harnesses/codex/README.md) | Explicit project root; `.agents/skills/` | Three standalone `.codex/agents/*.toml`; model/effort inherited | Official documented layout; executable unavailable during the historical adapter checks, so no native validation claimed. No `config.toml` registry changes. |
+| [`generic`](harnesses/generic/README.md) | Required explicit skill root; five directories directly inside | None; `--with-agents` rejected before writes | File installation only; no host discovery, agent dispatch, or runtime compatibility claim. |
 
-Every default installation includes exactly `leanflow-brainstorm`, `leanflow-plan`, `leanflow-execute`, and `leanflow-orchestrate`, plus applicable installer/plugin metadata. Native agents require `--with-agents`; the 25 legacy optional `config/skills/` packages are excluded. Detailed per-host evidence: [omp](harnesses/omp/COMPATIBILITY.md), [agy](harnesses/agy/COMPATIBILITY.md), [Claude Code](harnesses/claude/COMPATIBILITY.md), [Codex](harnesses/codex/COMPATIBILITY.md).
+Every default installation includes exactly `leanflow-brainstorm`, `leanflow-plan`, `leanflow-execute`, `leanflow-orchestrate`, and `leanflow-to-spec`, plus applicable installer/plugin metadata. These are five distributed skills, not five mandatory stages. Specification is optional for standalone planning and execution; selected orchestration requires a saved specification first, then planning, then execution within permission. Native agents require `--with-agents` and remain the same three roles. Of the former 25 optional `config/skills/` packages, `leanflow-to-spec` is promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers have been removed. Existing global installs remain user-owned and are not automatically deleted. Detailed per-host evidence: [omp](harnesses/omp/COMPATIBILITY.md), [agy](harnesses/agy/COMPATIBILITY.md), [Claude Code](harnesses/claude/COMPATIBILITY.md), [Codex](harnesses/codex/COMPATIBILITY.md).
 
 ## What each kind of evidence proves
 
@@ -21,9 +21,34 @@ Every default installation includes exactly `leanflow-brainstorm`, `leanflow-pla
 3. **Behavior smoke:** the actual instructions are read and applied to a bounded fixture, with observed outcomes. Planning-only, inline-plan, direct execution, and parallel orchestration need their own relevant observations; a launch receipt is not completion.
 4. **Permissions and containment:** native tool declarations or role prompts express intended scope. They are not evidence of inherited-MCP suppression, command isolation, OS containment, or host approval enforcement.
 
-## Current observed checks
+## Current five-skill checks
 
-Checks used disposable directories on Linux/WSL2 with Node.js 24.20.0. No live host installation, credentials, persistent settings, or external services were changed.
+Checks used disposable targets and fixtures on Linux/WSL2 with Node.js 24.20.0; no live host configuration or installed skills were changed. The package/native-loader results below predate the spec-first orchestration revision and do not establish its new stage behavior.
+
+- `node --test tests/install.test.mjs`: **27 passed, zero failures, zero skips**, with the exact five-skill default and existing update/conflict/preservation checks.
+- Actual installations for all five targets contained exactly the requested five package directories and byte-matching canonical skill files. CLI help reported five skills. **98 local link destinations** existed; heading anchors were not rechecked.
+- **omp 18.13.1** native skill reads from the disposable installation returned the complete canonical instruction bodies for all five names, including `leanflow-to-spec`.
+- **agy 1.4.7** strict native plugin validation returned **five skills, three agents, zero hooks/MCP servers/rules, and no findings**. This is parser/loader validation, not model-driven dispatch.
+- Before the specification-folder rename, a source-loaded to-spec run read the actual canonical skill and supplied synthetic design. It preserved the settled CSV decision, filtered-task requirement, nonmutation constraint, unresolved archive question, and PDF exclusion. Independent checks found one private `.workflow/specs/` artifact, both ignore rules, unchanged source, and no planning or implementation artifacts. That outcome is preserved at its original path, not relabeled as a `.workflow/specification/` result.
+- A later source-loaded path smoke read the latest `leanflow-to-spec` body and created `.workflow/specification/` with one source-grounded specification. Parent-observed checks found the historical `.workflow/specs/` file preserved byte-for-byte, the supplied design and user ignore rules preserved, both privacy ignores added, and no planning or implementation. This checks the renamed destination and bounded standalone specification behavior, not spec-first orchestration.
+
+These checks do not establish spec-first orchestration, Claude Code or Codex native behavior, all role-dispatch paths, or containment. Parser/loader acceptance and previous skill reads do not prove the revised orchestration sequence.
+
+## Specification-first orchestration checks
+
+Fresh source-loaded runs used the revised canonical procedures in **omp 18.13.1 / openai-codex/gpt-6.1-sol**, with direct work permitted and delegation unavailable:
+
+- Full orchestration: filesystem observations recorded specification creation, then plan creation, then implementation. Independent assertions verified `[2,5] -> 7`, `[] -> 0`, and `[3,-5] -> -2`; the exact saved plan identified its specification and recorded completed work.
+- Planning-only orchestration: observations recorded specification then plan, with pending steps and byte-unchanged implementation source.
+- Artifact writes forbidden: the actor reported the required-specification persistence blocker, returned only a permitted specification draft, and stopped before planning or implementation. Independent checks found unchanged source and no generated files.
+- All artifact-writing cases used `.workflow/specification/` and `.workflow/plans/`, established both privacy ignore rules, and created no separate execution state.
+- The installer suite passed again: **27 passed, zero failures, zero skips**. **105 local file/heading links** resolved across canonical skills and current documentation.
+
+These bounded checks do not establish revised delegated-specification behavior, the supplied-plan conflict path, native behavior in every harness, or containment.
+
+## Historical four-skill adapter checks
+
+The following checks predate the addition of canonical `leanflow-to-spec`. Their counts, failures, and limits describe the earlier four-skill version, not validation of the current five-skill package. Checks used disposable directories on Linux/WSL2 with Node.js 24.20.0. No live host installation, credentials, persistent settings, or external services were changed.
 
 - `node --test tests/install.test.mjs`: **27 passed, zero failures, zero skips**. Actual CLI cases cover the five layouts, four-skill default, opt-in agents, retained managed entries, dry-run nonmutation, consent for managed updates, local/unmanaged conflicts, unsafe manifests, source/destination symlinks, and preservation of unrelated settings/workspace files.
 - Real CLI installations exercised all five layouts. Bash wrapper execution, Bash syntax, CLI help, **80 local file/heading links**, and identical canonical skill bytes across the installed layouts passed. PowerShell execution was not performed because its runtime was unavailable.
@@ -37,9 +62,19 @@ Checks used disposable directories on Linux/WSL2 with Node.js 24.20.0. No live h
 
 The worker smoke establishes bounded ownership behavior, not every parallel schedule or enforcement against an uncooperative agent. Source-loaded cases are not native registration tests. A copied file, parser pass, historical smoke, or absence of a known failure must not be promoted to an all-host support claim.
 
+### Historical legacy-source retirement checks
+
+After removing the legacy package tree and its exclusive helpers, before promoting `leanflow-to-spec`:
+
+- The installer suite passed again: **27 passed, zero failures, zero skips**.
+- Fresh disposable installations for all five targets contained exactly four complete, byte-matching canonical skill packages without the removed source tree or helpers. **90 local link destinations** existed; this check did not revalidate heading anchors.
+- Fresh source-loaded planning and execution runs read the actual canonical skill files. Planning created one pending `.workflow/plans/` artifact and both root privacy ignore rules without implementation. Explicitly authorized execution then satisfied independent omitted/blank/named greeting assertions and marked the same plan complete. Directory checks found no legacy artifact folders or separate execution state.
+
+These are bounded source-loaded workflow checks of the pre-addition four-skill version, not five-skill validation or additional native registration or containment evidence.
+
 ## Behavior and privacy boundaries
 
-Canonical skills own procedures; native bindings only map available roles/tools. A delegate must read the actual relevant skill, not recursively run top-level orchestration. During parallel execution the coordinator alone writes the shared plan, integrating worker step IDs, outcomes, verification, and blockers. Sequential direct execution may update the supplied plan. In-chat plans are valid when their exact content is supplied and checked; persistence follows workflow privacy/permission rules, with chat evidence when persistence is unavailable.
+Canonical skills own procedures; native bindings only map available roles/tools. Selected orchestration saves a source-grounded `.workflow/specification/` file first, then plans, then executes within permission; planning-only consent stops after specification and planning. If required specification persistence or privacy setup is unavailable, return a permitted draft and blocker and stop dependent planning/implementation. A specification alone never authorizes later stages. Standalone planning remains specification-optional. An exact supplied plan is validated against the specification and current evidence during orchestration, not silently replaced. A delegate must read the actual relevant skill, not recursively run top-level orchestration. During parallel execution the coordinator alone writes the shared plan, integrating worker step IDs, outcomes, verification, and blockers. Sequential direct execution may update the supplied plan. In-chat plans are valid when their exact content is supplied and checked; chat evidence can replace unavailable plan persistence, but not orchestration's required specification file.
 
 Installation does not mutate host-global instructions, MCP settings, credentials, model/approval/telemetry choices, workspace settings, or ignore rules. Codex's explicit project installation writes only its requested skill/agent files and manifest. Local artifact ignores are established by the workflow when authorized, not by adapter setup. No adapter claims telemetry suppression or a confidentiality boundary.
 

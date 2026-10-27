@@ -1,39 +1,12 @@
 # Legacy Antigravity Configuration Reference
 
-This records the earlier broad global configuration. The current LeanFlow installer does not install this file, hooks, settings, MCP configuration, or optional specialist skills. The four canonical workflows live in `skills/`; native agent bindings live under `harnesses/<host>/agents/`. Do not treat this legacy reference as a portable core requirement.
+This archives the earlier broad global configuration, not current workflow instructions. The current LeanFlow installer does not install this file, hooks, settings, or MCP configuration. Of the former 25 optional `config/skills/` packages, `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers are removed. Existing global installs remain user-owned and are not automatically deleted. The unrelated historical settings and safety caveats below are retained as reference, not evidence of current deployment.
 
-## SKILLS AVAILABLE
+## CURRENT WORKFLOW OWNERS
 
-| Skill | Trigger | Purpose |
-|---|---|---|
-| `leanflow-plan` | '/leanflow-plan', 'plan', 'make a plan' | Sole planning-only workflow; automatically selects flash, super, or hyper from task evidence and records its method, rationale, and limitations. Explicit method requests are honored with risks visible; planning never authorizes execution. |
-| `leanflow-execute` | '/leanflow-execute', 'execute plan' | Execute an explicitly supplied authorized plan directly by default. |
-| `leanflow-orchestrate` | '/leanflow-orchestrate', 'orchestrate', 'orc' | Explicitly compose planning and execution using discovered host delegation when available and implementation is authorized. |
-| `leanflow-hyperexecution` | '/leanflow-hyperexecution', 'start work', 'execute plan' | Short alias to canonical execution workflow; requires supplied plan path. |
-| `leanflow-brainstorm` | '/leanflow-brainstorm', 'brainstorm', 'design spec', 'explore ideas', 'wayfinder', 'fog map' | Optional collaborative design exploration when decisions are unresolved. |
-| `leanflow-to-spec` | '/leanflow-to-spec', 'write spec', 'create spec' | Optional design-to-spec documentation step. |
-| `leanflow-work-with-pr` | '/leanflow-work-with-pr', 'create a PR', 'implement and PR' | Full PR lifecycle with worktrees |
-| `leanflow-tech-debt-audit` | '/leanflow-tech-debt-audit', 'tech debt', 'code health' | 9-dimension tech debt audit |
-| `leanflow-security-research` | '/leanflow-security-research', 'security review', 'vulnerability audit' | Parallel security audit team |
-| `leanflow-ast-grep` | '/leanflow-ast-grep', 'structural search', 'ast-grep' | Tree-sitter structural code search |
-| `leanflow-github-triage` | '/leanflow-github-triage', 'triage issues', 'audit issues' | Read-only issue/PR triage |
-| `leanflow-systematic-debugging` | '/leanflow-systematic-debugging', 'debug', 'bug', 'error', 'failing', 'broken', 'not working', 'investigate', 'root cause' | 4-phase structured debugging methodology |
-| `leanflow-test-driven-development` | '/leanflow-test-driven-development', 'tdd', 'test first', 'red green', 'write test', 'failing test' | RED-GREEN-REFACTOR cycle enforcement |
-| `leanflow-verification-before-completion` | '/leanflow-verification-before-completion', 'verify', 'verify before', 'evidence before', 'completion check' | Evidence before claims always |
-| `leanflow-bash-scripting` | '/leanflow-bash-scripting', 'bash', 'shell script', 'sh script', 'shellcheck' | POSIX vs Bash selection, quoting safety, traps, and shellcheck validation |
-| `leanflow-linux-sysadmin` | '/leanflow-linux-sysadmin', 'sysadmin', 'systemd', 'journalctl', 'selinux', 'firewall' | Host diagnostics, systemd services, rollback preparation, and security baseline safety |
-| `leanflow-podman-operator` | '/leanflow-podman-operator', 'podman', 'quadlet', 'rootless container' | Rootless Podman container lifecycle and systemd Quadlet service management |
-| `leanflow-workflow-health-check` | '/leanflow-workflow-health-check', 'wf-doctor', 'wf-repair' | Diagnose and auto-heal workspace workflow conventions and broken/outdated skills |
+The five canonical packages are [leanflow-brainstorm](../skills/leanflow-brainstorm/SKILL.md), [leanflow-to-spec](../skills/leanflow-to-spec/SKILL.md), [leanflow-plan](../skills/leanflow-plan/SKILL.md), [leanflow-execute](../skills/leanflow-execute/SKILL.md), and [leanflow-orchestrate](../skills/leanflow-orchestrate/SKILL.md). Specification is optional for standalone planning and execution. Selected orchestration requires `leanflow-to-spec` to save a source-grounded `.workflow/specification/` file first, then planning, then execution within permission; planning-only consent permits no implementation. If required specification saving or privacy setup is unavailable, return a permitted draft and blocker and stop dependent planning/implementation. Standalone to-spec may return chat output or an authorized private file; specification creation alone never authorizes later stages. Load the discovered skill body for the requested workflow; use the [current workflow guide](../docs/PLANNING_GUIDE.md) for artifact conventions and [host adapters](../README.md#install-a-host-adapter) for installation and the unchanged three native roles. This archive is not a skill catalog or an adapter.
 
-Load the four canonical core skills (`leanflow-brainstorm`, `leanflow-plan`, `leanflow-execute`, `leanflow-orchestrate`) by discovered skill name. Their repository source is root `skills/leanflow-<name>/SKILL.md`; this optional adapter installs them alongside `config/skills/*` under `~/.gemini/config/skills/`. Read the discovered skill body before following it; do not assume repository-relative adapter paths match the installed layout.
-
-## WORKFLOW ARTIFACTS AND COMPATIBILITY
-
-New plans live at `.workflow/plans/<SEQ>-YYYYMMDD-<slug>.md`; choose a non-colliding sequence and preserve existing artifacts. A plan is not execution evidence. Normal execution records checkbox status and verification inline in the supplied plan; no FSM, ledger, or evidence directory is required.
-
-Before saving workflow artifacts, preserve workspace `.gitignore` content and ensure the exact root entries `/workflow/` and `/.workflow/` are present. Ignoring does not untrack existing records; disclose tracked workflow artifacts and obtain explicit authorization before removing any from the Git index. Preserve their local files.
-
-Explicit legacy `.planning/` and `.ar-wf/` paths remain usable. When resuming legacy work, inspect relevant state, notes, ledger, and evidence and resolve discrepancies against current source before replaying potentially irreversible work. Do not trust status or checkboxes alone.
+The former `leanflow-hyperexecution` alias and optional specialist packages other than promoted `leanflow-to-spec` are retired, not available alternatives to the canonical skills. Current workflows preserve existing `.workflow/` artifacts; obsolete artifact compatibility instructions are not maintained here. For historical installation checks, failures, settings risks, and migration ownership boundaries, see [the historical record](../docs/LEGACY_CONFIGURATION.md).
 
 ## CORE OPERATING PRINCIPLES
 
@@ -44,9 +17,9 @@ Never claim something works without proving it. "It looks right" is not evidence
 - A file read confirming the content
 
 ### 2. Direct Work and Explicit Orchestration
-For planning and execution, main performs substantive work directly by default; no named role or model is required. Explicit orchestration or delegation uses the host's discovered delegation capabilities. In this adapter, prefer installed `planner` and `executor` roles when they fit the authorized handoff; use a read-only reviewer only for an explicit review request or concrete security, interface/schema, cross-boundary, or difficult correctness risk. Discover actual roles and tools rather than inventing them. If delegation is unavailable, disclose that limitation and proceed directly within the user's authorization. A failed delegated attempt must be reported before choosing an available recovery; do not fabricate worker results.
+For standalone planning and execution, main performs substantive work directly by default; no named role or model is required. Explicit orchestration or delegation uses the host's discovered delegation capabilities. Native roles remain planner, executor, and reviewer; discover actual installed roles and tools rather than inventing them. Use a read-only reviewer only for an explicit review request or concrete security, interface/schema, cross-boundary, or difficult correctness risk. If delegation is unavailable, disclose that limitation; proceed directly only within authorization, never for a delegation-only request. A failed delegated attempt must be reported before choosing an available recovery; do not fabricate worker results.
 
-Main owns scope, complete handoffs, plan validation, and final acceptance. Workers do not delegate further. Ordinary requests do not require a saved plan or documentation pipeline. Keep specialist skills independently selectable when their actual trigger applies. Do not manufacture specs, state machines, review stages, or extra agents. Prefer native capabilities, reuse, and minimal changes.
+Main owns scope, complete handoffs, plan validation, and final acceptance; during parallel execution only the coordinator writes the shared plan. Workers do not delegate further. Ordinary standalone requests do not require a saved plan or specification pipeline; selected orchestration does require its saved specification first. Validate any exact supplied plan against that specification and current evidence during planning rather than silently replacing it. Do not manufacture unrelated state machines, review stages, or extra agents. Prefer native capabilities, reuse, and minimal changes.
 
 For explicit adapter orchestration, installed role model settings are host preferences, not portable workflow requirements or verified exact reasoning-effort controls.
 
@@ -84,14 +57,14 @@ When writing plans, prompts, or documentation consumed by agents:
 Respond thoughtfully within the user's authorization. Resolve ambiguity from supplied context and source; ask only for material missing decisions.
 
 ### Planning and Execution
-Load `leanflow-plan` and `leanflow-execute` by discovered name and work directly by default. `leanflow-plan` chooses the least adequate depth: flash for clear, bounded, low-risk work; super for integration, dependencies, or moderate uncertainty; hyper for high-risk security, data, public interfaces, irreversible work, or unresolved load-bearing alternatives. An explicit method request changes planning depth, not model tier, delegation, or execution authorization. `leanflow-hyperexecution` is a thin execution alias. `/leanflow-orchestrate` explicitly composes planning and execution using available host delegation only when implementation is authorized; when delegation is unavailable, disclose and continue directly. A request authorizing brainstorm, plan, and execution may proceed through all three without redundant approval; brainstorming or planning alone does not authorize later stages.
+For current planning depth, execution authorization, and delegation behavior, read the [canonical planning](../skills/leanflow-plan/SKILL.md), [execution](../skills/leanflow-execute/SKILL.md), or [orchestration](../skills/leanflow-orchestrate/SKILL.md) owner for the requested workflow. The former broad configuration and its retired execution alias are not current workflow instructions.
 
 Native agent tool declarations and prose are not OS containment. Ambient MCP access may remain available; an empty `mcpServers` setting does not establish suppression of inherited MCP tools.
 
 ## REMOTE EXECUTION & HOST SAFETY RULES
 
 - **Host Security Baselines**: Never disable SELinux, AppArmor, or firewalls as a default fix. Fix specific rules or contexts.
-- **SSH Multiplexing & Safety**: Use persistent connection multiplexing for repetitive remote commands. Validate configs (`sshd -t`) and test new connections before closing sessions (see `leanflow-linux-sysadmin` skill).
+- **SSH Multiplexing & Safety**: Use persistent connection multiplexing for repetitive remote commands. Validate configs (`sshd -t`) and test new connections before closing sessions.
 - **Credential Masking**: Never print raw keys, tokens, or unmasked secrets to logs or evidence files (`report.txt`). Filter `env` and inspect outputs.
 
 ## GIT CONVENTIONS

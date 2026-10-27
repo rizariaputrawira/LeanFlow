@@ -1,6 +1,6 @@
 # agy Adapter
 
-This adapter packages four shared LeanFlow skills as a native agy plugin. Optional agy agent bindings use host-native metadata and tool names; the shared skills remain the procedure owners.
+This adapter packages five shared LeanFlow skills as a native agy plugin. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Optional agy agent bindings use host-native metadata and tool names; the shared skills remain the procedure owners.
 
 ## Install and update
 
@@ -13,7 +13,7 @@ node scripts/install.mjs agy --with-agents --dry-run
 node scripts/install.mjs agy --with-agents
 ```
 
-The default target is `~/.gemini/config/plugins/leanflow`. It receives native `plugin.json` and `skills/leanflow-{brainstorm,plan,execute,orchestrate}/`; `--with-agents` also copies the three native files from [`agents/`](agents/) into the plugin's `agents/` directory. This is not the old global `~/.gemini/config/agents/` installation.
+The default target is `~/.gemini/config/plugins/leanflow`. It receives native `plugin.json` and `skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec}/`; `--with-agents` also copies the three native files from [`agents/`](agents/) into the plugin's `agents/` directory. This is not the old global `~/.gemini/config/agents/` installation.
 
 For a custom plugin directory and update:
 
@@ -36,7 +36,7 @@ Bindings refer to loaded canonical skills. Delegated execution is assignment-onl
 
 ## Scope and migration
 
-The adapter does not deploy old `config/` settings, hooks, rules, MCP entries, host-global instructions, or 25 optional skill packages. It does not change credentials, model/approval/telemetry settings, or workspace privacy rules. `install.sh` and `install.ps1` now forward to the Node adapter CLI, not a full-configuration installer.
+The adapter does not deploy old `config/` settings, hooks, rules, MCP entries, or host-global instructions. Of the former 25 optional skill packages, `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers are removed. It does not change credentials, model/approval/telemetry settings, or workspace privacy rules. `install.sh` and `install.ps1` now forward to the Node adapter CLI, not a full-configuration installer.
 
 Existing global skills/agents, hooks, and MCP entries are not uninstalled. Inventory and back up assets you own, preview the plugin install, and resolve collisions deliberately; never automatically remove shared global directories. The new plugin manifest does not establish ownership of old globals. See [migration and historical telemetry warnings](../../docs/LEGACY_CONFIGURATION.md). Current installation does not apply historical telemetry opt-outs or account settings.
 
