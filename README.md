@@ -1,6 +1,6 @@
 # LeanFlow
 
-**Plan deliberately. Execute simply. Orchestrate end to end.**
+**Plan first. Execute simply. or Orchestrate.**
 
 Five portable, instruction-based skills for coding assistants. Read the canonical files directly or install them through a small host adapter—without adopting a full personal configuration kit.
 
