@@ -1,6 +1,6 @@
 # LeanFlow
 
-**Plan deliberately. Execute simply. Orchestrate specification-first.**
+**Plan deliberately. Execute simply. Orchestrate end to end.**
 
 Five portable, instruction-based skills for coding assistants. Read the canonical files directly or install them through a small host adapter—without adopting a full personal configuration kit.
 
@@ -23,9 +23,9 @@ Adapters package skills for Oh My Pi (`omp`), Antigravity CLI (`agy`), Claude Co
 
 ## Capabilities
 
-- **Five reusable procedures:** brainstorm, write a specification, plan, execute, or coordinate the specification-first workflow.
+- **Five reusable procedures:** use individual skills for brainstorming, specifications, planning, or execution—or use `leanflow-orchestrate` to run the complete workflow.
 - **Selectable planning depth:** flash, super, or hyper according to scope, uncertainty, and risk—not model selection.
-- **Direct or delegated work:** execute an explicitly supplied plan directly, or use available native delegation within selected orchestration.
+- **Direct or delegated work:** orchestration runs the workflow directly or uses available native delegation; standalone execution implements an explicitly supplied plan.
 - **Portable skill packages:** complete skill directories with on-demand references and license notices; the same canonical skill bytes across adapters.
 - **Optional native bindings:** planner, executor, and reviewer bindings for omp, agy, Claude Code, and Codex. Generic mode has no native agents.
 - **Explicit installation:** preview changes before writing; managed updates reject local edits and conflicting unmanaged content.
@@ -36,7 +36,17 @@ Skills are instructions for the assistant, not guarantees of compliance or isola
 
 ### Use without installing
 
-From a local checkout, send this to a file-capable coding assistant:
+For the complete workflow, send this to a file-capable coding assistant from a local checkout:
+
+```text
+Read skills/leanflow-orchestrate/SKILL.md, resolve relative references from
+skills/leanflow-orchestrate/, and use it to add CSV export to the report
+screen: create the specification, plan the change, then implement and verify it.
+```
+
+Invoke `leanflow-orchestrate` once; it uses the other skills for the applicable stages. You do not need to invoke each one separately. If material choices remain unresolved, it uses `leanflow-brainstorm` to resolve them before proceeding.
+
+For planning only, use the individual skill:
 
 ```text
 Read skills/leanflow-plan/SKILL.md, resolve relative references from
@@ -111,31 +121,30 @@ Ask for the intended work in ordinary language, or name a skill when you want a 
 | [`leanflow-brainstorm`](skills/leanflow-brainstorm/SKILL.md) | Explore unresolved goals and tradeoffs without implementing. |
 | [`leanflow-plan`](skills/leanflow-plan/SKILL.md) | Research and write a plan; choose planning depth automatically. |
 | [`leanflow-execute`](skills/leanflow-execute/SKILL.md) | Implement and verify an explicitly supplied saved or in-chat plan. |
-| [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Save a specification first, then coordinate planning and authorized execution using available native delegation. |
-| [`leanflow-to-spec`](skills/leanflow-to-spec/SKILL.md) | Synthesize supplied design material or conversation into a reference specification; optional standalone, required first within orchestration. |
+| [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Run the complete workflow: specification → plan → implementation and verification. Uses the other skills for each stage, including brainstorming when needed. |
+| [`leanflow-to-spec`](skills/leanflow-to-spec/SKILL.md) | Synthesize supplied design material or conversation into a reference specification, either standalone or as the specification stage within orchestration. |
 
 ### Choose the workflow
 
 - **Plan only:** “Plan this change; do not implement.” `leanflow-plan` selects **flash** for clear, bounded, low-risk work; **super** for integration or moderate uncertainty; **hyper** for high risk or unresolved load-bearing alternatives. Hyper applies five adversarial lenses and one revision. You can request a method in plain language; methods do not select models or require delegation. Planning alone never authorizes implementation.
 - **Execute directly:** “Implement this exact plan.” The current assistant implements the saved or in-chat plan you supplied, checks the result, and records actual evidence. No implicit selection of an unrelated plan.
-- **Orchestrate explicitly:** request the specification-first workflow, by name or ordinary language, to save a source-grounded specification with `leanflow-to-spec` first, then plan, then execute within the authorized task scope. A generic build request does not select orchestration. Planning-only consent permits specification and planning, not implementation. An exact supplied plan is validated against the saved specification and current evidence, not silently replaced.
+- **Orchestrate end to end:** “Use leanflow-orchestrate to add CSV export: spec, plan, implement, and verify.” This single skill runs the complete workflow using `leanflow-to-spec`, `leanflow-plan`, and `leanflow-execute`, with `leanflow-brainstorm` when material choices need resolving. You do not need to create a specification yourself or invoke the stages separately. The orchestration request authorizes the workflow within the requested scope and host permissions; an explicit planning-only restriction stops it before implementation. A generic build request does not select orchestration. An exact supplied plan is validated against the specification it creates and current evidence, not silently replaced.
 - **Document a specification standalone:** request a reference specification from supplied design material or conversation; the literal `leanflow-to-spec` name is optional. It returns a source-grounded reference specification in chat or, when saving is authorized and privacy established, `.workflow/specification/<SEQ>-YYYYMMDD-<slug>-spec.md`. This standalone choice is optional and does not automatically invoke planning or authorize implementation.
 
 No automatic commits, branches, pushes, or PRs are part of the core. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
 
 ### Workflow at a glance
 
-Choose `leanflow-orchestrate` for the full flow below. Each stage advances only when its required decisions, privacy checks, and permissions are satisfied.
+`leanflow-orchestrate` runs all stages below as one workflow. Each stage advances only when its required decisions, privacy checks, and permissions are satisfied.
 
 ```mermaid
 flowchart TD
     accTitle: LeanFlow orchestration workflow
     accDescr: Brainstorm unresolved choices when needed, save a specification, then plan at the appropriate depth. Execute and verify only with implementation permission; otherwise return the specification and plan.
 
-    brainstorm["leanflow-brainstorm<br/>Only for unresolved choices"] -.-> specification
-
-    subgraph orchestration["leanflow-orchestrate"]
-        specification["leanflow-to-spec<br/>Save specification"]
+    subgraph orchestration["leanflow-orchestrate · complete workflow"]
+        brainstorm["leanflow-brainstorm<br/>Only for unresolved choices"] -.-> specification
+        specification["leanflow-to-spec<br/>Create and save specification"]
         plan["leanflow-plan<br/>Select flash / super / hyper"]
         execute["leanflow-execute<br/>Implement and verify"]
 
@@ -159,7 +168,7 @@ Planning and execution share [simplicity guidance](skills/leanflow-execute/refer
 
 ## Safety and privacy
 
-- **Keep authority explicit.** Skill selection, planning, and specification creation do not grant implementation permission. Your host enforces approvals; instructions are not a sandbox.
+- **Keep authority explicit.** An end-to-end orchestration request authorizes specification, planning, and implementation within its stated scope and host permissions. A planning-only or specification-only request stops at that stage; creating an artifact alone does not authorize more work. Your host enforces approvals; instructions are not a sandbox.
 - **Keep artifacts local.** Canonical saved plans live in `.workflow/plans/`; specifications live in `.workflow/specification/`. A saved specification is required before planning in selected orchestration, but remains optional for standalone planning or execution.
 - **Establish privacy before saving.** Workflows preserve existing ignore rules and establish both `/workflow/` and `/.workflow/` before saving generated artifacts, including before Git initialization. If writes or privacy setup are unavailable, return a permitted in-chat draft and blocker rather than silently saving elsewhere. Orchestration must then stop before dependent planning or implementation; an inline draft does not replace its required specification file.
 - **Keep privacy claims scoped.** Ignore rules do not untrack existing files, encrypt records, hide them from local tools or assistant context, or remove secrets from history. Removing already-tracked artifacts from the index requires authorization and must preserve working files.
