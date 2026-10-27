@@ -1,0 +1,26 @@
+---
+name: leanflow-execute
+description: Execute a user-authorized, explicitly supplied plan and report evidence for each step.
+---
+
+# LeanFlow Execute
+
+Use the current host's permitted tools. Execute directly by default; no named role, model, tool API, or runtime is required. This skill does not grant permissions. If the user requires delegation-only work, unavailable or forbidden delegation blocks that work instead of permitting a direct fallback.
+
+1. Read the exact explicitly supplied plan fully, whether a file or in-chat content. Validate its goal, scope, constraints, steps, and acceptance criteria against current authorization; equivalent legacy headings are acceptable, and a missing Method alone is not a blocker. Do not choose a different artifact or infer an unspecified plan. Missing material information requires a precise blocker or `REPLAN_REQUIRED`, not broadened scope.
+2. Before saving or updating artifacts, follow the privacy procedure in [`../leanflow-plan/SKILL.md`](../leanflow-plan/SKILL.md), step 5. When an inline plan can be saved within authorization and those privacy rules, materialize its exact supplied content at a non-colliding local plan path under that skill's naming rules. Otherwise execute from the exact inline plan within current permissions and retain status and evidence in chat; do not invent a saved path or demand artifact writes as a prerequisite. If a supplied file elsewhere is tracked, report that before changes and obtain authorization to untrack it or create a separate local plan without overwriting the original.
+3. Resolve source roots and relative plan references explicitly; an inline plan's base comes from supplied context or confirmed workspace evidence, not an invented artifact directory. Reconcile status with current source and evidence before resuming. Explicit legacy `.planning/` and `.ar-wf/` paths remain usable; inspect relevant state/notes/evidence as needed. Status alone does not authorize replaying irreversible work. Preserve historical artifacts.
+4. Implement pending steps in dependency order within authorized scope. When delegation is requested, use available permitted workers and the concrete [assignment packet](../leanflow-orchestrate/SKILL.md#assignment-packet), then apply the **Delegated execution procedure** below. If delegation is unavailable, disclose and execute directly only when the user permits direct work. Resolve launched worker status and partial effects before takeover; do not conceal failed work or duplicate running tasks.
+5. Verify meaningful changes with relevant authorized checks and exercise the changed consumer path when practical. Observe actual output; tests or worker status alone do not prove all acceptance criteria. Record commands/interactions, outcomes, and unrun checks without credentials. Follow the assignment's check ownership: workers must not run coordinator-owned gates.
+6. The direct executor, or coordinator when work is delegated, owns plan status: `[ ]` pending, `[x]` verified with evidence, `[!]` blocked with decisive evidence. Update the saved plan inline only when authorized and private; otherwise record the same step IDs and evidence in chat. Delegated workers never edit the shared plan or its status. Note minor adaptations without silently rewriting the supplied plan's meaning. Material changes to goal, scope, architecture, public interface, data, security, or irreversible effects require `REPLAN_REQUIRED`; do not independently replan or broaden authority.
+7. Check combined changes and evidence against acceptance criteria. Report changed paths, observed behavior, blockers, and verification limits. Finish when authorized acceptance criteria are met or a specific blocker prevents dependent work.
+
+## Delegated execution procedure
+
+A worker loads this actual skill body and applies this section to its assignment; it does not invoke the top-level workflow or orchestrate recursively.
+
+1. Read the assignment's exact plan/content and source base. Match the assigned step IDs, owned paths, exclusions, permissions, dependencies, and acceptance criteria to current source. Missing or conflicting ownership blocks the affected work.
+2. Implement only assigned pending steps within those boundaries, preserving others' work. Do not write the shared plan, delegate, expand scope, or run checks reserved for the coordinator.
+3. Run only assigned, permitted checks. Return assigned step IDs, changed paths and results, exact checks and observed outcomes, unrun checks with reasons, blockers or `REPLAN_REQUIRED`, and any partial effects. Do not mark a step verified from an unrun check; the coordinator owns integration and acceptance.
+
+Respect the host's real permissions. A plan or runtime auto-approval does not replace required authorization for destructive effects. Do not add automatic commits, pushes, branches, worktrees, retries, FSMs, ledgers, host configuration changes, or evidence directories.

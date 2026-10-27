@@ -1,0 +1,59 @@
+---
+name: leanflow-plan
+description: Plan a task before implementation using evidence-based flash, super, or hyper depth.
+---
+
+# LeanFlow Plan
+
+Use the current host's permitted tools. Research and draft directly by default; no named worker, model, tool API, or slash command is required. This skill supplies instructions, not permissions. If the user requires delegation-only work, unavailable or forbidden delegation blocks that work instead of permitting a direct fallback.
+
+1. Resolve objective, scope, constraints, supplied decisions, and observable acceptance criteria from context and source. Ask only for material decisions unavailable from evidence. Carry forward settled brainstorm decisions.
+2. Inspect the workspace without implementing. Identify reuse and simpler adequate options, affected files, dependencies, verification, and unknowns. Select and perform the planning method below; record the choice and evidence in Method. Reassess if research exposes greater risk, rather than treating an initial choice as fixed. Use the common Plan format for every method.
+3. When delegation is requested, use an available permitted worker with the concrete [assignment packet](../leanflow-orchestrate/SKILL.md#assignment-packet). The planner reads this actual skill body, including **Planning method** and **Plan format**, researches read-only, and returns a draft with Method; it does not save a plan or invoke workers. Wait for its draft, not a launch receipt. If delegation is unavailable, disclose and plan directly only when the user permits direct work. On failure, resolve worker status and partial effects before any authorized takeover.
+4. Validate every step against authorization, evidence, dependency order, and Done When. Planning does not authorize implementation, proposed verification commands, commits, or host configuration changes.
+5. Before saving artifacts, preserve existing `.gitignore` content and ensure root entries `/.workflow/` and `/workflow/` are present. Both directories are local-only by default. When Git is available, check for already-tracked workflow files: ignore rules do not untrack them. Report tracked records and require explicit authorization before removing them from the index; preserve files and history. If privacy cannot be established or required writes are forbidden, return the plan in chat with the limitation instead of saving a tracked artifact.
+6. When authorized and privacy is established, save at `.workflow/plans/<SEQ>-YYYYMMDD-<slug>.md` with a non-colliding sequence after inspecting existing names. Do not overwrite historical records. Only the plan and its privacy ignore rules may change during planning. Otherwise return the complete plan in chat without writing or lowering permissions.
+7. For planning-only requests, report the path or exact in-chat plan, selected method and reason, summary, and blockers; stop without implementation. A request explicitly authorizing both stages may pass that exact path or complete inline content to [`../leanflow-execute/SKILL.md`](../leanflow-execute/SKILL.md) without redundant approval. Native artifact feedback or auto-approval is not execution consent.
+
+Load this actual file through supported discovery or authorized file reading. `leanflow-plan` is the sole planning skill; flash, super, and hyper are methods within it, not separate commands or packages. A host may offer slash invocation, but no slash command is assumed. If native artifact metadata is necessary, do not request feedback that could implicitly start implementation. A plan is not execution evidence.
+
+## Planning method
+
+Choose the least depth adequate for the evidenced task. File counts, model names, and arbitrary task-size ceilings are not selection criteria. Method depth does not change authorization, choose a model, or require delegation.
+
+- **Flash:** choose when the affected behavior is clear, bounded, low-risk, and supported by an established local pattern, with no unresolved consequential design choice. Inspect the relevant implementation and consumer, identify the smallest adequate change, and give concrete verification. A one-step plan is valid; do not omit acceptance criteria to make it short.
+- **Super:** choose for integration work, ordered dependencies, multiple affected consumers, or moderate uncertainty that targeted research can resolve. Trace contracts and dependencies, compare a simpler adequate alternative, and plan the implementation sequence, boundary/error cases, and integration verification. This is the conservative choice while ordinary scope remains unclear; research may justify flash or require hyper.
+- **Hyper:** choose when a mistake could compromise a security boundary, persisted data, public-contract compatibility, or an irreversible operation, or when load-bearing alternatives remain materially uncertain. First ground a draft in source. Critique it through five lenses: skeptic (unnecessary complexity), validator (boundaries and failure cases), researcher (unsupported assumptions), architect (ownership and cross-boundary effects), challenger (simpler alternatives). Record concrete findings, their disposition, failure/recovery considerations, and verification of the affected invariants. Revise once when critique identifies a material improvement. If essential decisions remain unresolved, mark them as blockers rather than inventing requirements or declaring the plan ready. These are reasoning lenses, not five mandatory workers.
+
+An explicit request for a method selects it instead of automatic selection. State any mismatch between requested depth and evidenced risk; preserve required safety checks and surface unresolved decisions rather than silently claiming that a flash plan provides hyper scrutiny. If the request demands an unsafe or unauthorized action, stop the dependent work under the actual permission boundary. Do not ask the user to choose a method when source evidence can select one.
+
+## Plan format
+
+Fill in concrete values; do not save placeholders. Use as many steps as needed, including one when sufficient.
+
+```markdown
+# Plan: <title>
+
+## Goal
+<requested outcome>
+
+## Method
+<flash | super | hyper; selection evidence, rationale, and unresolved limitations>
+
+## Scope
+<affected areas, source anchors, and exclusions>
+
+## Constraints
+<authorization, compatibility, dependencies, and unresolved facts>
+
+## Steps
+
+- [ ] 1. <action>
+  - Files/areas: <exact affected areas>
+  - Change: <bounded change using existing patterns>
+  - Verify: <concrete check and expected observable result>
+
+## Done When
+
+- <observable acceptance criterion>
+```

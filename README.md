@@ -1,102 +1,84 @@
-# Antigravity CLI Configuration
+# LeanFlow
 
-Portable native agents, skills, safety hooks, settings templates, and optional MCP configuration for Google Antigravity CLI (`agy`).
+Plan first. Execute simply. Orchestrate when needed.
 
-## Three workflows
+LeanFlow gives coding assistants four portable, instruction-based workflows: explore a decision, make a grounded plan, execute that exact plan, or coordinate the full flow. Use the same canonical skills as plain files or install them through a small host adapter—without adopting a full personal configuration kit.
 
-```text
-/plan <task>           Planning only: planner -> saved plan
-/execute <plan-path>   Execute an existing plan: executor -> verification
-/orchestrate <task>    Plan, then execute: planner -> executor -> acceptance
-```
-
-- **Plan first:** use `/plan` to inspect a proposed approach without changing project code. Execute it later only when you request it.
-- **Execute or resume:** use `/execute` with the saved plan path. The executor implements pending steps, verifies them, and updates the same plan.
-- **Let it run:** use `/orchestrate` when you want planning followed by implementation. No extra plan-to-execute confirmation is added; genuine safety or scope decisions still require you.
-
-Dedicated custom agents do the substantive work. Main handles routing, handoffs, and final acceptance. New plans live in `.workflow/plans/`; their checkboxes and inline verification are the execution state. Normal work creates no execution FSM or ledger, requires no review stage, and makes no automatic commits, branches, worktrees, pushes, or PRs.
-
-Antigravity also has a built-in `/plan` command. This configuration routes planning-only intent through the supplied `plan` skill and `planner`; it does not replace the native command. See the [planning guide](docs/PLANNING_GUIDE.md) for the verified contract and limitations.
-
-### Typical usage
-
-```text
-/plan Add CSV export to the report screen
-/execute <saved-plan-path>
-```
-
-Or authorize both phases in one request:
-
-```text
-/orchestrate Add CSV export to the report screen
-```
-
-The plan uses `[ ]` for pending, `[x]` for verified complete, and `[!]` for blocked steps. Verification outcomes stay inline. A material change returns `REPLAN_REQUIRED`; `/orchestrate` allows one automatic replan within the original authorization, then stops if another material invalidation occurs.
-
-## Optional workflows
-
-- `/hyperplan`: explicit adversarial planning, using one planner and one reviewer. Never selected automatically.
-- `/brainstorm` and `/to-spec`: design exploration and a reference spec when useful, not prerequisites.
-- `/flashplan` and `/superplan`: thin planning-only aliases to `/plan`.
-- `/hyperexecution <plan-path>`: thin alias to `/execute`.
-- Debugging, Ponytail, UI, security, code-health, system administration, and explicit Git/PR skills remain independently available.
-
-Existing `.workflow/` records and explicitly supplied `.planning/` or `.ar-wf/` plans are retained. Legacy status conflicts must be checked against source and evidence before replaying work.
-
-## Install
-
-Requires Antigravity CLI and Node.js (also used to safely merge privacy settings). `npx` is needed for the optional MCP servers. GitHub MCP authentication uses your own `GITHUB_TOKEN`; no token is supplied.
-
-From a local clone:
-
-```bash
-bash install.sh --dry-run
-bash install.sh
-```
-
-```powershell
-.\install.ps1 -DryRun
-.\install.ps1
-```
-
-Alternatively, inspect the remote script before running it:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/rizariaputrawira/antigravity-cli-config/main/install.sh | bash
-```
-
-```powershell
-irm https://raw.githubusercontent.com/rizariaputrawira/antigravity-cli-config/main/install.ps1 | iex
-```
-
-Both installers deploy agents under `~/.gemini/config/agents/<name>/agent.md`. They back up existing configuration, preserve unrelated settings and agent directories, and apply the privacy changes below to fresh and existing installations. Shipped rules, hooks, skills, and agent definitions are updated. A conflicting flat agent file or malformed privacy-target JSON stops installation without overwriting it. Fresh settings leave trusted workspaces empty, select Gemini 3.8 Flash (Medium), and use native `request-review` tool permissions; existing model routing and permissions are unchanged. Restart the CLI to load updated assets.
-
-### Privacy defaults and required account action
-
-Installation automatically applies these verified controls:
-
-| Mechanism | Installed control |
+| Skill | Use it for |
 | --- | --- |
-| Feedback surveys | `showFeedbackSurvey: false` in CLI settings |
-| Context7 OpenTelemetry instrumentation/exporters | `OTEL_SDK_DISABLED=true` in its MCP environment |
-| CodeGraph anonymous usage reporting | `CODEGRAPH_TELEMETRY=0` and `DO_NOT_TRACK=1` in its MCP environment |
-| Brainstorm companion remote branding/version image | Existing `SUPERPOWERS_DISABLE_TELEMETRY` opt-out enabled by its launcher and defaulted on for direct server launches |
+| [`leanflow-brainstorm`](skills/leanflow-brainstorm/SKILL.md) | Explore unresolved goals and tradeoffs without implementing. |
+| [`leanflow-plan`](skills/leanflow-plan/SKILL.md) | Research and write a plan; choose planning depth automatically. |
+| [`leanflow-execute`](skills/leanflow-execute/SKILL.md) | Implement and verify an explicitly supplied saved or in-chat plan. |
+| [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Coordinate planning and execution using available native delegation. |
 
-The shared `scripts/apply-privacy.cjs` merges only these settings, including recognized version-qualified or renamed MCP entries. Custom servers, API keys, GitHub token wiring, models, permissions, and workspace settings remain intact. Opt-outs are stored in MCP configuration rather than relying on shell profiles; unrelated applications' environments are not modified. Backups are saved under `~/.gemini.bak.<timestamp>.<unique-suffix>/`.
+LeanFlow is not an agent runtime, model gateway, sandbox, or permission system. Your host supplies models, tools, discovery, delegation, and approval enforcement.
 
-**Native CLI telemetry requires an account action:** start `agy`, open `/config` (or `/settings`), and set **Enable Telemetry** to **Off**. Check it again after signing in with a different account or upgrading. Installers print this requirement; they do not claim native telemetry is automatically disabled.
+## Get started without installing
 
-The [official settings documentation](https://antigravity.google/docs/settings.md) lists `enableTelemetry`, but inspected CLI **1.3.1** explicitly excludes `EnableTelemetry` from JSON persistence (`json:"-"`) and exposes backend getter/setter methods. No supported telemetry automation flag/subcommand was found. Adding `enableTelemetry: false` to a template would not establish a working opt-out, so this repository does not do so. Native/account state and its default cannot be safely guaranteed by this installer. A sandbox model smoke invocation still logged an attempted `recordTrajectoryAnalytics` request; the all-optional-telemetry-disabled target therefore remains **unverified until the account control is turned off and checked**.
+From a local checkout, send this to a file-capable coding assistant:
 
-These changes do not block authentication, provider/model requests, updates/downloads, explicit network tools, security checks, or local troubleshooting logs. The native account control does not control provider-side content retention or API project privacy settings. No proxy, firewall, TLS bypass, SDK removal, or model/agent/plugin redesign is introduced. Future `@latest` MCP packages and independently installed plugins or remote MCP services require version-specific reinspection; this is not a device-wide no-telemetry guarantee.
+```text
+Read skills/leanflow-plan/SKILL.md, resolve relative references from
+skills/leanflow-plan/, and use it to plan adding CSV export to the report
+screen. Do not implement it yet.
+```
 
-Verification: `node --test tests/privacy-install.test.cjs` exercises real Bash fresh/existing installs, dry-run, preference/auth preservation, telemetry opt-in migration, repeat installation, BOM handling, and malformed JSON rejection. Runtime checks against CLI 1.3.1 confirmed startup/authentication and a normal model response; cached Context7 4.1.2 and CodeGraph 1.6.2 completed MCP initialization with their opt-outs, and the live companion served a screen without the remote image. Windows PowerShell 5.1 parsing was checked; full Windows installation was not exercised (host script execution policy and absent Windows Node.js). No packet capture or exhaustive SDK-egress proof was performed.
+Keep all four complete skill directories accessible as siblings. After reviewing the plan, explicitly authorize execution:
 
+```text
+Read skills/leanflow-execute/SKILL.md, resolve relative references from
+skills/leanflow-execute/, and implement the plan at .workflow/plans/<plan-file>.md.
+```
 
-## Safety and maintenance
+Replace the example task and plan filename with your own. Plain-file loading does not register commands or prove native compatibility; the assistant must actually read the files, not just recognize their names.
 
-Destructive Git and recursive-delete confirmation, credential masking, and workspace permission boundaries remain applicable. Current CLI `always-proceed` can auto-approve a confirmation raised by the safety hook; existing users should check `/config` and `/hooks`, not assume the hook is a hard barrier. Planner/reviewer omit native edit, command, and delegation tools, but inherited MCP access is not OS containment. Custom agents use supported model tiers, not invented reasoning selectors.
+## Install a host adapter
 
-`/workflow-health-check` audits first. Repair requires an explicit request; conservative migration retains source trees rather than deleting possibly conflicting historical data. See the [planning guide](docs/PLANNING_GUIDE.md) for compatibility and validation details.
+Run from this checkout with Node.js. Preview first, then install for your chosen host:
 
-Bundled Impeccable utilities omit unused upstream reports and helper entry points. Web work retains its manual detector fallback; native projects bypass that HTML/CSS pass. Live editing, font matching, composition selection, and existing hook administration remain available.
+```bash
+node scripts/install.mjs omp --dry-run
+node scripts/install.mjs omp
+
+node scripts/install.mjs agy --dry-run
+node scripts/install.mjs agy
+
+node scripts/install.mjs claude --dry-run
+node scripts/install.mjs claude
+
+node scripts/install.mjs codex --target /path/to/project --dry-run
+node scripts/install.mjs codex --target /path/to/project
+```
+
+Default targets for omp, agy, and Claude Code are `~/.omp/agent`, `~/.gemini/config/plugins/leanflow`, and `~/.claude`, respectively. Codex requires an explicit project-root target and uses `.agents/skills/` plus opt-in `.codex/agents/`. For another host's documented skill root, use the explicit generic target:
+
+```bash
+node scripts/install.mjs generic --target /path/to/host/skills --dry-run
+node scripts/install.mjs generic --target /path/to/host/skills
+```
+
+Every default install copies **exactly the four core skills**, using the same canonical bytes. Add `--with-agents` to a native adapter to opt into its three `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` bindings. Generic installation has no native agent binding and rejects that option. Use `--target DIR` for a custom destination and `--update` for an installer-managed update; inspect the relevant setup guide before replacing existing files.
+
+The adapters do **not** install MCP servers, hooks, host-global instructions, or the 25 legacy optional packages in `config/skills/`. They do not change credentials, model routing, approval policies, telemetry, workspace settings, or ignore rules. Codex writes only the requested install files/manifest under its explicit project target. `install.sh` and `install.ps1` are Node adapter entrypoints, not the old full-configuration installer. Existing legacy assets are not automatically removed.
+
+Setup and migration details: [omp](harnesses/omp/README.md) · [agy](harnesses/agy/README.md) · [Claude Code](harnesses/claude/README.md) · [Codex](harnesses/codex/README.md) · [generic](harnesses/generic/README.md) · [compatibility and evidence](COMPATIBILITY.md). Packaging support is not a claim that native discovery or delegation has been tested in your installed host/version.
+
+## Choose the workflow
+
+- **Plan only:** `leanflow-plan` selects **flash** for clear, bounded, low-risk work; **super** for integration or moderate uncertainty; **hyper** for high risk or unresolved load-bearing alternatives. Hyper applies five adversarial lenses and one revision. You can request a method in plain language; methods do not select models or require delegation. Planning alone never authorizes implementation.
+- **Execute directly:** the current assistant implements the exact saved or in-chat plan you supplied, checks the result, and records actual evidence. No implicit selection of an unrelated plan.
+- **Orchestrate explicitly:** request `leanflow-orchestrate` for the composed flow and available host-native workers. The coordinator owns integration and is the sole shared-plan writer during parallel work. Delegates return scoped results, evidence, and blockers—not nested orchestration. If delegation is unavailable, disclose the limitation; a delegation-only request must not silently become direct execution.
+
+These are skill names and ordinary requests, not universal slash commands. No automatic commits, branches, pushes, or PRs are part of the core. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
+
+## Keep artifacts local
+
+Canonical saved plans live in `.workflow/plans/`. The workflows preserve existing ignore rules and establish both `/workflow/` and `/.workflow/` before saving generated artifacts, including before Git initialization. If writes or privacy setup are unavailable, keep the plan and evidence in chat rather than silently saving elsewhere.
+
+Ignore rules do not untrack existing files, encrypt records, hide them from local tools or assistant context, or remove secrets from history. Removing already-tracked artifacts from the index requires authorization and must preserve working files. Installing an adapter does not edit your workspace; artifact privacy is part of the workflow when it runs.
+
+## Help, maintenance, and background
+
+Open a [GitHub issue](https://github.com/rizariaputrawira/leanflow/issues) for questions or reproducible problems; include the host/version, installation mode, and redacted error output. Maintained by [rizariaputrawira](https://github.com/rizariaputrawira). Do not include credentials or private plan contents.
+
+LeanFlow adopts the shared-workflow/native-binding separation illustrated by [KitShift](https://github.com/rizariaputrawira/kitshift), not its full configuration bundle. See [workflow provenance](skills/SOURCES.md), [historical configuration and telemetry warnings](docs/LEGACY_CONFIGURATION.md), and [compatibility evidence](COMPATIBILITY.md). Other runtimes may use plain files or their own documented skill discovery; this is not a blanket native-support claim.

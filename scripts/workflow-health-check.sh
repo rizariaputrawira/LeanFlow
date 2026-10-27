@@ -159,8 +159,8 @@ fi
 # ------------------------------------------------------------------------------
 echo "🔍 Checking workflow internal path & skill references..."
 if [ -d "${WF_DIR}" ]; then
-  # Search for deprecated paths: .ar-wf, /ar-ultrawork, /ar-flashplan, etc. (excluding raw evidence reports)
-  DEPRECATED_MATCHES=$(grep -rn --exclude-dir="evidence" -E "(\.ar-wf/|/ar-ultrawork|/ar-flashplan|/ar-superplan|/ar-hyperplan|/ar-hyperexecution|/ar-brainstorm|/ultrawork\b)" "${WF_DIR}" 2>/dev/null || true)
+  # Preserve the historical planning depth while migrating retired skill invocations.
+  DEPRECATED_MATCHES=$(grep -rn --exclude-dir="evidence" -E "(\.ar-wf/|/ar-(ultrawork|flashplan|superplan|hyperplan|hyperexecution|brainstorm)\b|/(ultrawork|flashplan|superplan|hyperplan)\b)" "${WF_DIR}" 2>/dev/null || true)
   if [ -n "${DEPRECATED_MATCHES}" ]; then
     MATCH_COUNT=$(printf '%s\n' "${DEPRECATED_MATCHES}" | wc -l)
     ISSUES_FOUND=$((ISSUES_FOUND + MATCH_COUNT))
@@ -175,19 +175,23 @@ if [ -d "${WF_DIR}" ]; then
             -e 's|\.ar-wf/hyper-execution/evidence/|\.workflow/executions/evidence/|g' \
             -e 's|\.ar-wf/hyper-execution/ledger\.jsonl|\.workflow/executions/ledger\.jsonl|g' \
             -e 's|\.ar-wf/|\.workflow/|g' \
-            -e 's|/ar-ultrawork|/orchestrate|g' \
-            -e 's|/ar-flashplan|/flashplan|g' \
-            -e 's|/ar-superplan|/superplan|g' \
-            -e 's|/ar-hyperplan|/hyperplan|g' \
-            -e 's|/ar-hyperexecution|/hyperexecution|g' \
-            -e 's|/ar-brainstorm|/brainstorm|g' \
+            -e 's|/ar-ultrawork|/leanflow-orchestrate|g' \
+            -e 's|/ultrawork|/leanflow-orchestrate|g' \
+            -e 's|/ar-flashplan|/leanflow-plan (method: flash)|g' \
+            -e 's|/flashplan|/leanflow-plan (method: flash)|g' \
+            -e 's|/ar-superplan|/leanflow-plan (method: super)|g' \
+            -e 's|/superplan|/leanflow-plan (method: super)|g' \
+            -e 's|/ar-hyperplan|/leanflow-plan (method: hyper)|g' \
+            -e 's|/hyperplan|/leanflow-plan (method: hyper)|g' \
+            -e 's|/ar-hyperexecution|/leanflow-hyperexecution|g' \
+            -e 's|/ar-brainstorm|/leanflow-brainstorm|g' \
             < "$file" > "$TMP_SED"
         mv "$TMP_SED" "$file"
       done < <(find "${WF_DIR}" -path "${WF_DIR}/executions/evidence" -prune -o -type f \( -name "*.md" -o -name "*.json" \) -print)
       rm -f "$TMP_SED"
       MIGRATIONS_APPLIED=$((MIGRATIONS_APPLIED + MATCH_COUNT))
     else
-      echo "  ⚠️ Found ${MATCH_COUNT} deprecated reference(s) (.ar-wf or legacy ar-* skill names) inside .workflow/"
+      echo "  ⚠️ Found ${MATCH_COUNT} deprecated reference(s) (.ar-wf or legacy skill invocations) inside .workflow/"
     fi
   else
     echo "  ✅ All internal workflow references are up to date."
@@ -200,20 +204,22 @@ fi
 echo "🧠 Checking installed skills health..."
 
 if [ -d "${GLOBAL_SKILLS_DIR}" ]; then
-  # A. Check for deprecated / renamed skills
+  # A. Report obsolete skill identities; never delete potentially local packages.
   DEPRECATED_SKILLS=("ar-brainstorm" "ar-flashplan" "ar-superplan" "ar-hyperplan" "ar-hyperexecution" "ar-ultrawork" "ultrawork" "init-ai-core-consultation")
   for dep_skill in "${DEPRECATED_SKILLS[@]}"; do
-    if [ -d "${GLOBAL_SKILLS_DIR}/${dep_skill}" ]; then
+    if [ -f "${GLOBAL_SKILLS_DIR}/${dep_skill}/SKILL.md" ]; then
       ISSUES_FOUND=$((ISSUES_FOUND + 1))
-      if [ "$MODE" = "fix" ]; then
-        echo "  🔧 Removing obsolete skill: '${dep_skill}'..."
-        rm -rf "${GLOBAL_SKILLS_DIR:?}/${dep_skill}"
-        MIGRATIONS_APPLIED=$((MIGRATIONS_APPLIED + 1))
-      else
-        echo "  ⚠️ Deprecated skill folder found: '${GLOBAL_SKILLS_DIR}/${dep_skill}'"
-      fi
+      echo "  ⚠️ Deprecated skill found: '${GLOBAL_SKILLS_DIR}/${dep_skill}'. Preserve local changes and explicitly resolve or archive it outside the discovered skills directory."
     fi
   done
+
+  LEGACY_SKILL_CONFLICT=false
+  if [ -n "${CANONICAL_REPO_DIR}" ]; then
+    if ! node "${CANONICAL_REPO_DIR}/scripts/check-legacy-skills.cjs" "${CANONICAL_REPO_DIR}" "${GLOBAL_SKILLS_DIR}"; then
+      ISSUES_FOUND=$((ISSUES_FOUND + 1))
+      LEGACY_SKILL_CONFLICT=true
+    fi
+  fi
 
   # B. Verify skill frontmatter integrity
   for skill_md in "${GLOBAL_SKILLS_DIR}"/*/SKILL.md; do
@@ -240,32 +246,35 @@ if [ -d "${GLOBAL_SKILLS_DIR}" ]; then
   done
 
   # C. Ensure helper scripts in skills have executable permissions
-  for script_file in "${GLOBAL_SKILLS_DIR}"/*/*.sh "${GLOBAL_SKILLS_DIR}"/*/scripts/*.sh; do
-    if [ -f "$script_file" ] && [ ! -x "$script_file" ]; then
-      ISSUES_FOUND=$((ISSUES_FOUND + 1))
-      if [ "$MODE" = "fix" ]; then
-        echo "  🔧 Adding execute permission to: ${script_file}..."
-        chmod +x "$script_file"
-        MIGRATIONS_APPLIED=$((MIGRATIONS_APPLIED + 1))
-      else
-        echo "  ⚠️ Script not executable: ${script_file}"
+  for skill_md in "${GLOBAL_SKILLS_DIR}"/*/SKILL.md; do
+    [ -f "${skill_md}" ] || continue
+    skill_dir="$(dirname "${skill_md}")"
+    for script_file in "${skill_dir}"/*.sh "${skill_dir}"/scripts/*.sh; do
+      if [ -f "$script_file" ] && [ ! -x "$script_file" ]; then
+        ISSUES_FOUND=$((ISSUES_FOUND + 1))
+        if [ "$MODE" = "fix" ]; then
+          echo "  🔧 Adding execute permission to: ${script_file}..."
+          chmod +x "$script_file"
+          MIGRATIONS_APPLIED=$((MIGRATIONS_APPLIED + 1))
+        else
+          echo "  ⚠️ Script not executable: ${script_file}"
+        fi
       fi
-    fi
+    done
   done
 
   # D. Sync latest skills and config if canonical repository is available
-  if [ -n "${CANONICAL_REPO_DIR}" ]; then
-    CANONICAL_SKILLS_DIR="${CANONICAL_REPO_DIR}/config/skills"
-
-    # Check for missing skills from canonical repo
-    for can_skill in "${CANONICAL_SKILLS_DIR}"/*; do
-      if [ -d "$can_skill" ]; then
+  if [ -n "${CANONICAL_REPO_DIR}" ] && [ "${LEGACY_SKILL_CONFLICT}" = false ]; then
+    # Check for missing portable core and optional adapter skills.
+    for can_skill in "${CANONICAL_REPO_DIR}/skills/"* "${CANONICAL_REPO_DIR}/config/skills/"*; do
+      if [ -f "${can_skill}/SKILL.md" ]; then
         s_name="$(basename "$can_skill")"
-        if [ ! -d "${GLOBAL_SKILLS_DIR}/${s_name}" ]; then
+        if [ ! -f "${GLOBAL_SKILLS_DIR}/${s_name}/SKILL.md" ]; then
           ISSUES_FOUND=$((ISSUES_FOUND + 1))
           if [ "$MODE" = "fix" ]; then
             echo "  🔧 Installing missing canonical skill: '${s_name}'..."
-            cp -r "$can_skill" "${GLOBAL_SKILLS_DIR}/${s_name}"
+            mkdir -p "${GLOBAL_SKILLS_DIR}/${s_name}"
+            cp -r "${can_skill}/." "${GLOBAL_SKILLS_DIR}/${s_name}/"
             MIGRATIONS_APPLIED=$((MIGRATIONS_APPLIED + 1))
           else
             echo "  ⚠️ Missing canonical skill in global config: '${s_name}'"

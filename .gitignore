@@ -19,7 +19,9 @@ cache/
 log/
 *.log
 .impeccable/
-.workflow/executions/evidence/
+# Local workflow artifacts are untracked by default.
+/.workflow/
+/workflow/
 last_check.timestamp
 jetbox_summaries*
 jetski_state*
