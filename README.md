@@ -218,6 +218,8 @@ Open a [GitHub issue](https://github.com/rizariaputrawira/leanflow/issues) for q
 
 ## Documentation, sources, and licenses
 
+LeanFlow's original material is licensed under the [MIT License](LICENSE), Copyright (c) 2026 rizariaputrawira. Third-party material retains its applicable licenses and copyright notices; see the [source and attribution record](skills/SOURCES.md) and the `LICENSE.*` files inside the skill directories. Keep those notices when copying or redistributing the skills.
+
 - [Planning and execution guide](docs/PLANNING_GUIDE.md): workflow consent, artifact privacy, resumption, and verification.
 - [Host setup guides](harnesses/): destination semantics, optional bindings, and migration details.
 - [Compatibility record](COMPATIBILITY.md): package/source checks, observed host behavior, and evidence limits.
