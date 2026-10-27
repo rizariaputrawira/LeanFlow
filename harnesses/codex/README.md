@@ -1,6 +1,6 @@
 # Codex Adapter
 
-This project-targeted adapter installs five canonical LeanFlow skills. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Native Codex subagent TOML definitions are optional. It does not modify a user-wide Codex configuration.
+This project-targeted adapter installs seven canonical LeanFlow skills. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Native Codex subagent TOML definitions are optional. It does not modify a user-wide Codex configuration.
 
 ## Install and update
 
@@ -15,7 +15,9 @@ node scripts/install.mjs codex --target /path/to/project --with-agents --update 
 node scripts/install.mjs codex --target /path/to/project --with-agents --update
 ```
 
-There is no implicit target. `--target` is the **project root**, not `.agents/skills/` or `.codex/`. The five complete skills go to `.agents/skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec}/`; `--with-agents` adds `.codex/agents/leanflow-{planner,executor,reviewer}.toml`. The installer does not edit `config.toml` or register an agent table there. Follow the installed Codex version's native discovery/reload behavior and verify it independently.
+There is no implicit target. `--target` is the **project root**, not `.agents/skills/` or `.codex/`. The seven complete skills go to `.agents/skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}/`; `--with-agents` adds the unchanged three `.codex/agents/leanflow-{planner,executor,reviewer}.toml` files. The installer does not edit `config.toml` or register an agent table there. Follow the installed Codex version's native discovery/reload behavior and verify it independently.
+
+`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither is an automatic orchestration stage.
 
 The target-root `.leanflow-manifest.json` records schema version, harness, and file SHA-256 digests. Changed managed content requires `--update`; local modifications and unowned conflicts need explicit reconciliation. Old managed entries omitted from a later install remain retained. Omitting `--with-agents` does not uninstall agents. Dry-run is nonmutating; individual atomic writes do not promise whole-bundle rollback.
 
@@ -31,4 +33,4 @@ No MCP servers, hooks, global `AGENTS.md`, credentials, model/approval/telemetry
 
 Official documentation describes [skill locations](https://learn.chatgpt.com/docs/build-skills), including project `.agents/skills/` and user `~/.agents/skills/`, and [standalone subagent definitions](https://learn.chatgpt.com/docs/agent-configuration/subagents). This adapter deliberately selects the project layout. Personal skills may instead use the generic installer against the documented skill root, without native agent installation.
 
-Authored packaging is not native validation: no Codex executable was available during the historical four-skill adapter checks, and no five-skill native validation is claimed. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).
+Authored packaging is not native validation: no Codex executable was available during the historical four-skill adapter checks. Neither the historical five-skill revision nor the seven-skill package has native validation here; discovery and behavior of the two new Git skills remain unverified. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).

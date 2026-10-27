@@ -1,6 +1,6 @@
 # Claude Code Adapter
 
-The adapter copies five canonical LeanFlow skills into Claude Code's documented skill layout. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Native subagent bindings are optional. It does not install a full configuration kit.
+The adapter copies seven canonical LeanFlow skills into Claude Code's documented skill layout. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Native subagent bindings are optional. It does not install a full configuration kit.
 
 ## Install and update
 
@@ -13,7 +13,7 @@ node scripts/install.mjs claude --with-agents --dry-run
 node scripts/install.mjs claude --with-agents
 ```
 
-The default root is `~/.claude`: `skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec}/` directories are installed, and opt-in `leanflow-{planner,executor,reviewer}.md` bindings go to `agents/`. For a project-local setup, supply its `.claude` root explicitly:
+The default root is `~/.claude`: `skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}/` directories are installed, and the unchanged three opt-in `leanflow-{planner,executor,reviewer}.md` bindings go to `agents/`. For a project-local setup, supply its `.claude` root explicitly:
 
 ```bash
 node scripts/install.mjs claude --target /path/to/project/.claude --with-agents --dry-run
@@ -23,6 +23,8 @@ node scripts/install.mjs claude --target /path/to/project/.claude --with-agents 
 ```
 
 `--target` is the `.claude`-style root, not `skills/`. A custom directory is useful only where the host supports discovery. Follow the installed host's documented reload behavior and verify discovery rather than assuming file copying is registration.
+
+`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither is an automatic orchestration stage.
 
 `.leanflow-manifest.json` records schema version, harness, and managed file SHA-256 digests. Changed managed content requires `--update`; local modifications and unowned files need deliberate conflict resolution. Previously managed files omitted from a later install are retained. Omitting `--with-agents` does not uninstall agents. Dry-run writes nothing; per-file atomic writes do not provide a whole-bundle transaction or rollback.
 
@@ -36,4 +38,4 @@ No MCP, hooks, `CLAUDE.md`/global instructions, credentials, model/approval/tele
 
 ## Documentation basis and evidence
 
-The authored layout follows official [skills](https://code.claude.com/docs/en/skills) and [subagents](https://code.claude.com/docs/en/sub-agents) documentation. It is not a claim of native testing: the Claude Code executable was unavailable during the historical four-skill adapter checks, and no five-skill native validation is claimed. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).
+The authored layout follows official [skills](https://code.claude.com/docs/en/skills) and [subagents](https://code.claude.com/docs/en/sub-agents) documentation. It is not a claim of native testing: the Claude Code executable was unavailable during the historical four-skill adapter checks. Neither the historical five-skill revision nor the seven-skill package has native validation here; discovery and behavior of the two new Git skills remain unverified. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).

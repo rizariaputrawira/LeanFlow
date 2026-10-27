@@ -6,13 +6,15 @@ LeanFlow separates **portable workflow source**, **host packaging**, **native di
 
 | Target | Destination | Optional native agents | Current evidence boundary |
 | --- | --- | --- | --- |
-| [`omp`](harnesses/omp/README.md) | `~/.omp/agent`, or custom agent root | Three Markdown/YAML definitions in `agents/`; model omitted to inherit | Five-skill native selection and conditional-loading cases observed in omp 18.13.1; see the lean-guidance checks below. Native reviewer dispatch has separate historical four-skill evidence; planner/executor binding dispatch and full parallel execution remain unverified. |
-| [`agy`](harnesses/agy/README.md) | `~/.gemini/config/plugins/leanflow`, or custom plugin root | Three plugin agent definitions; `model: inherit` | Earlier five-skill plugin passed strict native validation in agy 1.4.7 with three agents and no findings. The lean-guidance revision has package-byte checks, not new native validation or model-driven dispatch evidence. |
+| [`omp`](harnesses/omp/README.md) | `~/.omp/agent`, or custom agent root | Three Markdown/YAML definitions in `agents/`; model omitted to inherit | Historical five-skill native selection and conditional-loading cases observed in omp 18.13.1; see the lean-guidance checks below. The seven-skill package and new Git-skill discovery/behavior are not native-validated. Native reviewer dispatch has separate historical four-skill evidence; planner/executor binding dispatch and full parallel execution remain unverified. |
+| [`agy`](harnesses/agy/README.md) | `~/.gemini/config/plugins/leanflow`, or custom plugin root | Three plugin agent definitions; `model: inherit` | Earlier five-skill plugin passed strict native validation in agy 1.4.7 with three agents and no findings. Lean-guidance package-byte checks are historical; neither the seven-skill package nor new Git-skill discovery/behavior has native validation. |
 | [`claude`](harnesses/claude/README.md) | `~/.claude`, or custom `.claude`-style root | Three native Markdown/YAML subagents; `model: inherit` | Official documented layout; executable unavailable during the historical adapter checks, so no native validation claimed. |
 | [`codex`](harnesses/codex/README.md) | Explicit project root; `.agents/skills/` | Three standalone `.codex/agents/*.toml`; model/effort inherited | Official documented layout; executable unavailable during the historical adapter checks, so no native validation claimed. No `config.toml` registry changes. |
-| [`generic`](harnesses/generic/README.md) | Required explicit skill root; five directories directly inside | None; `--with-agents` rejected before writes | File installation only; no host discovery, agent dispatch, or runtime compatibility claim. |
+| [`generic`](harnesses/generic/README.md) | Required explicit skill root; seven directories directly inside | None; `--with-agents` rejected before writes | File installation only; no host discovery, agent dispatch, or runtime compatibility claim. |
 
-Every default installation includes exactly `leanflow-brainstorm`, `leanflow-plan`, `leanflow-execute`, `leanflow-orchestrate`, and `leanflow-to-spec`, plus applicable installer/plugin metadata. These are five distributed skills, not five mandatory stages. Specification is optional for standalone planning and execution; selected orchestration requires a saved specification first, then planning, then execution within permission. Native agents require `--with-agents` and remain the same three roles. Of the former 25 optional `config/skills/` packages, `leanflow-to-spec` is promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers have been removed. Existing global installs remain user-owned and are not automatically deleted. Detailed per-host evidence: [omp](harnesses/omp/COMPATIBILITY.md), [agy](harnesses/agy/COMPATIBILITY.md), [Claude Code](harnesses/claude/COMPATIBILITY.md), [Codex](harnesses/codex/COMPATIBILITY.md).
+Every default installation includes exactly `leanflow-brainstorm`, `leanflow-plan`, `leanflow-execute`, `leanflow-orchestrate`, `leanflow-to-spec`, `leanflow-commit-message`, and `leanflow-pr-work`, plus applicable installer/plugin metadata. These are seven distributed skills, not seven mandatory stages. Specification is optional for standalone planning and execution; selected orchestration requires a saved specification first, then planning, then execution within permission. Native agents require `--with-agents` and remain the same three roles. Of the former 25 optional `config/skills/` packages, `leanflow-to-spec` is promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers have been removed. Existing global installs remain user-owned and are not automatically deleted. Detailed per-host evidence: [omp](harnesses/omp/COMPATIBILITY.md), [agy](harnesses/agy/COMPATIBILITY.md), [Claude Code](harnesses/claude/COMPATIBILITY.md), [Codex](harnesses/codex/COMPATIBILITY.md).
+
+`leanflow-commit-message` provides read-only advice grounded in the diff and history; it never commits. `leanflow-pr-work` prepares bounded changes and PR drafts by default, without unrequested branch creation, commits, pushes, or PR publication. Neither addition becomes an automatic orchestration stage or changes specification-first consent. **Native validation of the seven-skill package and native discovery/behavior of the two new Git skills remain unverified.** The five-skill and four-skill records below preserve their original counts and results; they are historical evidence for those revisions, not validation of the expanded package.
 
 ## What each kind of evidence proves
 
@@ -21,9 +23,20 @@ Every default installation includes exactly `leanflow-brainstorm`, `leanflow-pla
 3. **Behavior smoke:** the actual instructions are read and applied to a bounded fixture, with observed outcomes. Planning-only, inline-plan, direct execution, and parallel orchestration need their own relevant observations; a launch receipt is not completion.
 4. **Permissions and containment:** native tool declarations or role prompts express intended scope. They are not evidence of inherited-MCP suppression, command isolation, OS containment, or host approval enforcement.
 
-## Lean-guidance adoption checks — 2026-10-27
+## Seven-skill Git adoption package checks — 2026-10-27
 
-Disposable installations and fresh **omp 18.13.1 / openai-codex/gpt-6.1-sol** print-mode processes exercised the lean-guidance revision. Native discovery used a temporary `skills.customDirectories` overlay pointing at the copied five-skill tree, with other skill roots disabled and `leanflow-*` filtering. Context/rule/extension discovery was disabled. A generic runner instruction required reading relevant available skills; the selection requests below did not name a skill. Read-only cases exposed reading/search tools; implementation cases also exposed editing/writing/shell tools. No delegation interface was exposed.
+The `leanflow-commit-message` and `leanflow-pr-work` additions adapt the pinned KitShift sources and notices recorded in [`skills/SOURCES.md`](skills/SOURCES.md#commit-message-and-pr-adoption--2026-10-27). The default inventory is seven skills; the existing workflow stages and three optional native roles are unchanged.
+
+- `node --test tests/install.test.mjs`: **27 passed, zero failures, zero skips**, including exact seven-skill default layouts, update/conflict protection, retained files, and nonmutating previews.
+- Actual disposable previews and installations exercised all five targets, with agents opted in for native adapters. Each contained exactly seven skill directories and **22 byte-matching canonical files**, including references and nine notice files; manifest hashes matched and the isolated home stayed untouched.
+- All seven entrypoints passed name/description checks. Across canonical guidance, provenance, active documentation, and host guides/bindings, **181 local links**, including **33 heading fragments**, resolved. Three retained KitShift/Matt notice copies matched their local immediate sources byte-for-byte; the HumanLayer notice was retained from the inspected pinned primary license.
+- The initial throwaway smoke incorrectly counted the generic adapter's root manifest as a skill; correcting directory selection exposed two stale quickstart anchors, which were repaired. The completed smoke passed and its temporary targets were removed. These were smoke/checker and documentation issues, not installer failures.
+
+These are package/source and real installer checks on Linux/WSL2 with Node.js 24.20.0, not a model-driven behavioral assessment. Native discovery/loading or instruction following for the new Git skills, PR publication, and actual Git mutations were not exercised. No live host configuration or installation changed. Historical native observations below retain their original five-/four-skill scope.
+
+## Historical five-skill lean-guidance adoption checks — 2026-10-27
+
+Before the Git-skill additions, disposable installations and fresh **omp 18.13.1 / openai-codex/gpt-6.1-sol** print-mode processes exercised the five-skill lean-guidance revision. Native discovery used a temporary `skills.customDirectories` overlay pointing at the copied five-skill tree, with other skill roots disabled and `leanflow-*` filtering. Context/rule/extension discovery was disabled. A generic runner instruction required reading relevant available skills; the selection requests below did not name a skill. Read-only cases exposed reading/search tools; implementation cases also exposed editing/writing/shell tools. No delegation interface was exposed.
 
 | Exercised path | Observed result |
 | --- | --- |
@@ -47,9 +60,9 @@ The final `node --test tests/install.test.mjs` run passed **27 tests, zero failu
 
 Final local-link validation resolved **136 file/heading references** across the canonical skills, active documentation, and host guides/bindings with no missing targets.
 
-## Current five-skill checks
+## Historical five-skill checks
 
-Checks used disposable targets and fixtures on Linux/WSL2 with Node.js 24.20.0; no live host configuration or installed skills were changed. The package/native-loader results below predate the spec-first orchestration revision and do not establish its new stage behavior.
+Checks used disposable targets and fixtures on Linux/WSL2 with Node.js 24.20.0; no live host configuration or installed skills were changed. These historical five-skill package/native-loader results predate both the spec-first orchestration revision and the Git-skill additions and do not establish either revision's new behavior.
 
 - `node --test tests/install.test.mjs`: **27 passed, zero failures, zero skips**, with the exact five-skill default and existing update/conflict/preservation checks.
 - Actual installations for all five targets contained exactly the requested five package directories and byte-matching canonical skill files. CLI help reported five skills. **98 local link destinations** existed; heading anchors were not rechecked.
@@ -60,9 +73,9 @@ Checks used disposable targets and fixtures on Linux/WSL2 with Node.js 24.20.0; 
 
 These checks do not establish spec-first orchestration, Claude Code or Codex native behavior, all role-dispatch paths, or containment. Parser/loader acceptance and previous skill reads do not prove the revised orchestration sequence.
 
-## Specification-first orchestration checks
+## Historical five-skill specification-first orchestration checks
 
-Fresh source-loaded runs used the revised canonical procedures in **omp 18.13.1 / openai-codex/gpt-6.1-sol**, with direct work permitted and delegation unavailable:
+Before the Git-skill additions, fresh source-loaded runs used the revised five-skill canonical procedures in **omp 18.13.1 / openai-codex/gpt-6.1-sol**, with direct work permitted and delegation unavailable:
 
 - Full orchestration: filesystem observations recorded specification creation, then plan creation, then implementation. Independent assertions verified `[2,5] -> 7`, `[] -> 0`, and `[3,-5] -> -2`; the exact saved plan identified its specification and recorded completed work.
 - Planning-only orchestration: observations recorded specification then plan, with pending steps and byte-unchanged implementation source.
@@ -74,7 +87,7 @@ These bounded checks do not establish revised delegated-specification behavior, 
 
 ## Historical four-skill adapter checks
 
-The following checks predate the addition of canonical `leanflow-to-spec`. Their counts, failures, and limits describe the earlier four-skill version, not validation of the current five-skill package. Checks used disposable directories on Linux/WSL2 with Node.js 24.20.0. No live host installation, credentials, persistent settings, or external services were changed.
+The following checks predate the addition of canonical `leanflow-to-spec`. Their counts, failures, and limits describe the earlier four-skill version, not validation of either the later five-skill revision or the current seven-skill package. Checks used disposable directories on Linux/WSL2 with Node.js 24.20.0. No live host installation, credentials, persistent settings, or external services were changed.
 
 - `node --test tests/install.test.mjs`: **27 passed, zero failures, zero skips**. Actual CLI cases cover the five layouts, four-skill default, opt-in agents, retained managed entries, dry-run nonmutation, consent for managed updates, local/unmanaged conflicts, unsafe manifests, source/destination symlinks, and preservation of unrelated settings/workspace files.
 - Real CLI installations exercised all five layouts. Bash wrapper execution, Bash syntax, CLI help, **80 local file/heading links**, and identical canonical skill bytes across the installed layouts passed. PowerShell execution was not performed because its runtime was unavailable.
@@ -110,4 +123,4 @@ The `.leanflow-manifest.json` preserves old managed entries omitted from later s
 
 Prior source-loaded omp method-selection smoke, namespace/full-bundle installer checks, pre-namespace partial execution, and Antigravity CLI 1.3.1 observations are preserved with failures, skips, and limitations in [the historical record](docs/LEGACY_CONFIGURATION.md#historical-verification-record). They predate these adapters and must not be cited as current plugin/agent registration or dispatch proof.
 
-Other hosts can use [plain-file loading](README.md#get-started-without-installing) or their documented skill-discovery format. This is source portability, not an unbounded list of natively supported runtimes. For problems, open a [GitHub issue](https://github.com/rizariaputrawira/leanflow/issues) with the host/version, selected target/options, and redacted observed output.
+Other hosts can use [plain-file loading](README.md#use-without-installing) or their documented skill-discovery format. This is source portability, not an unbounded list of natively supported runtimes. For problems, open a [GitHub issue](https://github.com/rizariaputrawira/leanflow/issues) with the host/version, selected target/options, and redacted observed output.

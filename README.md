@@ -2,7 +2,7 @@
 
 **Plan first. Execute simply. or Orchestrate.**
 
-Five portable, instruction-based skills for coding assistants. Read the canonical files directly or install them through a small host adapter—without adopting a full personal configuration kit.
+Seven portable, instruction-based skills for coding assistants. Read the canonical files directly or install them through a small host adapter—without adopting a full personal configuration kit.
 
 Adapters package skills for Oh My Pi (`omp`), Antigravity CLI (`agy`), Claude Code, and Codex; a generic adapter targets another host's documented skill root. Your host supplies models, tools, discovery, delegation, and approval enforcement. LeanFlow is not an agent runtime, model gateway, sandbox, or permission system.
 
@@ -23,7 +23,7 @@ Adapters package skills for Oh My Pi (`omp`), Antigravity CLI (`agy`), Claude Co
 
 ## Capabilities
 
-- **Five reusable procedures:** use individual skills for brainstorming, specifications, planning, or execution—or use `leanflow-orchestrate` to run the complete workflow.
+- **Seven reusable procedures:** five workflow skills for brainstorming, specifications, planning, execution, and orchestration, plus optional commit-message advice and bounded change/PR preparation.
 - **Selectable planning depth:** flash, super, or hyper according to scope, uncertainty, and risk—not model selection.
 - **Direct or delegated work:** orchestration runs the workflow directly or uses available native delegation; standalone execution implements an explicitly supplied plan.
 - **Portable skill packages:** complete skill directories with on-demand references and license notices; the same canonical skill bytes across adapters.
@@ -54,7 +54,7 @@ skills/leanflow-plan/, and use it to plan adding CSV export to the report
 screen. Do not implement it yet.
 ```
 
-Keep all five complete skill directories accessible as siblings. After reviewing the plan, explicitly authorize execution:
+Keep all seven complete skill directories accessible as siblings. After reviewing the plan, explicitly authorize execution:
 
 ```text
 Read skills/leanflow-execute/SKILL.md, resolve relative references from
@@ -82,7 +82,7 @@ Choose your host and preview before installing:
 | Codex | `node scripts/install.mjs codex --target /path/to/project --dry-run` | Explicit project root required |
 | Generic | `node scripts/install.mjs generic --target /path/to/host/skills --dry-run` | Explicit host skill root required |
 
-Rerun the selected command **without `--dry-run`** to install. Every default install copies **exactly the five packaged skills** using the same canonical bytes. Codex uses `.agents/skills/` plus opt-in `.codex/agents/` beneath its explicit project target.
+Rerun the selected command **without `--dry-run`** to install. Every default install copies **exactly the seven packaged skills** using the same canonical bytes. Codex uses `.agents/skills/` plus opt-in `.codex/agents/` beneath its explicit project target.
 
 Add `--with-agents` to a native adapter to opt into its three `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` bindings. Generic installation rejects that option. Use `--target DIR` for a custom destination; consult the relevant setup guide before installing or updating:
 
@@ -96,7 +96,7 @@ Canonical skill files own workflow behavior. Host bindings load those procedures
 
 | Component | Repository source | Role |
 | --- | --- | --- |
-| Skills | [skills/](skills/) | Five canonical procedures and their relative references |
+| Skills | [skills/](skills/) | Seven canonical procedures and their relative references |
 | Native bindings | [harnesses/](harnesses/) | Optional host-specific planner, executor, and reviewer definitions |
 | Installer | [scripts/install.mjs](scripts/install.mjs) | Bundle, destination validation, preflight, and writes |
 | Regression suite | [tests/install.test.mjs](tests/install.test.mjs) | Observable CLI and filesystem contracts |
@@ -123,6 +123,8 @@ Ask for the intended work in ordinary language, or name a skill when you want a 
 | [`leanflow-execute`](skills/leanflow-execute/SKILL.md) | Implement and verify an explicitly supplied saved or in-chat plan. |
 | [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Run the complete workflow: specification → plan → implementation and verification. Uses the other skills for each stage, including brainstorming when needed. |
 | [`leanflow-to-spec`](skills/leanflow-to-spec/SKILL.md) | Synthesize supplied design material or conversation into a reference specification, either standalone or as the specification stage within orchestration. |
+| [`leanflow-commit-message`](skills/leanflow-commit-message/SKILL.md) | Draft a read-only, diff/history-grounded commit message without staging or committing. |
+| [`leanflow-pr-work`](skills/leanflow-pr-work/SKILL.md) | Prepare a bounded change and draft PR material from an issue or supplied scope, with explicit authorization for mutations. |
 
 ### Choose the workflow
 
@@ -131,7 +133,7 @@ Ask for the intended work in ordinary language, or name a skill when you want a 
 - **Orchestrate end to end:** “Use leanflow-orchestrate to add CSV export: spec, plan, implement, and verify.” This single skill runs the complete workflow using `leanflow-to-spec`, `leanflow-plan`, and `leanflow-execute`, with `leanflow-brainstorm` when material choices need resolving. You do not need to create a specification yourself or invoke the stages separately. The orchestration request authorizes the workflow within the requested scope and host permissions; an explicit planning-only restriction stops it before implementation. A generic build request does not select orchestration. An exact supplied plan is validated against the specification it creates and current evidence, not silently replaced.
 - **Document a specification standalone:** request a reference specification from supplied design material or conversation; the literal `leanflow-to-spec` name is optional. It returns a source-grounded reference specification in chat or, when saving is authorized and privacy established, `.workflow/specification/<SEQ>-YYYYMMDD-<slug>-spec.md`. This standalone choice is optional and does not automatically invoke planning or authorize implementation.
 
-No automatic commits, branches, pushes, or PRs are part of the core. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
+No automatic commits, branches, pushes, or PRs are part of the core. The two Git workflows below are optional, not extra orchestration stages. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
 
 ### Workflow at a glance
 
@@ -158,11 +160,34 @@ flowchart TD
 
 Use individual skills when you need only one stage. Standalone planning and execution do not require a specification.
 
+### Optional Git workflows
+
+For message advice, use [`leanflow-commit-message`](skills/leanflow-commit-message/SKILL.md):
+
+```text
+Read skills/leanflow-commit-message/SKILL.md and draft a commit message
+for the current changes. Follow the repository's recent message style.
+Do not stage files or create a commit.
+```
+
+The skill inspects the actual diff and recent history. Staged changes take precedence over unstaged changes unless you explicitly select another scope; unrelated working-tree edits are not silently included. Repository instructions and established history inform the style, rather than imposing a universal message format. Its output is advice only: it never commits.
+
+For bounded change and PR preparation, use [`leanflow-pr-work`](skills/leanflow-pr-work/SKILL.md):
+
+```text
+Read skills/leanflow-pr-work/SKILL.md. Prepare a draft PR title and
+description for these changes against main, using the repository's PR
+template. Report the compared refs, verification evidence, and limits.
+Do not edit code, create a branch, commit, push, or publish a PR.
+```
+
+Supply the issue or intended scope and the relevant base/head refs when available. The skill grounds the draft in the actual change, follows applicable repository instructions and PR templates, and separates performed checks from unrun checks and unavailable evidence. Change implementation is bounded by your authorization; drafting alone authorizes no source edits. Branch creation, staging, committing, pushing, and creating or updating a remote PR each require explicit authorization for that action. Selecting the skill or installing it grants none of those permissions.
+
 ### Skill selection and on-demand guidance
 
 On a host that supports model-selected skills, you do not need to run a router first. Selection loads guidance, not permission: the assistant must read the actual skill body and required references; your request and the host's permissions still control writes, execution, and external effects. Native selection remains host/version-dependent; see [observed evidence](COMPATIBILITY.md).
 
-The five entrypoints keep common steps and authority boundaries visible. Plan/specification templates, worker procedures, and review detail load only for their applicable branches. Preserve the complete sibling directories when copying skills; references and license notices are part of the package.
+The seven entrypoints keep common steps and authority boundaries visible. Plan/specification templates, worker procedures, and review detail load only for their applicable branches. Preserve the complete sibling directories when copying skills; references and license notices are part of the package.
 
 Planning and execution share [simplicity guidance](skills/leanflow-execute/references/simplicity.md): reuse existing patterns and choose the smallest complete solution without dropping acceptance or safety checks. English and Indonesian documents share [writing guidance](skills/leanflow-to-spec/references/writing.md), with language-specific idiom, register, terminology, and evidence checks—not word bans or a separate writing skill.
 
@@ -196,7 +221,7 @@ Keep `.leanflow-manifest.json` in the destination. `--update` permits upstream m
 | Generic rejects `--with-agents` | Omit the option; generic mode has no native agent bindings. |
 | A skill or agent is not discovered | Check the selected host's setup guide and installed version. Packaging support does not prove native discovery or dispatch. |
 
-Of the former 25 optional packages in `config/skills/`, only `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers have been removed. Legacy configuration examples are not current adapter inputs. See [historical configuration and telemetry warnings](docs/LEGACY_CONFIGURATION.md) before migrating an older setup.
+Of the former 25 optional packages in `config/skills/`, only `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers have been removed. The new canonical `leanflow-commit-message` and `leanflow-pr-work` skills do not restore the retired Git packages or their old paths. Legacy configuration examples are not current adapter inputs. See [historical configuration and telemetry warnings](docs/LEGACY_CONFIGURATION.md) before migrating an older setup.
 
 ## Verification and known limits
 
@@ -226,4 +251,4 @@ LeanFlow's original material is licensed under the [MIT License](LICENSE), Copyr
 - [Sources and notices](skills/SOURCES.md): source pins, modifications, provenance, and license notices.
 - [Legacy configuration](docs/LEGACY_CONFIGURATION.md): historical setup and telemetry warnings, not current defaults.
 
-LeanFlow selectively adapts [KitShift](https://github.com/rizariaputrawira/kitshift)'s shared-workflow/native-binding separation, on-demand guidance, writing discipline, and Ponytail-derived simplicity principles—not its full configuration bundle.
+LeanFlow selectively adapts [KitShift](https://github.com/rizariaputrawira/kitshift)'s shared-workflow/native-binding separation, on-demand guidance, writing discipline, commit-message and PR procedures, and Ponytail-derived simplicity principles—not its full configuration bundle. The [source and attribution record](skills/SOURCES.md) identifies the applicable source pins, modifications, and notices.
