@@ -10,7 +10,7 @@
 [CmdletBinding()]
 param (
     [string]$Workspace = "$HOME\workspaces",
-    [string]$Repo = "rizariaputrawira/antigravity-cli-config",
+    [string]$Repo = "rizariaputrawira/LeanFlow",
     [switch]$DryRun
 )
 
@@ -84,6 +84,21 @@ $CliDir = Join-Path $GeminiDir "antigravity-cli"
 # Normalize workspace path for JSON formatting (forward slashes prevent JSON escaping issues)
 $NormalizedWorkspace = $Workspace.Replace("\", "/")
 
+# Refuse legacy skill identities before dry-run or any destination mutation.
+& node (Join-Path $SrcDir "scripts\check-legacy-skills.cjs") $SrcDir (Join-Path $ConfigDir "skills")
+if ($LASTEXITCODE -ne 0) { throw "Legacy skill preflight failed. Resolve or archive the reported entries before rerunning." }
+
+# Flat legacy agent files also conflict with shipped directory-based roles.
+$SourceAgentsDir = Join-Path $SrcDir "config\agents"
+if (Test-Path $SourceAgentsDir) {
+    Get-ChildItem -Path $SourceAgentsDir -Directory | ForEach-Object {
+        $FlatAgent = Join-Path (Join-Path $ConfigDir "agents") ($_.Name + ".md")
+        if (Test-Path $FlatAgent) {
+            throw "Cannot install agent '$($_.Name)': flat file $FlatAgent conflicts with the directory-based agent. Preserve it and resolve the conflict manually."
+        }
+    }
+}
+
 # Validate before any mutation; malformed settings must not fall back to telemetry defaults.
 & node (Join-Path $SrcDir "scripts\apply-privacy.cjs") (Join-Path $CliDir "settings.json") (Join-Path $ConfigDir "mcp_config.json") --check
 if ($LASTEXITCODE -ne 0) { throw "Privacy settings preflight failed." }
@@ -105,7 +120,8 @@ if ($DryRun) {
     Write-Host "   - mcp_config.json.template -> $ConfigDir\mcp_config.json (workspace: $NormalizedWorkspace)"
     Write-Host "   - settings.json.template -> $CliDir\settings.json (if missing)"
     Write-Host "[DRY RUN] Would disable feedback surveys and recognized MCP telemetry, preserving unrelated settings." -ForegroundColor Yellow
-    Write-Host "[DRY RUN] Would copy agents, skills, hooks, and AGENTS.md." -ForegroundColor Yellow
+    Write-Host "[DRY RUN] Would merge portable skills/ and adapter config/skills/ into $ConfigDir\skills, and copy agents, hooks, and AGENTS.md." -ForegroundColor Yellow
+    Write-Host "[DRY RUN] Would preserve $Workspace\.gitignore and add /workflow/ and /.workflow/ when missing." -ForegroundColor Yellow
     Write-Host ""
     Write-Host "Dry run completed successfully. Zero changes were made." -ForegroundColor Green
     
@@ -118,16 +134,6 @@ if ($DryRun) {
 Write-Host ""
 Write-Host "Proceeding with installation..." -ForegroundColor Cyan
 
-# Abort before mutation if a flat legacy agent file conflicts with a shipped directory agent.
-$SourceAgentsDir = Join-Path $SrcDir "config\agents"
-if (Test-Path $SourceAgentsDir) {
-    Get-ChildItem -Path $SourceAgentsDir -Directory | ForEach-Object {
-        $FlatAgent = Join-Path (Join-Path $ConfigDir "agents") ($_.Name + ".md")
-        if (Test-Path $FlatAgent) {
-            throw "Cannot install agent '$($_.Name)': flat file $FlatAgent conflicts with the directory-based agent. Preserve it and resolve the conflict manually."
-        }
-    }
-}
 
 # Backup existing configuration if present
 if ((Test-Path $ConfigDir) -or (Test-Path (Join-Path $CliDir "settings.json"))) {
@@ -149,6 +155,20 @@ if ((Test-Path $ConfigDir) -or (Test-Path (Join-Path $CliDir "settings.json"))) 
 New-Item -ItemType Directory -Path $ConfigDir -Force | Out-Null
 New-Item -ItemType Directory -Path $CliDir -Force | Out-Null
 New-Item -ItemType Directory -Path $Workspace -Force | Out-Null
+
+# Ignore future workflow artifacts without changing any tracked destination files.
+$IgnoreScript = @'
+const fs = require('node:fs');
+const path = require('node:path');
+const file = path.join(process.argv[1], '.gitignore');
+const current = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
+const lines = current.split(/\r?\n/);
+const missing = ['/workflow/', '/.workflow/'].filter(entry => !lines.includes(entry));
+if (missing.length) fs.appendFileSync(file, (current && !current.endsWith('\n') ? '\n' : '') + missing.join('\n') + '\n');
+'@
+& node -e $IgnoreScript $Workspace
+if ($LASTEXITCODE -ne 0) { throw "Failed to ignore workspace workflow directories." }
+Write-Host "Workspace workflow directories are ignored. Already tracked workflow artifacts remain tracked; remove them from the Git index manually if needed (preserve local files)." -ForegroundColor Gray
 
 # 4. Template Rendering
 Write-Host "Rendering configuration templates when missing..." -ForegroundColor Cyan
@@ -186,10 +206,14 @@ Write-Host "Copying global rules, agents, hooks, and skills..." -ForegroundColor
 Copy-Item -Path (Join-Path $SrcDir "config\AGENTS.md") -Destination (Join-Path $ConfigDir "AGENTS.md") -Force
 Copy-Item -Path (Join-Path $SrcDir "config\hooks.json") -Destination (Join-Path $ConfigDir "hooks.json") -Force
 
-# Copy skills
+# Merge optional adapter skills with the portable canonical core.
 $TargetSkillsDir = Join-Path $ConfigDir "skills"
 New-Item -ItemType Directory -Path $TargetSkillsDir -Force | Out-Null
-Copy-Item -Path (Join-Path $SrcDir "config\skills\*") -Destination $TargetSkillsDir -Recurse -Force
+foreach ($SkillRoot in @("config\skills", "skills")) {
+    Get-ChildItem -Path (Join-Path $SrcDir $SkillRoot) -Directory | ForEach-Object {
+        Copy-Item -Path $_.FullName -Destination $TargetSkillsDir -Recurse -Force
+    }
+}
 
 # Copy shipped agents while retaining unrelated installed agent directories.
 $TargetAgentsDir = Join-Path $ConfigDir "agents"

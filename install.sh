@@ -9,7 +9,7 @@
 set -euo pipefail
 
 # Configurable defaults
-DEFAULT_REPO="rizariaputrawira/antigravity-cli-config"
+DEFAULT_REPO="rizariaputrawira/LeanFlow"
 REPO_NAME="${ANTIGRAVITY_REPO:-$DEFAULT_REPO}"
 TARGET_WORKSPACE="${WORKSPACE_DIR:-${HOME}/workspaces}"
 DRY_RUN=false
@@ -139,6 +139,9 @@ for agent_dir in "${SRC_DIR}/config/agents/"*; do
   fi
 done
 
+# Refuse legacy skill identities without deleting or rewriting local packages.
+node "${SRC_DIR}/scripts/check-legacy-skills.cjs" "${SRC_DIR}" "${CONFIG_DIR}/skills"
+
 # Validate before any mutation; malformed settings must not fall back to telemetry defaults.
 node "${SRC_DIR}/scripts/apply-privacy.cjs" "${CLI_DIR}/settings.json" "${CONFIG_DIR}/mcp_config.json" --check
 
@@ -158,7 +161,8 @@ if [ "${DRY_RUN}" = true ]; then
   echo "   - mcp_config.json.template -> ${CONFIG_DIR}/mcp_config.json (workspace: ${TARGET_WORKSPACE})"
   echo "   - settings.json.template -> ${CLI_DIR}/settings.json (if missing)"
   echo "🔎 [DRY RUN] Would disable feedback surveys and recognized MCP telemetry, preserving unrelated settings."
-  echo "🔎 [DRY RUN] Would copy skills ($(ls -1 "${SRC_DIR}/config/skills" 2>/dev/null | wc -l) skills), hooks, and AGENTS.md."
+  echo "🔎 [DRY RUN] Would merge portable skills/ and adapter config/skills/ into ${CONFIG_DIR}/skills, and copy hooks, agents, and AGENTS.md."
+  echo "🔎 [DRY RUN] Would preserve ${TARGET_WORKSPACE}/.gitignore and add /workflow/ and /.workflow/ when missing."
   echo ""
   echo "✅ Dry run completed successfully. Zero changes were made."
   exit 0
@@ -178,6 +182,18 @@ fi
 
 # Ensure target directories exist
 mkdir -p "${CONFIG_DIR}" "${CLI_DIR}" "${TARGET_WORKSPACE}"
+
+# Keep local workflow artifacts out of future Git additions without changing tracked files.
+node -e '
+const fs = require("node:fs");
+const path = require("node:path");
+const file = path.join(process.argv[1], ".gitignore");
+const current = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+const lines = current.split(/\r?\n/);
+const missing = ["/workflow/", "/.workflow/"].filter(entry => !lines.includes(entry));
+if (missing.length) fs.appendFileSync(file, (current && !current.endsWith("\n") ? "\n" : "") + missing.join("\n") + "\n");
+' "${TARGET_WORKSPACE}"
+echo "ℹ️ Workspace workflow directories are ignored. Already tracked workflow artifacts remain tracked; remove them from the Git index manually if needed (preserve local files)."
 
 # Render configuration files only when absent; preserve installed user settings.
 echo "⚙️ Rendering configuration templates when missing..."
@@ -206,9 +222,14 @@ echo "📦 Copying global rules, hooks, and skills..."
 cp "${SRC_DIR}/config/AGENTS.md" "${CONFIG_DIR}/AGENTS.md"
 cp "${SRC_DIR}/config/hooks.json" "${CONFIG_DIR}/hooks.json"
 
-# Copy skills
+# Merge optional adapter skills with the portable canonical core.
 mkdir -p "${CONFIG_DIR}/skills"
-cp -r "${SRC_DIR}/config/skills/"* "${CONFIG_DIR}/skills/"
+for skill_root in "${SRC_DIR}/config/skills" "${SRC_DIR}/skills"; do
+  for skill_dir in "${skill_root}/"*; do
+    [ -d "${skill_dir}" ] || continue
+    cp -r "${skill_dir}" "${CONFIG_DIR}/skills/"
+  done
+done
 
 # Copy shipped agents, preserving unrelated directories.
 if [ -d "${SRC_DIR}/config/agents" ]; then

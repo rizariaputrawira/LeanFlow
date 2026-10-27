@@ -16,11 +16,39 @@ test('installer migrates telemetry opt-ins without losing user settings or MCP a
     env: { ...process.env, HOME: home }, encoding: 'utf8',
   });
   try {
+    const workspace = path.join(home, 'workspace');
+    const ignorePath = path.join(workspace, '.gitignore');
+    fs.mkdirSync(workspace);
+    const git = (...args) => cp.spawnSync('git', args, { cwd: workspace, encoding: 'utf8' });
+    let gitResult = git('init', '--quiet');
+    assert.equal(gitResult.status, 0, gitResult.stderr);
+    fs.writeFileSync(ignorePath, '# user rules\r\n/user-cache/');
+    fs.mkdirSync(path.join(workspace, '.workflow'));
+    fs.writeFileSync(path.join(workspace, '.workflow/existing.md'), 'preserve tracked artifact');
+    gitResult = git('add', '.workflow/existing.md');
+    assert.equal(gitResult.status, 0, gitResult.stderr);
     let result = install('--dry-run');
     assert.equal(result.status, 0, result.stderr);
     assert.equal(fs.existsSync(path.join(home, '.gemini')), false);
+    assert.equal(fs.readFileSync(ignorePath, 'utf8'), '# user rules\r\n/user-cache/');
     result = install();
     assert.equal(result.status, 0, result.stderr);
+    const expectedIgnore = fs.readFileSync(ignorePath, 'utf8');
+    assert.ok(expectedIgnore.startsWith('# user rules\r\n/user-cache/'));
+    for (const file of ['workflow/future.md', '.workflow/plans/future.md']) {
+      gitResult = git('check-ignore', file);
+      assert.equal(gitResult.status, 0, gitResult.stderr);
+    }
+    gitResult = git('ls-files', '--error-unmatch', '.workflow/existing.md');
+    assert.equal(gitResult.status, 0, gitResult.stderr);
+    assert.equal(fs.readFileSync(path.join(workspace, '.workflow/existing.md'), 'utf8'), 'preserve tracked artifact');
+    const skillsDir = path.join(home, '.gemini/config/skills');
+    const customSkill = path.join(skillsDir, 'my-local-skill', 'SKILL.md');
+    fs.mkdirSync(path.dirname(customSkill));
+    fs.writeFileSync(customSkill, 'local skill: preserve unchanged');
+    const helperFile = path.join(skillsDir, 'plan', 'notes.txt');
+    fs.mkdirSync(path.dirname(helperFile));
+    fs.writeFileSync(helperFile, 'helper-only directory is not a legacy skill');
     assert.equal(read(settingsPath).showFeedbackSurvey, false);
     assert.equal(read(mcpPath).mcpServers.context7.env.OTEL_SDK_DISABLED, 'true');
     assert.equal(read(mcpPath).mcpServers.codegraph.env.CODEGRAPH_TELEMETRY, '0');
@@ -46,6 +74,9 @@ test('installer migrates telemetry opt-ins without losing user settings or MCP a
     result = install();
     assert.equal(result.status, 0, result.stderr);
     assert.equal(fs.readFileSync(mcpPath, 'utf8'), once);
+    assert.equal(fs.readFileSync(ignorePath, 'utf8'), expectedIgnore);
+    assert.equal(fs.readFileSync(customSkill, 'utf8'), 'local skill: preserve unchanged');
+    assert.equal(fs.readFileSync(helperFile, 'utf8'), 'helper-only directory is not a legacy skill');
     fs.writeFileSync(mcpPath, '{invalid');
     const before = fs.readFileSync(settingsPath, 'utf8');
     result = install();
@@ -56,3 +87,60 @@ test('installer migrates telemetry opt-ins without losing user settings or MCP a
     fs.rmSync(home, { recursive: true, force: true });
   }
 });
+
+function snapshot(directory) {
+  return fs.readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))
+    .map(entry => {
+      const file = path.join(directory, entry.name);
+      return [entry.name, entry.isDirectory() ? snapshot(file) : fs.readFileSync(file).toString('base64')];
+    });
+}
+
+const powerShell = process.platform === 'win32' ? 'powershell.exe' : 'pwsh';
+const hasPowerShell = cp.spawnSync(powerShell, ['-NoProfile', '-Command', 'exit 0'], { encoding: 'utf8' }).status === 0;
+for (const shell of ['bash', powerShell]) {
+  const unavailable = shell === 'bash' ? process.platform === 'win32' : !hasPowerShell;
+  test(`${shell} installer refuses legacy skills before changing destination files, including dry-run`, { skip: unavailable }, () => {
+    const home = fs.mkdtempSync(path.join(os.tmpdir(), 'leanflow-legacy-install-'));
+    const config = path.join(home, '.gemini/config');
+    const cli = path.join(home, '.gemini/antigravity-cli');
+    const workspace = path.join(home, 'workspace');
+    const skills = path.join(config, 'skills');
+    try {
+      fs.mkdirSync(skills, { recursive: true });
+      fs.mkdirSync(cli, { recursive: true });
+      fs.mkdirSync(workspace);
+      fs.writeFileSync(path.join(config, 'AGENTS.md'), 'user guidance: do not overwrite');
+      fs.writeFileSync(path.join(config, 'mcp_config.json'), '{"mcpServers":{}}');
+      fs.writeFileSync(path.join(cli, 'settings.json'), '{"showFeedbackSurvey":true,"userValue":"keep"}');
+      fs.writeFileSync(path.join(workspace, '.gitignore'), '# user rules\n/user-cache/\n');
+      fs.mkdirSync(path.join(skills, 'my-local-skill'));
+      fs.writeFileSync(path.join(skills, 'my-local-skill/SKILL.md'), 'unrelated local skill');
+      for (const name of ['plan', 'ast-grep', 'flashplan', 'superplan', 'hyperplan']) {
+        const legacy = path.join(skills, name);
+        fs.mkdirSync(legacy);
+        fs.writeFileSync(path.join(legacy, 'SKILL.md'), `user-modified ${name} skill`);
+        fs.writeFileSync(path.join(legacy, 'notes.txt'), 'preserve local notes');
+        const beforeConfig = snapshot(path.join(home, '.gemini'));
+        const beforeWorkspace = snapshot(workspace);
+        for (const dryRun of [false, true]) {
+          const args = shell === 'bash'
+            ? [path.join(repo, 'install.sh'), `--workspace=${workspace}`, ...(dryRun ? ['--dry-run'] : [])]
+            : ['-NoProfile', '-File', path.join(repo, 'install.ps1'), '-Workspace', workspace, ...(dryRun ? ['-DryRun'] : [])];
+          const result = cp.spawnSync(shell, args, {
+            env: { ...process.env, HOME: home, USERPROFILE: home }, encoding: 'utf8',
+          });
+          assert.notEqual(result.status, 0, `${name}: installer unexpectedly accepted legacy skill`);
+          const output = result.stdout + result.stderr;
+          assert.ok(output.includes(path.join(legacy, 'SKILL.md')), output);
+          assert.deepEqual(snapshot(path.join(home, '.gemini')), beforeConfig);
+          assert.deepEqual(snapshot(workspace), beforeWorkspace);
+          assert.equal(fs.readdirSync(home).some(entry => entry.startsWith('.gemini.bak.')), false);
+        }
+        fs.rmSync(legacy, { recursive: true });
+      }
+    } finally {
+      fs.rmSync(home, { recursive: true, force: true });
+    }
+  });
+}
