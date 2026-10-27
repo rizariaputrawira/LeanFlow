@@ -2,7 +2,35 @@
 
 Plan deliberately. Execute simply. Orchestrate specification-first.
 
-LeanFlow gives coding assistants five portable, instruction-based skills: explore a decision, synthesize a source-grounded specification, make a grounded plan, execute that exact plan, or coordinate the full flow. Specification is optional for standalone planning and execution; selected orchestration saves a specification first, then plans, then executes within the user's permission. Use the same canonical skills as plain files or install them through a small host adapter—without adopting a full personal configuration kit.
+LeanFlow gives coding assistants five portable, instruction-based skills. Read the canonical files directly or install them through a small host adapter—without adopting a full personal configuration kit.
+
+## Workflow at a glance
+
+Choose `leanflow-orchestrate` for the full flow below. Each stage advances only when its required decisions, privacy checks, and permissions are satisfied.
+
+```mermaid
+flowchart TD
+    accTitle: LeanFlow orchestration workflow
+    accDescr: Brainstorm unresolved choices when needed, save a specification, then plan at the appropriate depth. Execute and verify only with implementation permission; otherwise return the specification and plan.
+
+    brainstorm["leanflow-brainstorm<br/>Only for unresolved choices"] -.-> specification
+
+    subgraph orchestration["leanflow-orchestrate"]
+        specification["leanflow-to-spec<br/>Save specification"]
+        plan["leanflow-plan<br/>Select flash / super / hyper"]
+        execute["leanflow-execute<br/>Implement and verify"]
+
+        specification --> plan
+        plan -->|Implementation authorized| execute
+    end
+
+    plan -->|Planning only| report["Report artifacts and observed evidence"]
+    execute --> report
+```
+
+Use individual skills when you need only one stage. Standalone planning and execution do not require a specification.
+
+## Skills
 
 | Skill | Use it for |
 | --- | --- |
