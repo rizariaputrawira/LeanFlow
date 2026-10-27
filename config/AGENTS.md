@@ -1,6 +1,6 @@
-# Antigravity Global Rules
+# Legacy Antigravity Configuration Reference
 
-Installed at `~/.gemini/config/AGENTS.md` for global guidance.
+This records the earlier broad global configuration. The current LeanFlow installer does not install this file, hooks, settings, MCP configuration, or optional specialist skills. The four canonical workflows live in `skills/`; native agent bindings live under `harnesses/<host>/agents/`. Do not treat this legacy reference as a portable core requirement.
 
 ## SKILLS AVAILABLE
 

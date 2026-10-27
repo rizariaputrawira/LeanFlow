@@ -2,122 +2,83 @@
 
 Plan first. Execute simply. Orchestrate when needed.
 
-LeanFlow is a portable set of instruction-based workflows for coding assistants. Its canonical core is four sibling skills under [`skills/`](skills/): **leanflow-brainstorm**, **leanflow-plan**, **leanflow-execute**, and **leanflow-orchestrate**. It does not require Antigravity (`agy`), named agent roles, a particular model, or a particular delegation tool.
+LeanFlow gives coding assistants four portable, instruction-based workflows: explore a decision, make a grounded plan, execute that exact plan, or coordinate the full flow. Use the same canonical skills as plain files or install them through a small host adapter—without adopting a full personal configuration kit.
 
-LeanFlow is not a model gateway, agent runtime, sandbox, or permission system. The host supplies models, tools, discovery, delegation, and approval enforcement. Loading a skill does not install software, change model routing or permissions, or authorize commits.
+| Skill | Use it for |
+| --- | --- |
+| [`leanflow-brainstorm`](skills/leanflow-brainstorm/SKILL.md) | Explore unresolved goals and tradeoffs without implementing. |
+| [`leanflow-plan`](skills/leanflow-plan/SKILL.md) | Research and write a plan; choose planning depth automatically. |
+| [`leanflow-execute`](skills/leanflow-execute/SKILL.md) | Implement and verify an explicitly supplied saved or in-chat plan. |
+| [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Coordinate planning and execution using available native delegation. |
 
-## Simple workflow
+LeanFlow is not an agent runtime, model gateway, sandbox, or permission system. Your host supplies models, tools, discovery, delegation, and approval enforcement.
 
-```text
-leanflow-brainstorm <idea>    Explore unresolved choices; no implementation
-leanflow-plan <task>          Automatically choose planning depth and save a plan; no implementation
-leanflow-execute <plan-path>  Implement and verify an explicitly supplied plan
-leanflow-orchestrate <task>   Explicitly compose planning and execution with native delegation when available
-```
+## Get started without installing
 
-These are skill names and conceptual requests, not universally available slash commands. Use your host's documented skill-loading mechanism, or load the actual files as described below.
-
-- **Think first when useful:** brainstorm unresolved decisions; skip it when the task is clear. Brainstorming alone does not authorize implementation.
-- **Plan directly:** `leanflow-plan` researches and writes the plan, automatically choosing the least depth adequate for the task: **flash** for clear, bounded, low-risk work; **super** for integration, dependencies, or moderate uncertainty; **hyper** for high-risk work or load-bearing unresolved alternatives. Hyper uses five adversarial lenses and one revision. Method choice does not select a model or require delegation. An explicit plain-language method request is honored with risks and unknowns visible.
-- **Execute or resume directly:** provide the saved plan path and authorize implementation. The current assistant implements pending steps, runs appropriate checks, and updates the same plan with actual evidence.
-- **Authorize the full flow:** “Brainstorm, plan, then implement this task” can authorize the relevant stages together. No redundant approval ceremony is added; unresolved material decisions and genuine safety boundaries still require you.
-- **Delegate explicitly:** select `leanflow-orchestrate` when you want the composed flow to use the host's available native delegation. Discover real capabilities; do not invent planner/executor roles or assume a tool exists. If delegation is unavailable, disclose that limitation and continue directly within the original authorization.
-
-For example, after loading the appropriate skills:
+From a local checkout, send this to a file-capable coding assistant:
 
 ```text
-Use leanflow-plan to plan adding CSV export to the report screen. Do not implement it yet.
-Use leanflow-execute with the saved plan at <plan-path>.
+Read skills/leanflow-plan/SKILL.md, resolve relative references from
+skills/leanflow-plan/, and use it to plan adding CSV export to the report
+screen. Do not implement it yet.
 ```
 
-There is one public planning entrypoint, not separate method skills. For an explicit override, say “Use leanflow-plan with the super method for this task; do not implement.” These are ordinary requests, not parsed CLI flags. Every plan records its **Method**, selection rationale, and limitations; planning alone never authorizes execution.
-
-Or explicitly request the composed workflow:
+Keep all four complete skill directories accessible as siblings. After reviewing the plan, explicitly authorize execution:
 
 ```text
-Use leanflow-orchestrate to plan and implement CSV export to the report screen.
+Read skills/leanflow-execute/SKILL.md, resolve relative references from
+skills/leanflow-execute/, and implement the plan at .workflow/plans/<plan-file>.md.
 ```
 
-Plans live in `.workflow/plans/`. Checkboxes and inline verification are execution state: `[ ]` pending, `[x]` verified complete, `[!]` blocked. A material invalidation returns `REPLAN_REQUIRED`; orchestration permits at most one automatic replan within the original authorization. Normal work needs no execution FSM, ledger, or mandatory reviewer, and creates no automatic commits, branches, worktrees, pushes, or PRs. See the [planning guide](docs/PLANNING_GUIDE.md).
+Replace the example task and plan filename with your own. Plain-file loading does not register commands or prove native compatibility; the assistant must actually read the files, not just recognize their names.
 
-### Private workflow artifacts by default
+## Install a host adapter
 
-Both root `workflow/` and `.workflow/` directories are ignored by Git by default. Canonical plan paths remain `.workflow/plans/`; `workflow/` is also excluded to cover the user-facing spelling without silently migrating existing records. Before saving new workflow artifacts, the core instructions preserve existing `.gitignore` content and establish `/workflow/` and `/.workflow/` entries, including outside Git so that the default carries forward on initialization. If privacy cannot be established or required writes are forbidden, return the plan in chat with the limitation instead of saving it.
-
-Ignoring a path does **not** untrack files already in the Git index. Existing tracked generated records need an explicit index-only removal that preserves working files; historical commits are unchanged. Neither ignores nor index removal scrub secrets from history. Ignored files are still readable by local tools and may still be included in assistant context; this is not encryption or a confidentiality boundary.
-
-## Use the portable core
-
-### Manual host installation
-
-1. Consult your host's documentation for its supported skill format, skill root, discovery/reload procedure, and invocation syntax. No universal installation path or slash-command support is assumed.
-2. Copy each complete `skills/leanflow-<name>/` directory into that documented skill root. Keep `leanflow-brainstorm`, `leanflow-plan`, `leanflow-execute`, and `leanflow-orchestrate` as siblings so their relative links resolve. Do not copy only the individual Markdown files.
-3. Check for existing skills or native commands with the same names before replacing anything. Resolve conflicts according to the host's documentation; namespacing does not establish collision-free coexistence.
-4. Load the desired skill through the host's documented mechanism. Verify discovery and behavior in that host before relying on it.
-
-The portable core does not need `config/`, the bundled named agents, MCP services, Node.js, or either installation script. A host may impose its own prerequisites and limitations.
-
-### Plain-file loading
-
-When registration is unavailable, a file-capable assistant can read the actual `skills/leanflow-<name>/SKILL.md` and use its instructions within existing permissions. Supply its containing directory as the base directory for relative links. For example: “Read `skills/leanflow-plan/SKILL.md`, resolve relative references from `skills/leanflow-plan/`, and use it to plan this task without implementing.” Keep all four siblings accessible.
-
-This is instruction loading, not runtime registration: it does not create slash commands, make skills discoverable, add tools, or prove compatibility with a host. A pasted skill name without the file contents is not evidence that the skill was loaded.
-
-### Updating older installations
-
-The `leanflow-` prefix applies to **every shipped user-invoked skill**, including optional adapter skills, not just the four core skills. The former `flashplan`, `superplan`, and `hyperplan` packages are retired; their methods now belong to `leanflow-plan`, with no compatibility aliases. If installer preflight flags old generic skill packages, explicitly archive or otherwise resolve the flagged packages after checking their ownership before retrying. Do not delete another project's or another user's skills, and do not assume a name match proves ownership. Updating this checkout does not automatically install or alter any live host configuration.
-
-## Optional Antigravity full-configuration adapter
-
-`install.sh`, `install.ps1`, and `config/` are an **optional Antigravity-specific configuration adapter**, not generic LeanFlow installers. Choose this only if you want its broader Antigravity rules, hooks, settings, named agents, MCP configuration, and optional skills. Its host-specific policies are not portable-core requirements.
-
-The adapter merges the canonical four skills with the optional skills from `config/skills/` into its installed skills directory. Optional workflows include `leanflow-to-spec`, the execution alias `leanflow-hyperexecution`, debugging, UI, security, system administration, and explicit Git/PR helpers; all shipped invocation names use the `leanflow-` prefix. Planning depth remains owned by `leanflow-plan`. Individual optional dependencies and invocation support remain host-specific.
-
-Requires Antigravity CLI and Node.js for privacy merging and bundled hooks. `npx` is needed for the configured optional MCP servers. GitHub MCP authentication uses your own `GITHUB_TOKEN`; no token is supplied. Inspect the scripts and configuration before explicitly running them from a local clone:
+Run from this checkout with Node.js. Preview first, then install for your chosen host:
 
 ```bash
-bash install.sh --dry-run
-bash install.sh
+node scripts/install.mjs omp --dry-run
+node scripts/install.mjs omp
+
+node scripts/install.mjs agy --dry-run
+node scripts/install.mjs agy
+
+node scripts/install.mjs claude --dry-run
+node scripts/install.mjs claude
+
+node scripts/install.mjs codex --target /path/to/project --dry-run
+node scripts/install.mjs codex --target /path/to/project
 ```
 
-```powershell
-.\install.ps1 -DryRun
-.\install.ps1
+Default targets for omp, agy, and Claude Code are `~/.omp/agent`, `~/.gemini/config/plugins/leanflow`, and `~/.claude`, respectively. Codex requires an explicit project-root target and uses `.agents/skills/` plus opt-in `.codex/agents/`. For another host's documented skill root, use the explicit generic target:
+
+```bash
+node scripts/install.mjs generic --target /path/to/host/skills --dry-run
+node scripts/install.mjs generic --target /path/to/host/skills
 ```
 
-The adapter backs up existing configuration, preserves unrelated settings and agent directories, and updates shipped rules, hooks, skills, and agent definitions. Agents are installed at `~/.gemini/config/agents/<name>/agent.md`. A conflicting flat agent file or malformed privacy-target JSON stops installation without overwriting it. Fresh settings leave trusted workspaces empty, select Gemini 3.8 Flash (Medium), and use native `request-review` tool permissions; existing model routing and permissions are unchanged. The adapter adds both workflow ignore rules to its target workspace; this alone does not untrack existing files. Restart the CLI to load updated assets. The guide records discovery-path and native-command caveats.
+Every default install copies **exactly the four core skills**, using the same canonical bytes. Add `--with-agents` to a native adapter to opt into its three `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` bindings. Generic installation has no native agent binding and rejects that option. Use `--target DIR` for a custom destination and `--update` for an installer-managed update; inspect the relevant setup guide before replacing existing files.
 
-### Adapter privacy defaults and required account action
+The adapters do **not** install MCP servers, hooks, host-global instructions, or the 25 legacy optional packages in `config/skills/`. They do not change credentials, model routing, approval policies, telemetry, workspace settings, or ignore rules. Codex writes only the requested install files/manifest under its explicit project target. `install.sh` and `install.ps1` are Node adapter entrypoints, not the old full-configuration installer. Existing legacy assets are not automatically removed.
 
-The adapter applies these controls; copying the portable core alone does not change privacy settings:
+Setup and migration details: [omp](harnesses/omp/README.md) · [agy](harnesses/agy/README.md) · [Claude Code](harnesses/claude/README.md) · [Codex](harnesses/codex/README.md) · [generic](harnesses/generic/README.md) · [compatibility and evidence](COMPATIBILITY.md). Packaging support is not a claim that native discovery or delegation has been tested in your installed host/version.
 
-| Mechanism | Adapter control |
-| --- | --- |
-| Feedback surveys | `showFeedbackSurvey: false` in CLI settings |
-| Context7 OpenTelemetry instrumentation/exporters | `OTEL_SDK_DISABLED=true` in its MCP environment |
-| CodeGraph anonymous usage reporting | `CODEGRAPH_TELEMETRY=0` and `DO_NOT_TRACK=1` in its MCP environment |
-| Brainstorm companion remote branding/version image | Existing `SUPERPOWERS_DISABLE_TELEMETRY` opt-out enabled by its launcher and defaulted on for direct server launches |
+## Choose the workflow
 
-`scripts/apply-privacy.cjs` merges only these settings, including recognized version-qualified or renamed MCP entries. Custom servers, API keys, GitHub token wiring, models, permissions, and workspace settings remain intact. Opt-outs are stored in MCP configuration rather than relying on shell profiles; unrelated applications' environments are not modified. Backups use `~/.gemini.bak.<timestamp>.<unique-suffix>/`.
+- **Plan only:** `leanflow-plan` selects **flash** for clear, bounded, low-risk work; **super** for integration or moderate uncertainty; **hyper** for high risk or unresolved load-bearing alternatives. Hyper applies five adversarial lenses and one revision. You can request a method in plain language; methods do not select models or require delegation. Planning alone never authorizes implementation.
+- **Execute directly:** the current assistant implements the exact saved or in-chat plan you supplied, checks the result, and records actual evidence. No implicit selection of an unrelated plan.
+- **Orchestrate explicitly:** request `leanflow-orchestrate` for the composed flow and available host-native workers. The coordinator owns integration and is the sole shared-plan writer during parallel work. Delegates return scoped results, evidence, and blockers—not nested orchestration. If delegation is unavailable, disclose the limitation; a delegation-only request must not silently become direct execution.
 
-**Native CLI telemetry requires an account action:** start `agy`, open `/config` (or `/settings`), and set **Enable Telemetry** to **Off**. Recheck after changing accounts or upgrading. The adapter prints this requirement; it does not claim native telemetry is automatically disabled.
+These are skill names and ordinary requests, not universal slash commands. No automatic commits, branches, pushes, or PRs are part of the core. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
 
-The [official settings documentation](https://antigravity.google/docs/settings.md) lists `enableTelemetry`, but historical inspection of CLI **1.3.1** found `EnableTelemetry` excluded from JSON persistence (`json:"-"`) with backend getter/setter methods. No supported telemetry automation flag/subcommand was found. A sandbox model invocation still logged an attempted `recordTrajectoryAnalytics` request. Adding a template key would not establish a working opt-out; native/account state and its default cannot be guaranteed by these scripts. The all-optional-telemetry-disabled target remains unverified until the account control is turned off and checked.
+## Keep artifacts local
 
-These controls do not block authentication, provider/model requests, updates/downloads, explicit network tools, security checks, or local troubleshooting logs. Native account telemetry settings do not control provider-side content retention or API project privacy. No proxy, firewall, TLS bypass, or SDK removal is introduced. Future `@latest` MCP packages and independently installed plugins or remote MCP services need version-specific reinspection; this is not a device-wide no-telemetry guarantee.
+Canonical saved plans live in `.workflow/plans/`. The workflows preserve existing ignore rules and establish both `/workflow/` and `/.workflow/` before saving generated artifacts, including before Git initialization. If writes or privacy setup are unavailable, keep the plan and evidence in chat rather than silently saving elsewhere.
 
-### Adapter safety and historical evidence
+Ignore rules do not untrack existing files, encrypt records, hide them from local tools or assistant context, or remove secrets from history. Removing already-tracked artifacts from the index requires authorization and must preserve working files. Installing an adapter does not edit your workspace; artifact privacy is part of the workflow when it runs.
 
-Destructive Git and recursive-delete confirmation, credential masking, and workspace permission boundaries remain applicable. Historically, CLI `always-proceed` auto-approved a confirmation raised by the safety hook; inspect `/config` and `/hooks` rather than treating hooks as a hard barrier. Narrow planner/reviewer tool declarations did not prevent inherited MCP access and are not OS containment. These are Antigravity observations, not portable safety guarantees.
+## Help, maintenance, and background
 
-Prior adapter verification included `node --test tests/privacy-install.test.cjs` cases for real Bash fresh/existing installs, dry-run, preference/auth preservation, telemetry opt-in migration, repeat installation, BOM handling, and malformed JSON rejection. Historical CLI 1.3.1 checks observed startup/authentication and a model response; Context7 4.1.2 and CodeGraph 1.6.2 initialized with opt-outs, and the live companion served a screen without the remote image. Windows PowerShell 5.1 parsing was checked; full Windows privacy installation was not exercised in that check because of execution policy and absent Windows Node.js. No packet capture or exhaustive SDK-egress proof was performed.
+Open a [GitHub issue](https://github.com/rizariaputrawira/leanflow/issues) for questions or reproducible problems; include the host/version, installation mode, and redacted error output. Maintained by [rizariaputrawira](https://github.com/rizariaputrawira). Do not include credentials or private plan contents.
 
-These are **historical adapter results**, not tests of the current portable rewrite or proof of cross-host compatibility. The [guide](docs/PLANNING_GUIDE.md#verification-and-evidence-limits) separates the successful source-loaded method-selection smoke and namespace/install checks from earlier pre-namespace and historical adapter observations. Native discovery and behavior across every host remain unverified.
-
-The optional `leanflow-workflow-health-check` audits first; repair requires an explicit request and retains legacy source trees for reconciliation. Bundled Impeccable utilities omit unused upstream reports and helper entry points; web work retains its manual detector fallback, and native projects bypass that HTML/CSS pass. These adapter helpers are not required for the four-skill flow.
-
-## Relationship to KitShift
-
-[KitShift's README](https://github.com/rizariaputrawira/kitshift) describes a personal coding-agent configuration kit for `omp`/`agy`, not a runtime. LeanFlow's portable core instead packages a small planning/execution workflow without requiring either harness. The optional Antigravity adapter remains a broader configuration bundle, not the universal entrypoint. This distinction is about scope, not demonstrated effectiveness or universal compatibility. Namespaced skill identities reduce generic-name overlap, but installed names and configuration targets may still collide; no claim of safe simultaneous installation is made without inspecting the actual host setup.
-
-Immediate workflow provenance and the limits of recorded license lineage are documented in [`skills/SOURCES.md`](skills/SOURCES.md).
+LeanFlow adopts the shared-workflow/native-binding separation illustrated by [KitShift](https://github.com/rizariaputrawira/kitshift), not its full configuration bundle. See [workflow provenance](skills/SOURCES.md), [historical configuration and telemetry warnings](docs/LEGACY_CONFIGURATION.md), and [compatibility evidence](COMPATIBILITY.md). Other runtimes may use plain files or their own documented skill discovery; this is not a blanket native-support claim.
