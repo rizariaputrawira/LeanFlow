@@ -1,42 +1,19 @@
 ---
 name: leanflow-to-spec
-description: Synthesize a reference specification when explicitly requested or as the first stage of explicitly selected orchestration.
+description: Use when the user requests a reference specification or selects a specification-first orchestration workflow.
 ---
 
 # LeanFlow To-spec
 
-Use this skill when the user requests a reference specification from supplied design material or conversation, or when explicitly selected [`leanflow-orchestrate`](../leanflow-orchestrate/SKILL.md) invokes its required specification-first stage. Standalone specification capture is optional, not a prerequisite to standalone [`leanflow-plan`](../leanflow-plan/SKILL.md); orchestration requires a saved specification before planning. Use the current host's permitted tools; no named agent, model, tool API, or slash command is required. This skill supplies instructions, not permissions.
+Use this skill when the user requests a reference specification from supplied design material or conversation, or selects the coordinated, specification-first workflow governed by [`leanflow-orchestrate`](../leanflow-orchestrate/SKILL.md). Recognize that intent without requiring a literal skill name; a generic implementation request does not select orchestration. Standalone specification capture is optional, not a prerequisite to standalone [`leanflow-plan`](../leanflow-plan/SKILL.md); orchestration requires a saved specification before planning. Use the current host's permitted tools; no named agent, model, tool API, or slash command is required. This skill supplies instructions, not permissions.
 
 Under orchestration, a read-only drafting worker performs source synthesis and review, then returns the complete draft and evidence without saving it. The coordinator applies the privacy and save steps below and owns the required specification file.
 
 1. Read the supplied source document first; otherwise use the available conversation. Identify the source and preserve its actual decisions, requirements, constraints, unknowns, and out-of-scope items. If material design information is absent, state what is missing rather than inventing requirements or treating an unresolved proposal as a settled decision. Resolve facts available from the supplied evidence; ask only when a material decision cannot be recovered from it.
-2. Synthesize a complete reference specification using the relevant sections of the template below. Keep requirements distinct from proposed solutions, implementation decisions, constraints, and open questions. Include user stories and testing seams only when supported by the source. Retain the settled-decision table for decisions actually made and preserve their rationale where known. Fill concrete values, omit irrelevant sections, and leave no template placeholders in the actual output.
+2. Before drafting, read the [specification template](references/specification-template.md) and, for English or Indonesian prose, the shared [writing guidance](references/writing.md). Synthesize a complete reference specification using the relevant template sections. Keep requirements distinct from proposed solutions, implementation decisions, constraints, and open questions. Include user stories and testing seams only when supported by the source. Retain the settled-decision table for decisions actually made and preserve their rationale where known. Fill concrete values, omit irrelevant sections, and leave no template placeholders in the actual output.
 3. Review the specification against the source for ambiguity, contradiction, unsupported assumptions, and scope drift. Preserve unresolved questions explicitly; do not silently resolve them or expand the requested scope.
-4. Before any save, read and apply the artifact privacy procedure in [`leanflow-plan`](../leanflow-plan/SKILL.md). That procedure owns privacy checks and authorized ignore-rule handling; the specification destination is the path in the next step, not the plan destination. If saving or the necessary privacy writes are unauthorized, forbidden, or cannot establish privacy, disclose the limitation and return the complete specification in chat without writing elsewhere or lowering permissions.
+4. Before any save, read and apply the artifact privacy procedure in [`leanflow-plan`](../leanflow-plan/SKILL.md), step 5. That procedure owns privacy checks and authorized ignore-rule handling; the specification destination is the path in the next step, not the plan destination. If saving or the necessary privacy writes are unauthorized, forbidden, or cannot establish privacy, disclose the limitation and return the complete specification in chat without writing elsewhere or lowering permissions.
 5. Only when saving is authorized and privacy is established, create `.workflow/specification/` if absent, inspect existing names, and save a new, non-colliding `.workflow/specification/<SEQ>-YYYYMMDD-<slug>-spec.md`. Do not overwrite historical records or move existing artifacts from other directories. Change only the authorized specification and any privacy ignore rules allowed by the canonical procedure.
 6. Report the saved path or return the complete in-chat specification, identify its source, and surface material unknowns. For standalone use, offer canonical [`leanflow-plan`](../leanflow-plan/SKILL.md) as an optional next step with this exact saved path or complete inline specification; a specification-only request stops here. Under orchestration, return the draft to the coordinator for its mandatory save, or report the exact file the coordinator saved. If the required file cannot be saved, return the permitted draft and blocker; orchestration must stop dependent planning and implementation rather than use inline evidence instead. Do not proceed past unresolved material design. Planning selects its own flash, super, or hyper method. Writing a specification alone never authorizes later stages, delegation, commits, or host configuration changes; continue only within authorization already supplied by the user, including an explicit orchestration request.
 
-## Specification template
-
-Use only sections relevant to the source. This template is a drafting aid, not permission to invent missing content or a mandatory implementation plan.
-
-```markdown
-# <Title>
-
-**Status:** Draft
-**Source:** <conversation or source path>
-**Date:** <YYYY-MM-DD>
-
-## Problem Statement
-## Requirements
-## Proposed Solution
-## User Stories
-## Constraints
-## Implementation Decisions
-## Settled Decisions & Answers
-| ID | Decision | Rationale |
-|---|---|---|
-## Testing Seams
-## Open Questions & Unknowns
-## Out of Scope
-```
+Adapted from Matt Pocock's to-spec; retained [MIT notice](LICENSE.matt). Source references and LeanFlow-specific changes are recorded in the repository's `skills/SOURCES.md`.
