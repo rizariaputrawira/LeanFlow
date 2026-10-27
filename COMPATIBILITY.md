@@ -6,8 +6,8 @@ LeanFlow separates **portable workflow source**, **host packaging**, **native di
 
 | Target | Destination | Optional native agents | Current evidence boundary |
 | --- | --- | --- | --- |
-| [`omp`](harnesses/omp/README.md) | `~/.omp/agent`, or custom agent root | Three Markdown/YAML definitions in `agents/`; model omitted to inherit | All five installed skill bodies loaded through native reads in omp 18.13.1. Native reviewer dispatch has separate historical four-skill evidence; planner/executor dispatch and full parallel execution remain unverified. |
-| [`agy`](harnesses/agy/README.md) | `~/.gemini/config/plugins/leanflow`, or custom plugin root | Three plugin agent definitions; `model: inherit` | Current five-skill plugin passed strict native validation in agy 1.4.7 with three agents and no findings. Model-driven dispatch remains unverified. |
+| [`omp`](harnesses/omp/README.md) | `~/.omp/agent`, or custom agent root | Three Markdown/YAML definitions in `agents/`; model omitted to inherit | Five-skill native selection and conditional-loading cases observed in omp 18.13.1; see the lean-guidance checks below. Native reviewer dispatch has separate historical four-skill evidence; planner/executor binding dispatch and full parallel execution remain unverified. |
+| [`agy`](harnesses/agy/README.md) | `~/.gemini/config/plugins/leanflow`, or custom plugin root | Three plugin agent definitions; `model: inherit` | Earlier five-skill plugin passed strict native validation in agy 1.4.7 with three agents and no findings. The lean-guidance revision has package-byte checks, not new native validation or model-driven dispatch evidence. |
 | [`claude`](harnesses/claude/README.md) | `~/.claude`, or custom `.claude`-style root | Three native Markdown/YAML subagents; `model: inherit` | Official documented layout; executable unavailable during the historical adapter checks, so no native validation claimed. |
 | [`codex`](harnesses/codex/README.md) | Explicit project root; `.agents/skills/` | Three standalone `.codex/agents/*.toml`; model/effort inherited | Official documented layout; executable unavailable during the historical adapter checks, so no native validation claimed. No `config.toml` registry changes. |
 | [`generic`](harnesses/generic/README.md) | Required explicit skill root; five directories directly inside | None; `--with-agents` rejected before writes | File installation only; no host discovery, agent dispatch, or runtime compatibility claim. |
@@ -20,6 +20,32 @@ Every default installation includes exactly `leanflow-brainstorm`, `leanflow-pla
 2. **Native registration:** the installed host/version discovers the actual skill/agent/plugin. This does not prove invocation routing, permitted tool behavior, or a completed delegated task.
 3. **Behavior smoke:** the actual instructions are read and applied to a bounded fixture, with observed outcomes. Planning-only, inline-plan, direct execution, and parallel orchestration need their own relevant observations; a launch receipt is not completion.
 4. **Permissions and containment:** native tool declarations or role prompts express intended scope. They are not evidence of inherited-MCP suppression, command isolation, OS containment, or host approval enforcement.
+
+## Lean-guidance adoption checks — 2026-10-27
+
+Disposable installations and fresh **omp 18.13.1 / openai-codex/gpt-6.1-sol** print-mode processes exercised the lean-guidance revision. Native discovery used a temporary `skills.customDirectories` overlay pointing at the copied five-skill tree, with other skill roots disabled and `leanflow-*` filtering. Context/rule/extension discovery was disabled. A generic runner instruction required reading relevant available skills; the selection requests below did not name a skill. Read-only cases exposed reading/search tools; implementation cases also exposed editing/writing/shell tools. No delegation interface was exposed.
+
+| Exercised path | Observed result |
+| --- | --- |
+| Plan-only request | Selected `leanflow-plan`, read the plan template, simplicity, and writing references, and returned a complete flash plan with no writes or commands. |
+| Standalone specification request | Selected `leanflow-to-spec`, read its template and writing reference, preserved the settled entrypoint, nonmutation requirement, exclusion, and unresolved non-finite-input question; no planning or implementation. |
+| Unresolved-design discussion | Selected `leanflow-brainstorm` and the writing reference, compared rejection versus propagation of non-finite numbers, and kept its recommendation provisional; no implementation or artifacts. |
+| English and Indonesian specifications | Both selected to-spec and loaded the writing reference. Outputs preserved `POST /api/import`, `8 MB`, the supplied statistical/noncausal caveats, and the undecided retry policy. The Indonesian output used Indonesian prose without translating the API identifier or strengthening the evidence. |
+| Exact inline-plan execution | Selected `leanflow-execute` and the simplicity reference. Independent Node checks verified `[2,5] -> 7`, `[] -> 0`, `[3,-5] -> -2`, and unchanged inputs; no artifact or ignore-rule writes. |
+| Required specification save forbidden | Selected orchestration and to-spec, returned an unsaved draft and the precise persistence/privacy blocker, and did not load the plan template or execution stage, change source, or create files. |
+| Generic implementation request | Implemented the bounded function directly and passed independent consumer checks without loading orchestration or to-spec or creating workflow artifacts. |
+| Full specification-first workflow | Saved a specification, read that exact file, saved a plan, then implemented and verified the function. Tool records showed that order; the final plan contained completed steps and observed evidence. Both privacy ignores were present. |
+| Assigned worker and source reviewer | The worker loaded execution plus its extracted worker reference, passed assigned checks, and preserved the coordinator-owned plan byte-for-byte. The reviewer loaded orchestration plus its review reference, cited the constant-zero defect, and used reading only. These assignments explicitly supplied source paths; they are not native role-dispatch tests. |
+| Planning-only orchestration | Saved a private specification and plan, left `sum.mjs` byte-identical, did not load execution, and ran no commands or implementation checks. |
+| Delegation-only execution without an interface | Reported the unavailable/forbidden delegation blocker; did not implement directly, run checks, or create artifacts despite having editing tools. |
+
+The controller inspected native read results, tool records, outputs, and filesystem bytes independently of actor completion claims. Assistant message metadata identified `openai-codex/gpt-6.1-sol`. These are bounded candidate observations, not a measured baseline improvement, selection-accuracy rate, token/cost saving, default-configuration guarantee, or OS-isolation claim. The initial behavior snapshots preceded the later attribution-only footer/notice additions; workflow procedures and the shared bilingual reference were unchanged by those additions. Actual host binding dispatch, delegated specification drafting, supplied-plan conflicts, parallel schedules, and other hosts' model selection remain unverified by this assessment.
+
+Final package checks installed all five targets into disposable directories, retaining exactly five skill packages and byte-matching all **16 canonical skill files**, including references and five notice files. Manifest hashes matched; the isolated home remained untouched. Retained notices matched the inspected KitShift notices byte-for-byte. The repository source record separately identifies the official Matt Pocock and Superpowers procedures/notices read for the confirmed to-spec and brainstorming lineage; inspected source revisions are not asserted as original LeanFlow import pins.
+
+The final `node --test tests/install.test.mjs` run passed **27 tests, zero failures, zero skips**. Independent trace assertions covered **13 completed behavior cases**, confirmed successful source reads and the actual model identity, checked specification/read/plan/implementation order, and found no tool errors. These counts describe the exercised fixtures, not a statistical reliability estimate.
+
+Final local-link validation resolved **136 file/heading references** across the canonical skills, active documentation, and host guides/bindings with no missing targets.
 
 ## Current five-skill checks
 

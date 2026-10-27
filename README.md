@@ -42,6 +42,18 @@ Use individual skills when you need only one stage. Standalone planning and exec
 
 LeanFlow is not an agent runtime, model gateway, sandbox, or permission system. Your host supplies models, tools, discovery, delegation, and approval enforcement.
 
+### Let the model choose the skill
+
+On a host that supports model-selected skills, describe the intended work in ordinary language; you do not need to name a skill or run a router first. “Plan this change; do not implement” selects planning intent. “Implement this exact plan” supplies execution intent. The specification-first workflow must be requested deliberately; a generic build request does not select orchestration.
+
+Selection loads guidance, not permission. The assistant must read the actual skill body and required references; your request and the host's permissions still control writes, execution, and external effects. Native selection remains host/version-dependent; see [observed evidence](COMPATIBILITY.md).
+
+### Keep the procedure small, not the outcome
+
+The five entrypoints keep common steps and authority boundaries visible. Plan/specification templates, worker procedures, and review detail load only for their applicable branches. Preserve the complete sibling directories when copying skills; references and license notices are part of the package.
+
+Planning and execution share [simplicity guidance](skills/leanflow-execute/references/simplicity.md): reuse existing patterns and choose the smallest complete solution without dropping acceptance or safety checks. English and Indonesian documents share [writing guidance](skills/leanflow-to-spec/references/writing.md), with language-specific idiom, register, terminology, and evidence checks—not word bans or a separate writing skill.
+
 ## Get started without installing
 
 From a local checkout, send this to a file-capable coding assistant:
@@ -96,8 +108,8 @@ Setup and migration details: [omp](harnesses/omp/README.md) · [agy](harnesses/a
 
 - **Plan only:** `leanflow-plan` selects **flash** for clear, bounded, low-risk work; **super** for integration or moderate uncertainty; **hyper** for high risk or unresolved load-bearing alternatives. Hyper applies five adversarial lenses and one revision. You can request a method in plain language; methods do not select models or require delegation. Planning alone never authorizes implementation.
 - **Execute directly:** the current assistant implements the exact saved or in-chat plan you supplied, checks the result, and records actual evidence. No implicit selection of an unrelated plan.
-- **Orchestrate explicitly:** request `leanflow-orchestrate` to save a source-grounded specification with `leanflow-to-spec` first, then plan, then execute within the authorized task scope. Planning-only consent permits specification and planning, not implementation. An exact supplied plan is validated against the saved specification and current evidence, not silently replaced. The coordinator owns integration and is the sole shared-plan writer during parallel work. Delegates return scoped results, evidence, and blockers—not nested orchestration. If delegation is unavailable, disclose the limitation; a delegation-only request must not silently become direct execution.
-- **Document a specification standalone:** explicitly request `leanflow-to-spec` with supplied design material or conversation. It returns a source-grounded reference specification in chat or, when saving is authorized and privacy established, `.workflow/specification/<SEQ>-YYYYMMDD-<slug>-spec.md`. This standalone choice is optional and does not automatically invoke planning or authorize implementation.
+- **Orchestrate explicitly:** request the specification-first workflow, by name or ordinary language, to save a source-grounded specification with `leanflow-to-spec` first, then plan, then execute within the authorized task scope. Planning-only consent permits specification and planning, not implementation. An exact supplied plan is validated against the saved specification and current evidence, not silently replaced. The coordinator owns integration and is the sole shared-plan writer during parallel work. Delegates return scoped results, evidence, and blockers—not nested orchestration. If delegation is unavailable, disclose the limitation; a delegation-only request must not silently become direct execution.
+- **Document a specification standalone:** request a reference specification from supplied design material or conversation; the literal `leanflow-to-spec` name is optional. It returns a source-grounded reference specification in chat or, when saving is authorized and privacy established, `.workflow/specification/<SEQ>-YYYYMMDD-<slug>-spec.md`. This standalone choice is optional and does not automatically invoke planning or authorize implementation.
 
 These are skill names and ordinary requests, not universal slash commands. No automatic commits, branches, pushes, or PRs are part of the core. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
 
@@ -111,4 +123,4 @@ Ignore rules do not untrack existing files, encrypt records, hide them from loca
 
 Open a [GitHub issue](https://github.com/rizariaputrawira/leanflow/issues) for questions or reproducible problems; include the host/version, installation mode, and redacted error output. Maintained by [rizariaputrawira](https://github.com/rizariaputrawira). Do not include credentials or private plan contents.
 
-LeanFlow adopts the shared-workflow/native-binding separation illustrated by [KitShift](https://github.com/rizariaputrawira/kitshift), not its full configuration bundle. See [workflow provenance](skills/SOURCES.md), [historical configuration and telemetry warnings](docs/LEGACY_CONFIGURATION.md), and [compatibility evidence](COMPATIBILITY.md). Other runtimes may use plain files or their own documented skill discovery; this is not a blanket native-support claim.
+LeanFlow selectively adapts [KitShift](https://github.com/rizariaputrawira/kitshift)'s shared-workflow/native-binding separation, on-demand guidance, writing discipline, and Ponytail-derived simplicity principles—not its full configuration bundle. See [source pins, modifications, and notices](skills/SOURCES.md), [historical configuration and telemetry warnings](docs/LEGACY_CONFIGURATION.md), and [compatibility evidence](COMPATIBILITY.md). Other runtimes may use plain files or their own documented skill discovery; this is not a blanket native-support claim.
