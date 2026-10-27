@@ -1,6 +1,6 @@
 # Claude Code Adapter
 
-The adapter copies four canonical LeanFlow skills into Claude Code's documented skill layout, with optional native subagent bindings. It does not install a full configuration kit.
+The adapter copies five canonical LeanFlow skills into Claude Code's documented skill layout. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Native subagent bindings are optional. It does not install a full configuration kit.
 
 ## Install and update
 
@@ -13,7 +13,7 @@ node scripts/install.mjs claude --with-agents --dry-run
 node scripts/install.mjs claude --with-agents
 ```
 
-The default root is `~/.claude`: core directories go to `skills/`, and opt-in `leanflow-{planner,executor,reviewer}.md` bindings go to `agents/`. For a project-local setup, supply its `.claude` root explicitly:
+The default root is `~/.claude`: `skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec}/` directories are installed, and opt-in `leanflow-{planner,executor,reviewer}.md` bindings go to `agents/`. For a project-local setup, supply its `.claude` root explicitly:
 
 ```bash
 node scripts/install.mjs claude --target /path/to/project/.claude --with-agents --dry-run
@@ -28,12 +28,12 @@ node scripts/install.mjs claude --target /path/to/project/.claude --with-agents 
 
 ## Binding and permission limits
 
-Native files under [`agents/`](agents/) use Claude Code subagent YAML rather than reusing omp/agy metadata. Model selection inherits the host. The canonical skills own planning/execution procedures; agent prompts bind roles and tools. Tool declarations are not proof of containment or inherited-tool suppression, and cannot grant unavailable tools or approvals.
+Native files under [`agents/`](agents/) use Claude Code subagent YAML rather than reusing omp/agy metadata. Model selection inherits the host. The canonical skills own specification, planning, and execution procedures; agent prompts bind roles and tools. Tool declarations are not proof of containment or inherited-tool suppression, and cannot grant unavailable tools or approvals.
 
 Delegates perform only assigned work; they do not recursively launch orchestration. During parallel execution they return step IDs, results, checks, and blockers while the coordinator alone writes the shared plan. Planning-only consent remains planning-only.
 
-No MCP, hooks, `CLAUDE.md`/global instructions, credentials, model/approval/telemetry settings, workspace settings, or ignore rules are installed. The 25 optional `config/skills/` packages remain legacy source. Inventory older globals and preserve user ownership; do not automatically delete shared directories when migrating. See [legacy migration](../../docs/LEGACY_CONFIGURATION.md#migration-preserves-user-ownership).
+No MCP, hooks, `CLAUDE.md`/global instructions, credentials, model/approval/telemetry settings, workspace settings, or ignore rules are installed. Of the former 25 optional `config/skills/` packages, `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers are removed. Inventory older globals and preserve user ownership; existing global installs are not automatically deleted. See [legacy migration](../../docs/LEGACY_CONFIGURATION.md#migration-preserves-user-ownership).
 
 ## Documentation basis and evidence
 
-The authored layout follows official [skills](https://code.claude.com/docs/en/skills) and [subagents](https://code.claude.com/docs/en/sub-agents) documentation. It is not a claim of native testing: the Claude Code executable was unavailable during this change. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).
+The authored layout follows official [skills](https://code.claude.com/docs/en/skills) and [subagents](https://code.claude.com/docs/en/sub-agents) documentation. It is not a claim of native testing: the Claude Code executable was unavailable during the historical four-skill adapter checks, and no five-skill native validation is claimed. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).

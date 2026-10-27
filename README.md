@@ -1,15 +1,16 @@
 # LeanFlow
 
-Plan first. Execute simply. Orchestrate when needed.
+Plan deliberately. Execute simply. Orchestrate specification-first.
 
-LeanFlow gives coding assistants four portable, instruction-based workflows: explore a decision, make a grounded plan, execute that exact plan, or coordinate the full flow. Use the same canonical skills as plain files or install them through a small host adapter—without adopting a full personal configuration kit.
+LeanFlow gives coding assistants five portable, instruction-based skills: explore a decision, synthesize a source-grounded specification, make a grounded plan, execute that exact plan, or coordinate the full flow. Specification is optional for standalone planning and execution; selected orchestration saves a specification first, then plans, then executes within the user's permission. Use the same canonical skills as plain files or install them through a small host adapter—without adopting a full personal configuration kit.
 
 | Skill | Use it for |
 | --- | --- |
 | [`leanflow-brainstorm`](skills/leanflow-brainstorm/SKILL.md) | Explore unresolved goals and tradeoffs without implementing. |
 | [`leanflow-plan`](skills/leanflow-plan/SKILL.md) | Research and write a plan; choose planning depth automatically. |
 | [`leanflow-execute`](skills/leanflow-execute/SKILL.md) | Implement and verify an explicitly supplied saved or in-chat plan. |
-| [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Coordinate planning and execution using available native delegation. |
+| [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Save a specification first, then coordinate planning and authorized execution using available native delegation. |
+| [`leanflow-to-spec`](skills/leanflow-to-spec/SKILL.md) | Synthesize supplied design material or conversation into a reference specification; optional standalone, required first within orchestration. |
 
 LeanFlow is not an agent runtime, model gateway, sandbox, or permission system. Your host supplies models, tools, discovery, delegation, and approval enforcement.
 
@@ -23,7 +24,7 @@ skills/leanflow-plan/, and use it to plan adding CSV export to the report
 screen. Do not implement it yet.
 ```
 
-Keep all four complete skill directories accessible as siblings. After reviewing the plan, explicitly authorize execution:
+Keep all five complete skill directories accessible as siblings. After reviewing the plan, explicitly authorize execution:
 
 ```text
 Read skills/leanflow-execute/SKILL.md, resolve relative references from
@@ -57,9 +58,9 @@ node scripts/install.mjs generic --target /path/to/host/skills --dry-run
 node scripts/install.mjs generic --target /path/to/host/skills
 ```
 
-Every default install copies **exactly the four core skills**, using the same canonical bytes. Add `--with-agents` to a native adapter to opt into its three `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` bindings. Generic installation has no native agent binding and rejects that option. Use `--target DIR` for a custom destination and `--update` for an installer-managed update; inspect the relevant setup guide before replacing existing files.
+Every default install copies **exactly the five packaged skills** listed above, using the same canonical bytes. Standalone planning and execution do not require a specification; selected orchestration does. Add `--with-agents` to a native adapter to opt into its three `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` bindings. Generic installation has no native agent binding and rejects that option. Use `--target DIR` for a custom destination and `--update` for an installer-managed update; inspect the relevant setup guide before replacing existing files.
 
-The adapters do **not** install MCP servers, hooks, host-global instructions, or the 25 legacy optional packages in `config/skills/`. They do not change credentials, model routing, approval policies, telemetry, workspace settings, or ignore rules. Codex writes only the requested install files/manifest under its explicit project target. `install.sh` and `install.ps1` are Node adapter entrypoints, not the old full-configuration installer. Existing legacy assets are not automatically removed.
+The adapters do **not** install MCP servers, hooks, or host-global instructions. Of the former 25 optional packages in `config/skills/`, only `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 and the exclusive migration/health helpers have been removed. The adapters do not change credentials, model routing, approval policies, telemetry, workspace settings, or ignore rules. Codex writes only the requested install files/manifest under its explicit project target. `install.sh` and `install.ps1` are Node adapter entrypoints, not the old full-configuration installer. Existing global installs remain user-owned and are not automatically removed.
 
 Setup and migration details: [omp](harnesses/omp/README.md) · [agy](harnesses/agy/README.md) · [Claude Code](harnesses/claude/README.md) · [Codex](harnesses/codex/README.md) · [generic](harnesses/generic/README.md) · [compatibility and evidence](COMPATIBILITY.md). Packaging support is not a claim that native discovery or delegation has been tested in your installed host/version.
 
@@ -67,13 +68,14 @@ Setup and migration details: [omp](harnesses/omp/README.md) · [agy](harnesses/a
 
 - **Plan only:** `leanflow-plan` selects **flash** for clear, bounded, low-risk work; **super** for integration or moderate uncertainty; **hyper** for high risk or unresolved load-bearing alternatives. Hyper applies five adversarial lenses and one revision. You can request a method in plain language; methods do not select models or require delegation. Planning alone never authorizes implementation.
 - **Execute directly:** the current assistant implements the exact saved or in-chat plan you supplied, checks the result, and records actual evidence. No implicit selection of an unrelated plan.
-- **Orchestrate explicitly:** request `leanflow-orchestrate` for the composed flow and available host-native workers. The coordinator owns integration and is the sole shared-plan writer during parallel work. Delegates return scoped results, evidence, and blockers—not nested orchestration. If delegation is unavailable, disclose the limitation; a delegation-only request must not silently become direct execution.
+- **Orchestrate explicitly:** request `leanflow-orchestrate` to save a source-grounded specification with `leanflow-to-spec` first, then plan, then execute within the authorized task scope. Planning-only consent permits specification and planning, not implementation. An exact supplied plan is validated against the saved specification and current evidence, not silently replaced. The coordinator owns integration and is the sole shared-plan writer during parallel work. Delegates return scoped results, evidence, and blockers—not nested orchestration. If delegation is unavailable, disclose the limitation; a delegation-only request must not silently become direct execution.
+- **Document a specification standalone:** explicitly request `leanflow-to-spec` with supplied design material or conversation. It returns a source-grounded reference specification in chat or, when saving is authorized and privacy established, `.workflow/specification/<SEQ>-YYYYMMDD-<slug>-spec.md`. This standalone choice is optional and does not automatically invoke planning or authorize implementation.
 
 These are skill names and ordinary requests, not universal slash commands. No automatic commits, branches, pushes, or PRs are part of the core. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
 
 ## Keep artifacts local
 
-Canonical saved plans live in `.workflow/plans/`. The workflows preserve existing ignore rules and establish both `/workflow/` and `/.workflow/` before saving generated artifacts, including before Git initialization. If writes or privacy setup are unavailable, keep the plan and evidence in chat rather than silently saving elsewhere.
+Canonical saved plans live in `.workflow/plans/`; specifications live in `.workflow/specification/`. A saved specification is required before planning in selected orchestration, but remains optional for standalone planning or execution. The workflows preserve existing ignore rules and establish both `/workflow/` and `/.workflow/` before saving generated artifacts, including before Git initialization. If writes or privacy setup are unavailable, return a permitted in-chat draft and blocker rather than silently saving elsewhere. Orchestration must then stop before dependent planning or implementation; an inline draft does not replace its required specification file. Creating the specification alone never authorizes later stages.
 
 Ignore rules do not untrack existing files, encrypt records, hide them from local tools or assistant context, or remove secrets from history. Removing already-tracked artifacts from the index requires authorization and must preserve working files. Installing an adapter does not edit your workspace; artifact privacy is part of the workflow when it runs.
 

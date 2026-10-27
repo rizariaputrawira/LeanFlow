@@ -2,7 +2,7 @@
 
 This is a **historical reference**, not current installation guidance. The old Antigravity full-configuration installer has been replaced by the narrow [host adapters](../README.md#install-a-host-adapter). `install.sh` and `install.ps1` now enter the Node adapter installer; they do not reapply the historical configuration described below.
 
-The 25 optional packages in `config/skills/` remain source for deliberate, separate use. They are not installed by the core adapters. Historical references to settings, hooks, agents, MCP servers, helper scripts, or backup paths describe the old bundle; they do not imply those assets are deployed or maintained by a current installation.
+Of the former 25 optional packages in `config/skills/`, `leanflow-to-spec` is retained and promoted to canonical `skills/`; the other 24 are retired and removed, along with their exclusive helpers `scripts/workflow-health-check.sh` and `scripts/check-legacy-skills.cjs`. The five canonical packages include specification documentation: optional for standalone planning and execution, but required as a saved `.workflow/specification/` file first in selected orchestration, followed by planning and execution within permission. Planning-only orchestration stops after specification and planning; if required specification saving or privacy setup is unavailable, return a permitted draft and blocker without dependent planning or implementation. Standalone `leanflow-to-spec` can return supplied design material or conversation as a source-grounded specification in chat or an authorized private file, without authorizing later stages. Historical references below to packages, settings, hooks, agents, MCP servers, helper scripts, or backup paths describe the old bundle and past checks, not current installation instructions. Existing global installs remain user-owned and are not automatically deleted.
 
 ## Migration preserves user ownership
 
@@ -15,11 +15,11 @@ Updating this checkout does not change a live host. Before migrating an old inst
 
 The new manifest records installed files, not ownership of the whole target. Omitted old managed files remain tracked; omitting `--with-agents` does not uninstall agents. There is no whole-bundle rollback or automatic old-configuration cleanup. Never restore an entire old backup over newer user-owned configuration without reviewing the differences.
 
-The former `flashplan`, `superplan`, and `hyperplan` packages are retired without compatibility aliases. Their planning methods belong to `leanflow-plan`. Optional `leanflow-hyperexecution` is a legacy execution alias, not a fifth core workflow. All shipped user-invoked skill identities use `leanflow-`; namespace migration does not authorize replacing unrelated assets.
+The former `flashplan`, `superplan`, and `hyperplan` packages are retired without compatibility aliases. Their planning methods belong to `leanflow-plan`. The former `leanflow-hyperexecution` execution alias is also retired and removed; use `leanflow-execute`. All remaining shipped user-invoked skill identities use `leanflow-`; namespace migration does not authorize replacing unrelated assets.
 
 ## What the former bundle changed
 
-The previous Antigravity-specific adapter merged four core skills with the optional `config/skills/` packages and deployed broader rules, hooks, settings, agents, and MCP configuration. Optional workflows included reference specifications, debugging, UI, security, administration, and explicit Git/PR helpers. None is a prerequisite for the four-skill core.
+The previous Antigravity-specific adapter merged four core skills with the optional `config/skills/` packages and deployed broader rules, hooks, settings, agents, and MCP configuration. Optional workflows included reference specifications, debugging, UI, security, administration, and explicit Git/PR helpers. None was a prerequisite for that historical four-skill core.
 
 Historical prerequisites included Antigravity CLI, Node.js for privacy merging/hooks, and `npx` for configured MCP packages. GitHub MCP used the user's own `GITHUB_TOKEN`; no token was supplied. Old global agents were installed at `~/.gemini/config/agents/<name>/agent.md`; historical project fixtures used `.agents/agents/<name>/agent.md`.
 
@@ -70,7 +70,7 @@ Host references: [subagents](https://antigravity.google/docs/subagents.md), [age
 
 ## Historical verification record
 
-All results below predate the new multi-host adapters. They are retained as bounded observations, not current test results, native registration proof, comparative effectiveness evidence, or containment guarantees. Current evidence belongs in [`COMPATIBILITY.md`](../COMPATIBILITY.md).
+All results below predate the new multi-host adapters and the later promotion of canonical `leanflow-to-spec`. They are retained as bounded observations, not current test results, five-skill validation, native registration proof, comparative effectiveness evidence, or containment guarantees. The adapter evidence and its historical scope belong in [`COMPATIBILITY.md`](../COMPATIBILITY.md).
 
 ### Consolidated planning behavior smoke
 
@@ -85,7 +85,7 @@ The process completed. Tool events showed source reads, not implementation actio
 
 ### Namespace packaging and old adapter checks
 
-- A disposable smoke found **29 unique shipped skill identities**, all `leanflow-` prefixed with matching directory/frontmatter names. The three retired planning packages were absent and core/documentation links resolved. An isolated Bash install merged core, optional packages, and helpers; its read-only namespace health check passed. This was the old full-bundle scope, not today's four-skill default.
+- A disposable smoke found **29 unique shipped skill identities**, all `leanflow-` prefixed with matching directory/frontmatter names. The three retired planning packages were absent and core/documentation links resolved. An isolated Bash install merged core, optional packages, and helpers; its read-only namespace health check passed. This was the old full-bundle scope, not today's five-package default or validation of the promoted canonical specification skill.
 - `node --test tests/privacy-install.test.cjs`: **two passed, one skipped, zero failures**. Bash cases covered settings/auth preservation, workflow ignores, repeat install, local-skill/helper-only preservation, and legacy-skill refusal before destination changes in real/dry-run installs. PowerShell was unavailable; no behavioral pass was claimed.
 - Bash syntax checks for both installer/health scripts and Node syntax checking for legacy-skill preflight passed.
 - The actual Impeccable pin generator in an isolated synthetic workspace produced `leanflow-audit` and an OpenCode `leanflow-impeccable-audit` bridge, both referencing the namespaced main skill; no generic `audit` was generated. This verified file contracts, not host discovery or execution.

@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const skills = ['leanflow-brainstorm', 'leanflow-execute', 'leanflow-orchestrate', 'leanflow-plan'];
+const skills = ['leanflow-brainstorm', 'leanflow-execute', 'leanflow-orchestrate', 'leanflow-plan', 'leanflow-to-spec'];
 const manifestName = '.leanflow-manifest.json';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -79,7 +79,7 @@ for (const harness of ['omp', 'agy', 'claude', 'codex']) {
     assert.deepEqual(fs.readdirSync(f.home), []);
   });
 
-  test(`${harness}: fresh install contains exactly four skills and no agents by default`, t => {
+  test(`${harness}: fresh install contains exactly five skills and no agents by default`, t => {
     const f = fixture(t);
     success(f.run(harness, '--target', f.target));
     assert.deepEqual(discoveredSkills(path.join(f.target, skillDirectory)), skills);
