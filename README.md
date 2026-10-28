@@ -135,6 +135,8 @@ Ask for the intended work in ordinary language, or name a skill when you want a 
 
 No automatic commits, branches, pushes, or PRs are part of the core. The two Git workflows below are optional, not extra orchestration stages. See the [planning and execution guide](docs/PLANNING_GUIDE.md) for consent, inline plans, resuming, and replanning.
 
+**Verified implementation is not shipping approval.** Execution distinguishes implemented, verified, and independently reviewed work; completing orchestration does not establish current CI, human acceptance, or merge authorization. Before substantial implementation, establish the existing baseline and a usable consumer-path verification method under the [execution procedure](skills/leanflow-execute/SKILL.md#verification-readiness).
+
 ### Workflow at a glance
 
 `leanflow-orchestrate` runs all stages below as one workflow. Each stage advances only when its required decisions, privacy checks, and permissions are satisfied.
@@ -183,6 +185,8 @@ Do not edit code, create a branch, commit, push, or publish a PR.
 
 Supply the issue or intended scope and the relevant base/head refs when available. The skill grounds the draft in the actual change, follows applicable repository instructions and PR templates, and separates performed checks from unrun checks and unavailable evidence. Change implementation is bounded by your authorization; drafting alone authorizes no source edits. Branch creation, staging, committing, pushing, and creating or updating a remote PR each require explicit authorization for that action. Selecting the skill or installing it grants none of those permissions.
 
+The optional PR handoff reports current-head CI evidence, independent-review scope/revision, unresolved actionable feedback, and required human/manual checks within your selected PR format. Missing or stale evidence stays explicit; a passing check for an older commit does not verify later fixes or uncommitted edits. Reporting readiness does not authorize merging.
+
 ### Skill selection and on-demand guidance
 
 On a host that supports model-selected skills, you do not need to run a router first. Selection loads guidance, not permission: the assistant must read the actual skill body and required references; your request and the host's permissions still control writes, execution, and external effects. Native selection remains host/version-dependent; see [observed evidence](COMPATIBILITY.md).
@@ -196,6 +200,7 @@ Planning and execution share [simplicity guidance](skills/leanflow-execute/refer
 - **Keep authority explicit.** An end-to-end orchestration request authorizes specification, planning, and implementation within its stated scope and host permissions. A planning-only or specification-only request stops at that stage; creating an artifact alone does not authorize more work. Your host enforces approvals; instructions are not a sandbox.
 - **Keep artifacts local.** Canonical saved plans live in `.workflow/plans/`; specifications live in `.workflow/specification/`. A saved specification is required before planning in selected orchestration, but remains optional for standalone planning or execution.
 - **Establish privacy before saving.** Workflows preserve existing ignore rules and establish both `/workflow/` and `/.workflow/` before saving generated artifacts, including before Git initialization. If writes or privacy setup are unavailable, return a permitted in-chat draft and blocker rather than silently saving elsewhere. Orchestration must then stop before dependent planning or implementation; an inline draft does not replace its required specification file.
+- **Separate working notes from shared contracts.** Private task specifications are not automatically authoritative project specifications. Updating versioned requirements or roadmap documentation is a separate, explicitly authorized repository change; do not publish private planning records by default.
 - **Keep privacy claims scoped.** Ignore rules do not untrack existing files, encrypt records, hide them from local tools or assistant context, or remove secrets from history. Removing already-tracked artifacts from the index requires authorization and must preserve working files.
 - **Distinguish installation from workflow execution.** Installing an adapter does not edit workspace ignore rules; artifact privacy is part of the workflow when it runs. Existing global installs remain user-owned and are not automatically removed.
 

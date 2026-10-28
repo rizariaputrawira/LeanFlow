@@ -23,6 +23,24 @@ Every default installation includes exactly `leanflow-brainstorm`, `leanflow-pla
 3. **Behavior smoke:** the actual instructions are read and applied to a bounded fixture, with observed outcomes. Planning-only, inline-plan, direct execution, and parallel orchestration need their own relevant observations; a launch receipt is not completion.
 4. **Permissions and containment:** native tool declarations or role prompts express intended scope. They are not evidence of inherited-MCP suppression, command isolation, OS containment, or host approval enforcement.
 
+## Verification-readiness and delivery-handoff checks — 2026-10-27
+
+The revised planning, execution, orchestration, and PR guidance adds pre-implementation verification readiness and separates implementation verification from shipping approval. Seven packages and the three optional bindings are unchanged. The earlier observations below predate these procedure changes and retain their original scope.
+
+Three fresh **omp 18.13.1 / openai-codex gpt-6.1-sol** print-mode processes read copied candidate skill sources in a disposable fixture. Assistant message metadata identified `gpt-6.1-sol`; context, rule, extension, and skill discovery were disabled. Execution exposed reading/editing/writing/shell tools; PR drafting and planning exposed reading only. The controller inspected tool records and full outputs, then independently imported the resulting module to check all five supplied acceptance cases.
+
+| Exercised source-loaded path | Observed result |
+| --- | --- |
+| Exact inline-plan execution | Read execution and simplicity guidance, ran `node baseline.mjs` successfully before editing, changed only the clamping module, passed ten boundary/in-range assertions and the post-change baseline, and reported local verification without CI, independent review, human acceptance, or Git actions. |
+| PR draft with stale delivery evidence | Read PR and completion guidance; preserved the requested Summary/Verification/Limits format; distinguished supplied synthetic claims from observed facts; identified older-head CI/review, the uncommitted and untested fix, open feedback, pending target-environment check, and pending human decision. Did not claim readiness or attempt commands/writes/external actions. |
+| Planning-only readiness | Read planning, template, execution readiness, simplicity, and writing guidance. Inspected the importing consumer and proposed baseline and boundary checks before any implementation, explicitly leaving commands unrun and runtime readiness unverified; used reading only. |
+
+The execution actor also attempted `git status --short` in the non-Git fixture; it failed with no repository present. The actor disclosed the unavailable Git check and continued to successful baseline, implementation, and consumer verification. This was not a zero-tool-error run.
+
+`node --test tests/install.test.mjs` passed **27 tests, zero failures, zero skips**. Local-link validation across 35 active Markdown files resolved **193 local links**, including **44 heading fragments**. No permanent behavior tests or new tooling framework were added.
+
+These are candidate-only bounded observations, not a baseline comparison or measured improvement. They do not establish native discovery/role dispatch, Git-skill selection, live CI or review integration, publication/merge behavior, unavailable/failing-baseline recovery, parallel readiness ownership, other-host behavior, or OS isolation. No live installation, host-setting change, commit, push, or PR publication was performed.
+
 ## Seven-skill Git adoption package checks — 2026-10-27
 
 The `leanflow-commit-message` and `leanflow-pr-work` additions adapt the pinned KitShift sources and notices recorded in [`skills/SOURCES.md`](skills/SOURCES.md#commit-message-and-pr-adoption--2026-10-27). The default inventory is seven skills; the existing workflow stages and three optional native roles are unchanged.

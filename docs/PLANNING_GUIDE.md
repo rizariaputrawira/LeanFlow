@@ -74,6 +74,8 @@ Use leanflow-plan with the super method for this integration. Do not implement.
 
 Plans contain Goal, Scope, Constraints, Method, Steps, and Done When. Method records the choice, rationale, and limitations. A one-step plan is valid. Proposed checks are not execution evidence. Planning-only consent does not authorize source edits, implementation workers, or a native feedback/approval route that starts execution.
 
+Plans identify baseline commands, the changed consumer-path exercise, and missing validation prerequisites before substantial implementation. Planning records those checks as proposed, not performed; execution owns the [verification-readiness procedure](../skills/leanflow-execute/SKILL.md#verification-readiness).
+
 The current assistant normally saves `.workflow/plans/<SEQ>-YYYYMMDD-<slug>.md` without overwriting an existing record. Under orchestration, a planning delegate may return a draft; the coordinator validates and persists it. Planning responsibility does not require a registered agent named `planner`.
 
 ### Artifact privacy
@@ -84,11 +86,15 @@ If privacy cannot be established or required writes are forbidden, disclose the 
 
 Ignore rules only cover untracked paths. For already-tracked generated records, obtain authorization for index-only removal preserving files on disk, or for a separate local plan preserving the original. Neither action erases historical commits or secrets. Ignored files remain readable by local tools and assistants; avoid credentials and unnecessary sensitive data.
 
+Private task specifications and plans are working artifacts, not automatic replacements for shared project requirements or roadmaps. When a change needs versioned project documentation, update its existing owner only within explicit authorization; do not publish private records or invent a new project specification by default.
+
 ## Execute an exact supplied plan
 
 Explicit user authorization and an exact saved **or in-chat** plan are required. Do not implicitly select an unrelated plan because it is newest, nearby, or pending.
 
 For a saved plan, read the full supplied file. For an inline plan, validate the exact supplied content for its goal, scope, constraints, steps, and acceptance criteria; equivalent headings are acceptable, and a missing Method alone is not a blocker. When authorized and possible, materialize that exact content as a local plan under the privacy procedure; preserve its meaning and disclose any path used. If persistence is unavailable, execute within existing permissions from the exact inline plan and keep status and evidence in chat. Missing material information requires a precise blocker or `REPLAN_REQUIRED`, not invented scope.
+
+Before substantial implementation, establish verification readiness using the [execution owner](../skills/leanflow-execute/SKILL.md#verification-readiness): observe relevant authorized baseline checks, identify the consumer-path exercise, and record pre-existing failures or unavailable checks. Use supplied evidence for known failures rather than rerunning merely to confirm them. Establish a missing required check within scope before dependent feature work; stop only affected work when safe implementation or verification cannot proceed. Do not fix unrelated baseline failures or waive acceptance criteria.
 
 Direct execution is the default: reconcile current source and evidence, implement pending steps in dependency order, exercise relevant changed consumer paths, and report real results. A sequential direct executor may update its plan. Record:
 
@@ -116,6 +122,12 @@ Material changes to goal, scope, architecture, public interface, data, security,
 If delegation is unavailable, disclose the limitation and perform the authorized ordered flow directly when allowed. If the user requires delegation-only work, stop the dependent work rather than silently substituting direct execution. A launched worker's failure does not justify pretending no work occurred.
 
 Review is optional when requested or justified by concrete risk, not a mandatory role stage. On `REPLAN_REQUIRED`, orchestration permits at most one automatic revision within the original authorization when replanning is permitted, preserving the old plan and completed work. Broader scope requires the user; a second material invalidation stops dependent work. Do not replay verified steps.
+
+### Implementation completion versus delivery readiness
+
+Execution's [completion boundary](../skills/leanflow-execute/SKILL.md#completion-boundary) applies to direct and orchestrated work. **Implemented** means the intended change exists; **verified** means observed checks support its authorized acceptance criteria; **independently reviewed** requires evidence of a separate review tied to its inspected revision/scope. These are evidence distinctions, not extra mandatory stages.
+
+Completing orchestration does not prove current CI, human acceptance, or readiness to merge or ship. Report delivery requirements when delivery is in scope; missing or stale evidence remains visible. A readiness report grants no Git or publication authority.
 
 ## Optional commit-message advice
 
@@ -145,6 +157,10 @@ Do not edit files, create branches, stage, commit, push, or publish a PR.
 ```
 
 Resolve the actual base/head refs and inspect their change before describing it. Follow applicable repository instructions and PR templates; preserve required sections and identify unavailable information instead of filling it with invented evidence. Tie the draft to the supplied issue or scope, distinguish observed verification from proposed or unrun checks, and disclose unavailable refs, tools, network access, or permissions. Never claim a check passed or a PR exists without evidence.
+
+The PR procedure fits a delivery handoff into the user's format or repository template: current head and uncommitted changes; required CI status and checked revision; independent-review source, revision/scope, and limits; unresolved actionable findings or evidenced dispositions; and required human/manual checks with remaining decisions. Mark unknown, unavailable, pending, stale, or not-applicable evidence explicitly with reasons. Older-head CI or review does not automatically cover later fixes or local edits.
+
+After authorized review fixes, rerun affected checks and refresh available head-specific evidence. A local fix does not itself resolve a review thread. Do not claim readiness while required evidence is missing, or contact reviewers, change CI, resolve threads, push, or merge just to fill the handoff. No new service or mandatory reviewer is imposed on every task; repository/user requirements determine the applicable gates.
 
 Draft material is the default deliverable, not a published PR. Implementation must remain within authorized scope; branch creation, staging, committing, pushing, and creating or updating a remote PR each need explicit authorization for that action. Do not infer those permissions from a preparation request, a skill selection, or orchestration's implementation consent. Host approval policies still apply. These two Git skills are optional procedures alongside the existing workflow, not additions to its specification-first stage sequence or its three native roles.
 
