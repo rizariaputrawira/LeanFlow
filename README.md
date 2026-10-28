@@ -123,8 +123,8 @@ Ask for the intended work in ordinary language, or name a skill when you want a 
 | [`leanflow-execute`](skills/leanflow-execute/SKILL.md) | Implement and verify an explicitly supplied saved or in-chat plan. |
 | [`leanflow-orchestrate`](skills/leanflow-orchestrate/SKILL.md) | Run the complete workflow: specification → plan → implementation and verification. Uses the other skills for each stage, including brainstorming when needed. |
 | [`leanflow-to-spec`](skills/leanflow-to-spec/SKILL.md) | Synthesize supplied design material or conversation into a reference specification, either standalone or as the specification stage within orchestration. |
-| [`leanflow-commit-message`](skills/leanflow-commit-message/SKILL.md) | Draft a read-only, diff/history-grounded commit message without staging or committing. |
-| [`leanflow-pr-work`](skills/leanflow-pr-work/SKILL.md) | Prepare a bounded change and draft PR material from an issue or supplied scope, with explicit authorization for mutations. |
+| [`leanflow-commit-message`](skills/leanflow-commit-message/SKILL.md) | Message-advice helper the model can select for commit requests; drafts from the diff and history without staging or committing. |
+| [`leanflow-pr-work`](skills/leanflow-pr-work/SKILL.md) | Change/PR helper the model can select for relevant requests; drafts PR material or performs only the implementation and Git actions explicitly authorized. |
 
 ### Choose the workflow
 
@@ -164,26 +164,13 @@ Use individual skills when you need only one stage. Standalone planning and exec
 
 ### Optional Git workflows
 
-For message advice, use [`leanflow-commit-message`](skills/leanflow-commit-message/SKILL.md):
+On hosts that support model-selected skills, ask for the intended result in ordinary language; you do not need to name these helpers or manually load their files. Selection and loading remain host/version-dependent.
 
-```text
-Read skills/leanflow-commit-message/SKILL.md and draft a commit message
-for the current changes. Follow the repository's recent message style.
-Do not stage files or create a commit.
-```
+- **Commit-message advice:** “Suggest a commit message for these changes.” `leanflow-commit-message` inspects the actual diff and recent history, gives staged changes precedence unless you select another scope, and follows repository style. It never stages or commits. For “Commit these changes,” the assistant can use this advice before performing the separately authorized commit through host tools.
+- **PR preparation:** “Draft a PR title and description for these changes against main.” `leanflow-pr-work` grounds the draft in the change and follows the repository's PR template. Drafting alone does not authorize source edits or Git mutations.
+- **Branch through PR publication:** “Create a new branch, commit these changes, push, and open a PR against main.” This explicitly authorizes that sequence within the requested scope and host permissions. Invoking `leanflow-pr-work` alone does not automatically commit, push, or create a PR.
 
-The skill inspects the actual diff and recent history. Staged changes take precedence over unstaged changes unless you explicitly select another scope; unrelated working-tree edits are not silently included. Repository instructions and established history inform the style, rather than imposing a universal message format. Its output is advice only: it never commits.
-
-For bounded change and PR preparation, use [`leanflow-pr-work`](skills/leanflow-pr-work/SKILL.md):
-
-```text
-Read skills/leanflow-pr-work/SKILL.md. Prepare a draft PR title and
-description for these changes against main, using the repository's PR
-template. Report the compared refs, verification evidence, and limits.
-Do not edit code, create a branch, commit, push, or publish a PR.
-```
-
-Supply the issue or intended scope and the relevant base/head refs when available. The skill grounds the draft in the actual change, follows applicable repository instructions and PR templates, and separates performed checks from unrun checks and unavailable evidence. Change implementation is bounded by your authorization; drafting alone authorizes no source edits. Branch creation, staging, committing, pushing, and creating or updating a remote PR each require explicit authorization for that action. Selecting the skill or installing it grants none of those permissions.
+Supply the issue or intended scope and base/head refs when known. Branch creation, staging, committing, pushing, and creating or updating a remote PR each require authorization for that action; a request may authorize the complete sequence at once. Installing or selecting a skill grants none of those permissions, and PR publication does not authorize merging.
 
 The optional PR handoff reports current-head CI evidence, independent-review scope/revision, unresolved actionable feedback, and required human/manual checks within your selected PR format. Missing or stale evidence stays explicit; a passing check for an older commit does not verify later fixes or uncommitted edits. Reporting readiness does not authorize merging.
 
