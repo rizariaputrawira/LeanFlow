@@ -1,6 +1,6 @@
 # agy Adapter
 
-This adapter packages seven shared LeanFlow skills as a native agy plugin. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Optional agy agent bindings use host-native metadata and tool names; the shared skills remain the procedure owners.
+This adapter packages seven main LeanFlow skills and ten model-invokable companions as a native agy plugin. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Optional agy agent bindings use host-native metadata and tool names; the shared skills remain the procedure owners.
 
 ## Install and update
 
@@ -13,9 +13,9 @@ node scripts/install.mjs agy --with-agents --dry-run
 node scripts/install.mjs agy --with-agents
 ```
 
-The default target is `~/.gemini/config/plugins/leanflow`. It receives native `plugin.json` and `skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}/`; `--with-agents` also copies the unchanged three native files from [`agents/`](agents/) into the plugin's `agents/` directory. This is not the old global `~/.gemini/config/agents/` installation.
+The default target is `~/.gemini/config/plugins/leanflow`. It receives native `plugin.json` and all 17 complete `skills/leanflow-*/` packages listed in the [main and supporting skill catalog](../../README.md#skills-and-workflows); `--with-agents` also copies the unchanged three native files from [`agents/`](agents/) into the plugin's `agents/` directory. This is not the old global `~/.gemini/config/agents/` installation.
 
-`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither is an automatic orchestration stage. Native discovery and behavior of these two additions and native validation of the seven-skill package remain unverified.
+`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither Git skill nor any companion is an automatic orchestration stage. Native validation, discovery, and behavior of the 17-skill package remain unverified; earlier observations retain their original scope.
 
 For a custom plugin directory and update:
 

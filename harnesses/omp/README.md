@@ -1,6 +1,6 @@
 # omp Adapter
 
-This adapter installs seven shared LeanFlow skills into omp's skill layout. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Optional native bindings use omp metadata and tool names; canonical procedures remain in the skills, not duplicated in role prompts.
+This adapter installs seven main LeanFlow skills and ten model-invokable companions into omp's skill layout. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Optional native bindings use omp metadata and tool names; canonical procedures remain in the skills, not duplicated in role prompts.
 
 ## Install and update
 
@@ -13,9 +13,9 @@ node scripts/install.mjs omp --with-agents --dry-run
 node scripts/install.mjs omp --with-agents
 ```
 
-The default target is `~/.omp/agent`. It receives `skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}/`; `--with-agents` also copies the unchanged three files from [`agents/`](agents/) to `agents/leanflow-{planner,executor,reviewer}.md`.
+The default target is `~/.omp/agent`. It receives all 17 complete `skills/leanflow-*/` packages listed in the [main and supporting skill catalog](../../README.md#skills-and-workflows); `--with-agents` also copies the unchanged three files from [`agents/`](agents/) to `agents/leanflow-{planner,executor,reviewer}.md`.
 
-`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither is an automatic orchestration stage. Native discovery and behavior of these two additions and native validation of the seven-skill package remain unverified.
+`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither Git skill nor any companion is an automatic orchestration stage. Native discovery and behavior of the current package require separate evidence; historical observations retain their original scope.
 
 For an isolated/custom agent root and later update:
 
@@ -36,7 +36,7 @@ Planner/reviewer declare `read`, `grep`, `glob`, and `web_search`. Executor addi
 
 Use loaded canonical skills for procedures. Delegates handle only assigned scope; they do not recursively orchestrate. Parallel workers return assigned step IDs, results, checks, and blockers; the coordinator alone updates the shared plan. Installing agents neither activates delegation automatically nor makes review mandatory.
 
-If you customize the main session's tool allowlist, retain a supported task-completion mechanism. In the historical four-skill omp 18.13.1 print-mode checks, `task` plus native `wait` and asynchronous completion reached terminal reviewer acceptance; a runner omitting `wait` timed out. This is runner configuration, not native-loading validation of the seven-skill package or a reason to weaken approval settings, poll jobs, or treat a launch receipt as completion.
+If you customize the main session's tool allowlist, retain a supported task-completion mechanism. In the historical four-skill omp 18.13.1 print-mode checks, `task` plus native `wait` and asynchronous completion reached terminal reviewer acceptance; a runner omitting `wait` timed out. This is runner configuration, not native-loading validation of the current package or a reason to weaken approval settings, poll jobs, or treat a launch receipt as completion.
 
 ## Scope and migration
 

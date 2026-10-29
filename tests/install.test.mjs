@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const skills = ['leanflow-brainstorm', 'leanflow-commit-message', 'leanflow-execute', 'leanflow-orchestrate', 'leanflow-plan', 'leanflow-pr-work', 'leanflow-to-spec'];
+const skills = ['leanflow-architecture', 'leanflow-brainstorm', 'leanflow-code-review', 'leanflow-commit-message', 'leanflow-debugging', 'leanflow-domain-modeling', 'leanflow-execute', 'leanflow-git-status', 'leanflow-license-review', 'leanflow-orchestrate', 'leanflow-plan', 'leanflow-plan-review', 'leanflow-pr-work', 'leanflow-research', 'leanflow-security-review', 'leanflow-to-spec', 'leanflow-writing'];
 const manifestName = '.leanflow-manifest.json';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -79,7 +79,7 @@ for (const harness of ['omp', 'agy', 'claude', 'codex']) {
     assert.deepEqual(fs.readdirSync(f.home), []);
   });
 
-  test(`${harness}: fresh install contains exactly seven skills and no agents by default`, t => {
+  test(`${harness}: fresh install contains seven main and ten supporting skills without agents by default`, t => {
     const f = fixture(t);
     success(f.run(harness, '--target', f.target));
     assert.deepEqual(discoveredSkills(path.join(f.target, skillDirectory)), skills);

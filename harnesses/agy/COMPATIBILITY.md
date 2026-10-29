@@ -2,14 +2,14 @@
 
 ## Authored contract
 
-- Native plugin root defaults to `~/.gemini/config/plugins/leanflow`, containing `plugin.json` and seven canonical skill directories: `leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}`. Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
+- Native plugin root defaults to `~/.gemini/config/plugins/leanflow`, containing `plugin.json`, seven main skills, and ten model-invokable companions under `skills/leanflow-*/`; see the [skill catalog](../../README.md#skills-and-workflows). Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
 - Optional native `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` plugin agents; no installation into the former shared global agent tree.
 - Planner/reviewer tools: `read_file`, `search_web`; executor adds `write_file`, `edit_file`, `run_command`. Model is `inherit`.
 - No MCP, hooks, global instructions, credentials, model/approval/telemetry settings, workspace settings, or ignore-rule changes.
 
 Authored native plugin metadata is not native registration evidence. A custom target must be discoverable through the actual host's plugin mechanism.
 
-The three native roles are unchanged. The two new Git skills are not automatic orchestration stages. Native validation of the seven-skill package and discovery/behavior of `leanflow-commit-message` and `leanflow-pr-work` remain unverified; the observations below apply only to earlier revisions.
+The three native roles are unchanged. Neither the Git workflows nor companions are automatic orchestration stages. Native validation, discovery, and behavior of the 17-skill package remain unverified; the observations below apply only to earlier revisions.
 
 ## Historical five-skill evidence
 

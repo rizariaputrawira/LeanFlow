@@ -1,6 +1,6 @@
 # Claude Code Adapter
 
-The adapter copies seven canonical LeanFlow skills into Claude Code's documented skill layout. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Native subagent bindings are optional. It does not install a full configuration kit.
+The adapter copies seven main LeanFlow skills and ten model-invokable companions into Claude Code's documented skill layout. Standalone planning and execution are specification-optional; selected `leanflow-orchestrate` saves a specification with `leanflow-to-spec` in `.workflow/specification/` first, then plans, then executes within permission. Planning-only consent stops after specification and planning. Native subagent bindings are optional. It does not install a full configuration kit.
 
 ## Install and update
 
@@ -13,7 +13,7 @@ node scripts/install.mjs claude --with-agents --dry-run
 node scripts/install.mjs claude --with-agents
 ```
 
-The default root is `~/.claude`: `skills/leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}/` directories are installed, and the unchanged three opt-in `leanflow-{planner,executor,reviewer}.md` bindings go to `agents/`. For a project-local setup, supply its `.claude` root explicitly:
+The default root is `~/.claude`: all 17 complete `skills/leanflow-*/` packages in the [main and supporting skill catalog](../../README.md#skills-and-workflows) are installed, and the unchanged three opt-in `leanflow-{planner,executor,reviewer}.md` bindings go to `agents/`. Companions are conditional guidance, not mandatory workflow stages. For a project-local setup, supply its `.claude` root explicitly:
 
 ```bash
 node scripts/install.mjs claude --target /path/to/project/.claude --with-agents --dry-run
@@ -38,4 +38,4 @@ No MCP, hooks, `CLAUDE.md`/global instructions, credentials, model/approval/tele
 
 ## Documentation basis and evidence
 
-The authored layout follows official [skills](https://code.claude.com/docs/en/skills) and [subagents](https://code.claude.com/docs/en/sub-agents) documentation. It is not a claim of native testing: the Claude Code executable was unavailable during the historical four-skill adapter checks. Neither the historical five-skill revision nor the seven-skill package has native validation here; discovery and behavior of the two new Git skills remain unverified. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).
+The authored layout follows official [skills](https://code.claude.com/docs/en/skills) and [subagents](https://code.claude.com/docs/en/sub-agents) documentation. It is not a claim of native testing: the Claude Code executable was unavailable during the historical four-skill adapter checks. Native validation, discovery, and behavior of the current 17-skill package remain unverified. See [compatibility](COMPATIBILITY.md) and the [workflow guide](../../docs/PLANNING_GUIDE.md).

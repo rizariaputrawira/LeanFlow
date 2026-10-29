@@ -1,0 +1,20 @@
+---
+name: leanflow-plan-review
+description: "[Open GSD] Review consequential plans for acceptance coverage, dependencies, integration, and credible proof."
+---
+
+# LeanFlow Plan Review
+
+Review whether an accessible proposed or approved plan can deliver its actual requirements. This companion is read-only: it does not write or approve a plan, implement it, run verification, launch workers automatically, or introduce a mandatory review stage. A review is not approval or execution consent. Use the current assignment's permitted source-reading tools; a helper cannot widen this boundary.
+
+1. **Bind the real input.** Read the exact plan and its source basis, canonical acceptance criteria, constraints, fixed decisions, and exclusions. Follow the project's established owners and actual supplied paths; no document manifest, tracker, or duplicate specification is required. Inspect affected source/callers only as needed to establish interfaces, prerequisites, and integration routes. A title, requirement ID, or worker summary is not semantic coverage. Missing material sources make the review incomplete rather than a pass.
+2. **Trace outcomes backward.** Read the [coverage checklist](references/coverage-checklist.md). For every required outcome, produce `criterion/source → deliverable/actions → integration/consumer → planned observable proof`, with exact anchors and covered/partial/uncovered/unknown status. Include negative and failure behavior and every relevant consumer boundary, not just artifact creation. Proposed checks stay unrun.
+3. **Challenge the executable plan.** Check declared and implicit dependencies, producer/consumer contracts, shared mutable-state ownership, fixed decisions, and undo cost. Identify unapproved additions and silent reductions. Current actionable feedback must appear in executable plan content or have an explicit, source-grounded disposition; a separate review comment is not a hidden execution requirement.
+4. **Report invariant-first findings.** Classify blockers, warnings, and information. For each, give the failed invariant, exact observed evidence, consequence, and needed decision or proof. Suggested remedies are optional routes, not reviewer-owned scope. A blocker means required delivery, authorization, safety, or proof cannot be established; a warning is a concrete nonfatal risk; information is advisory. Missing acceptance is not softened into a warning to avoid conflict.
+5. **State the result's limits.** List inspected, unavailable, and out-of-scope sources, unresolved decisions, and whether review is complete within its declared scope. “No blocker found in inspected scope” is not implementation proof or approval. Never claim a planned command passes or infer runtime behavior from document shape.
+
+[Planning](../leanflow-plan/SKILL.md) owns method, plan format, privacy, and authorized saving; [specification](../leanflow-to-spec/SKILL.md) owns requirement capture. [Orchestration](../leanflow-orchestrate/SKILL.md) retains its saved-specification prerequisite only when that workflow is selected. Standalone planning does not acquire that prerequisite from this review. Changed material scope or decisions return to their actual owner for resolution under the current approval boundary; reviewing does not create a new approval interaction or authorize execution.
+
+Useful independent source inspection may be delegated only when already permitted by the current assignment and native tools. Supply this read-only contract and a bounded question; return findings without writes, verification, or automatic nested workers. The caller retains integration responsibility. No worker, model, runtime mode, fixed review loop, or tracking state is required. If delegation is unavailable, perform permitted inspection directly rather than installing or configuring anything.
+
+Adapted from KitShift's `docs-plan-review` and Open GSD's plan-checker/planner-review sources. Retained notices: [Open GSD](LICENSE.gsd) and [KitShift](LICENSE.kitshift). Exact lineage is recorded in the distribution's `skills/SOURCES.md`.

@@ -1,6 +1,6 @@
 # LeanFlow Planning and Execution Guide
 
-The seven sibling packages under [`skills/`](../skills/) contain five workflow skills and two optional Git workflows. They own LeanFlow's procedures. Specification capture is optional for standalone planning but required first within orchestration. This guide explains how to use them; native adapters bind host tools and roles, not alternative workflow implementations.
+The 17 sibling packages under [`skills/`](../skills/) contain seven main skills (five workflow skills and two optional Git workflows) plus ten model-invokable specialist companions. They own LeanFlow's procedures. Specification capture is optional for standalone planning but required first within orchestration. This guide explains how to use them; native adapters bind host tools and roles, not alternative workflow implementations.
 
 - [`leanflow-brainstorm`](../skills/leanflow-brainstorm/SKILL.md): unresolved goals, choices, and tradeoffs.
 - [`leanflow-plan`](../skills/leanflow-plan/SKILL.md): planning methods, canonical plan format, and artifact privacy.
@@ -14,7 +14,7 @@ The current assistant plans and executes directly by default. Skills cannot supp
 
 ## Load the workflows
 
-Use a [native adapter](../README.md#install-a-host-adapter), or consult your host's documentation and copy the seven complete `skills/leanflow-<name>/` directories into its documented skill root. Preserve their sibling layout and inspect existing ownership before replacing anything. Packaging alone does not invoke `leanflow-to-spec`: a standalone specification request or explicit orchestration selects it. Neither Git skill becomes an automatic orchestration stage. Native registration, file readability, command routing, and behavioral correctness are separate properties; see [compatibility](../COMPATIBILITY.md).
+Use a [native adapter](../README.md#install-a-host-adapter), or consult your host's documentation and copy all 17 complete `skills/leanflow-<name>/` directories into its documented skill root. Preserve their sibling layout and inspect existing ownership before replacing anything. Packaging alone does not invoke `leanflow-to-spec`: a standalone specification request or explicit orchestration selects it. Neither Git skill nor any companion becomes an automatic orchestration stage. Native registration, file readability, command routing, and behavioral correctness are separate properties; see [compatibility](../COMPATIBILITY.md).
 
 For plain-file use, ask the assistant to read the actual skill and resolve links from its containing directory:
 
@@ -34,9 +34,10 @@ Read the actual entrypoint, then its references when their stated conditions app
 - Before drafting, load the canonical [plan template](../skills/leanflow-plan/references/plan-template.md) or [specification template](../skills/leanflow-to-spec/references/specification-template.md).
 - When dispatching workers or requesting source review, load the [assignment/review reference](../skills/leanflow-orchestrate/references/delegation.md). An execution worker also loads the [worker procedure](../skills/leanflow-execute/references/delegation.md).
 - When choosing or revising an implementation approach, planning and execution use the same [simplicity owner](../skills/leanflow-execute/references/simplicity.md).
-- For English or Indonesian plans, specifications, designs, or substantial reports, load the shared [writing reference](../skills/leanflow-to-spec/references/writing.md) and apply the matching language section. Mixed-language passages retain their own idiom and audience; technical identifiers and evidence limits remain intact. Loading this reference does not select the specification workflow.
+- For English or Indonesian plans, specifications, designs, commit messages, or substantial reports, load the [writing companion](../skills/leanflow-writing/SKILL.md). Mixed-language passages retain their own idiom and audience; technical identifiers and evidence limits remain intact. Loading this companion does not select the specification workflow.
+- When the task needs specialist help, use the main skill's conditional pointers to the [ten supporting skills](../README.md#supporting-skills). Planning can consult research, domain modeling, architecture, and plan review; execution can consult debugging and source review; Git workflows can consult writing and Git-state reporting. Security and license review apply only to relevant boundaries. Respect disabled skills and do not turn an unavailable helper into automatic installation or an invented pass.
 
-These are supporting files inside the workflow skills, not additional skills or mandatory stages. Copy all seven complete directories, including references and retained notices. Common consent and stopping rules remain in the entrypoints rather than being hidden in optional detail. Native discovery and model-selection behavior still require host/version-specific evidence.
+Companions are discoverable skills, while templates, simplicity guidance, and worker packets remain internal references. Neither category is a mandatory checklist. Copy all 17 complete directories, including references and retained notices. Common consent and stopping rules remain in the main entrypoints. A planning-only request does not authorize a helper to run experiments, tests, browser sessions, or implementation. Native discovery and model-selection behavior require host/version-specific evidence.
 
 ## Brainstorm when choices remain
 
@@ -174,6 +175,6 @@ The former `config/skills/` package tree remains retired, not an available optio
 
 ## Verification and evidence limits
 
-Current native compatibility and any newly observed evidence belong in [`COMPATIBILITY.md`](../COMPATIBILITY.md). The [historical record](LEGACY_CONFIGURATION.md#historical-verification-record) preserves prior source-loaded method smokes, old namespace/installer checks, and Antigravity observations with their limitations. Those results predate the new adapters and do not verify their current registration, delegation, or safety behavior. Earlier four-skill evidence remains four-skill evidence; it does not establish validation of the restored fifth package or the two new Git skills. Likewise, five-skill observations do not establish seven-skill native discovery or behavior.
+Current native compatibility and any newly observed evidence belong in [`COMPATIBILITY.md`](../COMPATIBILITY.md). The [historical record](LEGACY_CONFIGURATION.md#historical-verification-record) preserves prior source-loaded method smokes, old namespace/installer checks, and Antigravity observations with their limitations. Earlier four-, five-, and seven-skill observations retain their original scope; they do not establish native discovery or behavior of the current 17-skill package.
 
 File readability, relative links, native discovery, command routing, delegation, instruction following, and safety enforcement require distinct evidence. LeanFlow supplies guidance, not a runtime enforcement layer or a demonstrated all-host effectiveness guarantee.

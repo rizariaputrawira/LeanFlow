@@ -2,14 +2,14 @@
 
 ## Authored contract
 
-- Seven canonical skill directories under `<target>/skills/`: `leanflow-{brainstorm,plan,execute,orchestrate,to-spec,commit-message,pr-work}`; default target `~/.omp/agent`. Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
+- Seven main skills and ten model-invokable companions under `<target>/skills/leanflow-*/`, listed in the [skill catalog](../../README.md#skills-and-workflows); default target `~/.omp/agent`. Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
 - Opt-in native Markdown/YAML `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` files under `<target>/agents/`.
 - Planner/reviewer tools: `read`, `grep`, `glob`, `web_search`; executor adds `edit`, `write`, `bash`.
 - No model field, so host selection is inherited. No global instructions, MCP, approvals, telemetry, workspace settings, or ignore-rule mutation.
 
 These are authored package/binding properties, not proof that every installed omp version parses, discovers, dispatches, or restricts them.
 
-The three native roles are unchanged. The two new Git skills are not automatic orchestration stages. Native validation of the seven-skill package and discovery/behavior of `leanflow-commit-message` and `leanflow-pr-work` remain unverified; the observations below apply only to earlier revisions.
+The three native roles are unchanged. Neither the Git workflows nor companions are automatic orchestration stages. Current package and behavioral checks are recorded in the [central evidence record](../../COMPATIBILITY.md); the observations below retain their earlier five-/four-skill scope and do not validate all 17 skills.
 
 ## Historical five-skill evidence
 
