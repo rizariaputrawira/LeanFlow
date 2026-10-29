@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const manifestName = '.leanflow-manifest.json';
 const coreSkills = ['leanflow-brainstorm', 'leanflow-plan', 'leanflow-execute', 'leanflow-orchestrate', 'leanflow-to-spec', 'leanflow-commit-message', 'leanflow-pr-work'];
+const supportSkills = ['leanflow-research', 'leanflow-domain-modeling', 'leanflow-architecture', 'leanflow-plan-review', 'leanflow-debugging', 'leanflow-code-review', 'leanflow-security-review', 'leanflow-license-review', 'leanflow-writing', 'leanflow-git-status'];
 const roles = ['planner', 'executor', 'reviewer'];
 const hosts = {
   omp: { target: () => path.join(os.homedir(), '.omp', 'agent'), skills: 'skills', agents: 'agents', extension: 'md' },
@@ -135,7 +136,7 @@ function readBundle(options) {
       else fail(`Unsupported packaged entry: ${file}`);
     }
   }
-  for (const skill of coreSkills) {
+  for (const skill of [...coreSkills, ...supportSkills]) {
     const source = path.join(sourceRoot, 'skills', skill);
     const relative = [hosts[options.harness].skills, skill].filter(Boolean).join('/');
     addTree(source, relative);
@@ -212,7 +213,7 @@ try {
     (args.length === 2 && Object.hasOwn(hosts, args[0]) && ['--help', '-h'].includes(args[1]));
   if (help) {
     console.log(usage);
-    console.log('Install seven portable skills; add --with-agents for native roles. codex and generic require an explicit --target.');
+    console.log('Install seven main skills and ten model-invokable supporting skills; add --with-agents for native roles. codex and generic require an explicit --target.');
     process.exit(0);
   }
   const options = parseArgs(args);

@@ -2,7 +2,7 @@
 
 **Plan first. Execute simply. or Orchestrate.**
 
-Seven portable, instruction-based skills for coding assistants. Read the canonical files directly or install them through a small host adapter—without adopting a full personal configuration kit.
+Seven main workflow skills and ten model-invokable supporting skills for coding assistants. Read the canonical files directly or install them through a small host adapter—without adopting a full personal configuration kit.
 
 Adapters package skills for Oh My Pi (`omp`), Antigravity CLI (`agy`), Claude Code, and Codex; a generic adapter targets another host's documented skill root. Your host supplies models, tools, discovery, delegation, and approval enforcement. LeanFlow is not an agent runtime, model gateway, sandbox, or permission system.
 
@@ -23,7 +23,7 @@ Adapters package skills for Oh My Pi (`omp`), Antigravity CLI (`agy`), Claude Co
 
 ## Capabilities
 
-- **Seven reusable procedures:** five workflow skills for brainstorming, specifications, planning, execution, and orchestration, plus optional commit-message advice and bounded change/PR preparation.
+- **Seven main workflows, ten specialist companions:** brainstorming, specifications, planning, execution, orchestration, commit-message advice, and PR preparation can load relevant research, design, review, writing, and Git-state guidance.
 - **Selectable planning depth:** flash, super, or hyper according to scope, uncertainty, and risk—not model selection.
 - **Direct or delegated work:** orchestration runs the workflow directly or uses available native delegation; standalone execution implements an explicitly supplied plan.
 - **Portable skill packages:** complete skill directories with on-demand references and license notices; the same canonical skill bytes across adapters.
@@ -54,7 +54,7 @@ skills/leanflow-plan/, and use it to plan adding CSV export to the report
 screen. Do not implement it yet.
 ```
 
-Keep all seven complete skill directories accessible as siblings. After reviewing the plan, explicitly authorize execution:
+Keep all 17 complete skill directories accessible as siblings so conditional companion references resolve. After reviewing the plan, explicitly authorize execution:
 
 ```text
 Read skills/leanflow-execute/SKILL.md, resolve relative references from
@@ -82,7 +82,7 @@ Choose your host and preview before installing:
 | Codex | `node scripts/install.mjs codex --target /path/to/project --dry-run` | Explicit project root required |
 | Generic | `node scripts/install.mjs generic --target /path/to/host/skills --dry-run` | Explicit host skill root required |
 
-Rerun the selected command **without `--dry-run`** to install. Every default install copies **exactly the seven packaged skills** using the same canonical bytes. Codex uses `.agents/skills/` plus opt-in `.codex/agents/` beneath its explicit project target.
+Rerun the selected command **without `--dry-run`** to install. Every default install copies **all 17 packaged skills: seven main and ten supporting** using the same canonical bytes. Codex uses `.agents/skills/` plus opt-in `.codex/agents/` beneath its explicit project target.
 
 Add `--with-agents` to a native adapter to opt into its three `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` bindings. Generic installation rejects that option. Use `--target DIR` for a custom destination; consult the relevant setup guide before installing or updating:
 
@@ -96,7 +96,7 @@ Canonical skill files own workflow behavior. Host bindings load those procedures
 
 | Component | Repository source | Role |
 | --- | --- | --- |
-| Skills | [skills/](skills/) | Seven canonical procedures and their relative references |
+| Skills | [skills/](skills/) | Seven main procedures, ten specialist companions, and their relative references |
 | Native bindings | [harnesses/](harnesses/) | Optional host-specific planner, executor, and reviewer definitions |
 | Installer | [scripts/install.mjs](scripts/install.mjs) | Bundle, destination validation, preflight, and writes |
 | Regression suite | [tests/install.test.mjs](tests/install.test.mjs) | Observable CLI and filesystem contracts |
@@ -125,6 +125,25 @@ Ask for the intended work in ordinary language, or name a skill when you want a 
 | [`leanflow-to-spec`](skills/leanflow-to-spec/SKILL.md) | Synthesize supplied design material or conversation into a reference specification, either standalone or as the specification stage within orchestration. |
 | [`leanflow-commit-message`](skills/leanflow-commit-message/SKILL.md) | Message-advice helper the model can select for commit requests; drafts from the diff and history without staging or committing. |
 | [`leanflow-pr-work`](skills/leanflow-pr-work/SKILL.md) | Change/PR helper the model can select for relevant requests; drafts PR material or performs only the implementation and Git actions explicitly authorized. |
+
+### Supporting skills
+
+All ten companions are **model-invokable**: the assistant can select them when relevant within a main workflow or an ordinary-language request. You can also request them explicitly. They are not mandatory stages, separate agents, or permission grants.
+
+| Supporting skill | Load when | Main workflows supported |
+| --- | --- | --- |
+| [`leanflow-research`](skills/leanflow-research/SKILL.md) | External facts need primary-source evidence. | Brainstorm, specification, planning |
+| [`leanflow-domain-modeling`](skills/leanflow-domain-modeling/SKILL.md) | Domain terms, entities, relationships, or rules conflict. | Brainstorm, specification, planning |
+| [`leanflow-architecture`](skills/leanflow-architecture/SKILL.md) | Module boundaries, interfaces, dependencies, or migrations need design. | Brainstorm, planning, execution |
+| [`leanflow-plan-review`](skills/leanflow-plan-review/SKILL.md) | A consequential multi-slice plan needs coverage and integration review. | Planning, orchestration |
+| [`leanflow-debugging`](skills/leanflow-debugging/SKILL.md) | A difficult failure needs root-cause investigation. | Execution, orchestration, PR work |
+| [`leanflow-code-review`](skills/leanflow-code-review/SKILL.md) | Changes need source review against requirements and correctness constraints. | Execution, orchestration, PR work |
+| [`leanflow-security-review`](skills/leanflow-security-review/SKILL.md) | Security-sensitive changes need bounded source review. | Planning, execution, orchestration, PR work |
+| [`leanflow-license-review`](skills/leanflow-license-review/SKILL.md) | Source reuse, dependencies, or distribution raise license obligations. | Specification, planning, execution, PR work |
+| [`leanflow-writing`](skills/leanflow-writing/SKILL.md) | Human-facing artifacts need clear, evidence-preserving English or Indonesian prose. | All seven main skills |
+| [`leanflow-git-status`](skills/leanflow-git-status/SKILL.md) | Local, pushed, merged, or released states need evidence-qualified reporting. | Commit-message advice, PR work |
+
+For example, “Plan organization-level permissions; do not implement” may use domain modeling to clarify roles, architecture to compare authorization boundaries, and plan review to check integration coverage. It does not run every companion, execute experiments, or authorize implementation. Skill selection is host-dependent; explicit disablement and native permissions still apply.
 
 ### Choose the workflow
 
@@ -178,9 +197,9 @@ The optional PR handoff reports current-head CI evidence, independent-review sco
 
 On a host that supports model-selected skills, you do not need to run a router first. Selection loads guidance, not permission: the assistant must read the actual skill body and required references; your request and the host's permissions still control writes, execution, and external effects. Native selection remains host/version-dependent; see [observed evidence](COMPATIBILITY.md).
 
-The seven entrypoints keep common steps and authority boundaries visible. Plan/specification templates, worker procedures, and review detail load only for their applicable branches. Preserve the complete sibling directories when copying skills; references and license notices are part of the package.
+The seven main entrypoints keep common steps and authority boundaries visible. Their condition-bearing pointers load specialist companions only for applicable work. Plan/specification templates and worker procedures remain references within their existing owners. Preserve all 17 complete sibling directories, including references and license notices.
 
-Planning and execution share [simplicity guidance](skills/leanflow-execute/references/simplicity.md): reuse existing patterns and choose the smallest complete solution without dropping acceptance or safety checks. English and Indonesian documents share [writing guidance](skills/leanflow-to-spec/references/writing.md), with language-specific idiom, register, terminology, and evidence checks—not word bans or a separate writing skill.
+Planning and execution share [simplicity guidance](skills/leanflow-execute/references/simplicity.md): reuse existing patterns and choose the smallest complete solution without dropping acceptance or safety checks. The [writing companion](skills/leanflow-writing/SKILL.md) owns shared English and Indonesian guidance, with language-specific idiom, register, terminology, and evidence checks—not word bans.
 
 ## Safety and privacy
 

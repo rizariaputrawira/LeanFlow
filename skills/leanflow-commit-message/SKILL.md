@@ -10,6 +10,7 @@ Inspect actual changes and propose concise, natural developer-written commit-mes
 ## Inspect the right evidence
 
 1. Read `git --no-optional-locks status` to establish staged, unstaged, and untracked state without writing Git's optional index refresh. Inspect the staged diff, for example `git diff --staged`, to determine whether anything is staged. Use read-only Git inspection only.
+   When the request also needs an interpretation of repository state beyond choosing the message's diff, read [Git status](../leanflow-git-status/SKILL.md) for only that bounded question. Commit-message drafting needs local evidence, not remote freshness checks, fetches, or a release audit.
 2. If anything is staged, use the staged diff as the complete subject of the message. Exclude unstaged and untracked changes. Resolve unclear staged intent from relevant evidence; ask only if a material ambiguity remains.
 3. Only when nothing is staged, inspect relevant unstaged diffs and the actual contents of relevant untracked files. Do not infer content from filenames or inspect unrelated work.
 4. Follow the user's explicit format first. Otherwise inspect recent commit subjects and, when useful, bodies for repository style: capitalization, tense, prefixes, punctuation, scope notation, length, and body usage. Use Conventional Commits only when requested or consistent with observed history.
@@ -18,6 +19,8 @@ Inspect actual changes and propose concise, natural developer-written commit-mes
 ## Write the suggestion
 
 Normally return one concise subject line and nothing else. Prefer plain, specific verbs over marketing or release-note language. Add a short body only for useful non-obvious rationale, compatibility, migration, or tradeoffs. Do not invent issue IDs, footers, co-author lines, or other metadata; include them only when requested or established by relevant history.
+
+When English or Indonesian wording needs editorial review, read [writing](../leanflow-writing/SKILL.md) without expanding this advice-only assignment. The staged-selection and repository-style rules above still govern the message's subject and format.
 
 For genuinely separate, independently committable concerns, follow the user's requested format or use:
 

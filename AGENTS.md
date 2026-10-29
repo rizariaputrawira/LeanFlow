@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-LeanFlow distributes seven portable, instruction-based skills for coding assistants: brainstorming, specification, planning, execution, orchestration, commit-message advice, and PR preparation. It is an installer-and-content repository, not a `src/` application or agent runtime. Hosts supply tools, discovery, delegation, and approval enforcement.
+LeanFlow distributes seven main instruction-based workflows (brainstorming, specification, planning, execution, orchestration, commit-message advice, and PR preparation) and ten model-invokable supporting skills for research, domain modeling, architecture, plan review, debugging, code review, security review, license review, writing, and Git status. It is an installer-and-content repository, not a `src/` application or agent runtime. Hosts supply tools, discovery, delegation, and approval enforcement.
 
 ## Architecture & Data Flow
 
@@ -42,12 +42,12 @@ There is no application/dev server, build step, package script, or configured li
 - Installer filesystem work is deliberately synchronous. Reuse small validation helpers and the existing parse/bundle/preflight/write separation; no async framework or dependency-injection container is present.
 - Validation throws through `fail(message)`; the top-level handler prints `LeanFlow install failed: …` and sets exit code 1. Missing-file handling distinguishes `ENOENT` from other errors. Preserve actionable errors and preflight-before-write behavior.
 - State is explicit options, bundles, maps, and the manifest—not an application store. Keep output deterministic through sorted entries and byte-preserving skill copies.
-- Change workflow behavior in its canonical skill, then reconcile affected bindings and documentation. Keep the seven-skill list, host layouts, tests, and public installation examples consistent when packaging changes.
+- Change workflow behavior in its canonical skill, then reconcile affected bindings and documentation. Keep the seven-main/ten-support inventory, host layouts, tests, and public installation examples consistent when packaging changes. Companions load conditionally and never expand the main workflow's authorization.
 - Current adapters do not install legacy hooks, MCP servers, global instructions, or model/approval/telemetry settings. Do not turn archived examples into current defaults.
 
 ## Important Files
 
-- `scripts/install.mjs`: executable entry point, `coreSkills`, `hosts`, manifest validation, and write safety.
+- `scripts/install.mjs`: executable entry point, `coreSkills`, `supportSkills`, `hosts`, manifest validation, and write safety.
 - `tests/install.test.mjs`: observable installer contract and reusable fixture helpers.
 - `skills/leanflow-orchestrate/SKILL.md`: composition of specification, planning, and authorized execution.
 - `README.md` and `harnesses/<host>/README.md`: public usage and destination semantics.
