@@ -1,6 +1,8 @@
 ---
 name: leanflow-planner
 description: Research an assigned task read-only and return a grounded LeanFlow plan draft.
+mainAgent: false
+subagent: true
 tools:
   - read_file
   - search_web

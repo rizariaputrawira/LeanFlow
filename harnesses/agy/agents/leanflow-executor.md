@@ -1,6 +1,8 @@
 ---
 name: leanflow-executor
 description: Implement bounded assigned LeanFlow plan steps and return actual evidence.
+mainAgent: false
+subagent: true
 tools:
   - read_file
   - search_web

@@ -15,7 +15,7 @@ node scripts/install.mjs agy --with-agents
 
 The default target is `~/.gemini/config/plugins/leanflow`. It receives native `plugin.json` and all 17 complete `skills/leanflow-*/` packages listed in the [main and supporting skill catalog](../../README.md#skills-and-workflows); `--with-agents` also copies the unchanged three native files from [`agents/`](agents/) into the plugin's `agents/` directory. This is not the old global `~/.gemini/config/agents/` installation.
 
-`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither Git skill nor any companion is an automatic orchestration stage. Native validation, discovery, and behavior of the 17-skill package remain unverified; earlier observations retain their original scope.
+`leanflow-commit-message` provides read-only, diff/history-grounded message advice and never commits. `leanflow-pr-work` prepares bounded changes and PR drafts without unrequested branch creation, commits, pushes, or PR publication. Neither Git skill nor any companion is an automatic orchestration stage. Strict native validation accepted the 17-skill package on agy 1.5.0; discovery and behavior remain unverified. Earlier observations retain their original scope.
 
 For a custom plugin directory and update:
 
@@ -35,6 +35,16 @@ The `.leanflow-manifest.json` records schema version, harness, and installed fil
 Planner/reviewer declare `read_file` and `search_web`. Executor additionally declares `write_file`, `edit_file`, and `run_command`. Native model selection is `inherit`; no host model setting is changed. Role tool declarations do not demonstrate inherited-tool suppression, command containment, or an OS sandbox.
 
 Bindings refer to loaded canonical skills. Delegated execution is assignment-only, not a recursive workflow invocation. Parallel workers return assigned step IDs, results, verification, and blockers; only the coordinator writes the shared plan. Optional roles do not make delegation or reviewer stages mandatory.
+
+### Session continuity
+
+The optional `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` roles are delegated-only: `mainAgent: false` and `subagent: true`. Keep the default/current primary agent as coordinator and load the canonical `leanflow-orchestrate`, `leanflow-plan`, or `leanflow-execute` procedure as applicable instead of switching primary roles between stages. For example:
+
+> Use leanflow-orchestrate for this task. Keep the current agent as coordinator and use LeanFlow roles only as delegated workers.
+
+The example does not expand authorization or replace loading the canonical procedures. The [agent schema](https://antigravity.google/docs/subagents.md) documents delegated-only metadata; the [agent command reference](https://antigravity.google/docs/cli/commands/agents/#common-mistakes) says switching the primary agent forks the conversation. Native delegation intentionally creates separate worker conversations: this preserves the parent coordinator, not a single conversation for all workers. Enforcement depends on the installed host version.
+
+Existing managed bindings need an explicit update and native reload. Use the explicit-target update preview and command above, including `--with-agents --update`; reconcile local modifications first. Omitting `--with-agents` does not uninstall old roles.
 
 ## Scope and migration
 
