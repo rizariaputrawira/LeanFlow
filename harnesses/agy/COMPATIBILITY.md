@@ -3,13 +3,21 @@
 ## Authored contract
 
 - Native plugin root defaults to `~/.gemini/config/plugins/leanflow`, containing `plugin.json`, seven main skills, and ten model-invokable companions under `skills/leanflow-*/`; see the [skill catalog](../../README.md#skills-and-workflows). Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
-- Optional native `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` plugin agents; no installation into the former shared global agent tree.
+- Optional native `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` plugin agents use `mainAgent: false` and `subagent: true` for delegated-only roles; no installation into the former shared global agent tree.
 - Planner/reviewer tools: `read_file`, `search_web`; executor adds `write_file`, `edit_file`, `run_command`. Model is `inherit`.
 - No MCP, hooks, global instructions, credentials, model/approval/telemetry settings, workspace settings, or ignore-rule changes.
 
 Authored native plugin metadata is not native registration evidence. A custom target must be discoverable through the actual host's plugin mechanism.
 
-The three native roles are unchanged. Neither the Git workflows nor companions are automatic orchestration stages. Native validation, discovery, and behavior of the 17-skill package remain unverified; the observations below apply only to earlier revisions.
+The three role names and procedures remain, while primary-agent eligibility changes for hosts honoring the metadata. Neither the Git workflows nor companions are automatic orchestration stages. Native discovery and behavior of the 17-skill package remain unverified.
+
+## Delegated-only package checks
+
+On Linux/WSL2, the existing installer suite passed (27 tests, zero failures or skips). A separate disposable isolated-home installation's dry-run left the target absent; the installed role bytes matched source, manifest hashes matched, and the explicit eligibility booleans, inherited model and tool declarations were present.
+
+**agy 1.5.0** `plugin validate <target> --strict --json` exited zero and reported 17 skills, three agents, no warnings or errors, and no ignored-field findings. It emitted one informational note about the missing plugin logo. This is plugin parsing, not project or UI discovery, primary-selection enforcement, or worker dispatch.
+
+An isolated interactive launch initially could not open `/dev/tty`; with a terminal it displayed an unsigned-in login prompt. An isolated `agy agents` invocation returned no output, so fixture plugin discovery was not established. No credentials were copied or login performed. The `/agents` primary-selection check, three worker completions, result bytes, parent identity, and coordinator continuity remain unverified; an authenticated isolated runtime and successful plugin discovery are prerequisites.
 
 ## Historical five-skill evidence
 

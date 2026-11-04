@@ -1,6 +1,8 @@
 ---
 name: leanflow-reviewer
 description: Review supplied LeanFlow changes and source read-only against assigned acceptance criteria.
+mainAgent: false
+subagent: true
 tools:
   - read_file
   - search_web
