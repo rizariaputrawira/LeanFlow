@@ -96,7 +96,9 @@ for (const harness of ['omp', 'agy', 'claude', 'codex']) {
     if (harness === 'agy') {
       const plugin = JSON.parse(fs.readFileSync(path.join(f.target, 'plugin.json'), 'utf8'));
       assert.equal(plugin.name, 'leanflow');
+      assert.equal(plugin.displayName, 'LeanFlow');
       assert.match(plugin.version, /^\d+\.\d+\.\d+$/);
+      assert.match(plugin.description, /Seven main workflow skills/);
     }
     const before = snapshot(f.target);
     success(f.run(harness, '--target', f.target));

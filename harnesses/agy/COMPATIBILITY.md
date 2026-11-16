@@ -2,8 +2,8 @@
 
 ## Authored contract
 
-- Native plugin root defaults to `~/.gemini/config/plugins/leanflow`, containing `plugin.json`, seven main skills, and ten model-invokable companions under `skills/leanflow-*/`; see the [skill catalog](../../README.md#skills-and-workflows). Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
-- Optional native `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` plugin agents use `mainAgent: false` and `subagent: true` for delegated-only roles; no installation into the former shared global agent tree.
+- Native plugin root defaults to `~/.gemini/config/plugins/leanflow`, containing `plugin.json` (`name`, `displayName`, `version`, and `description`), seven main skills, and ten model-invokable companions under `skills/leanflow-*/`; see the [skill catalog](../../README.md#skills-and-workflows). Standalone planning and execution are specification-optional; selected orchestration requires a saved `.workflow/specification/` file first, then planning, then execution within permission.
+- Optional native `leanflow-planner`, `leanflow-executor`, and `leanflow-reviewer` plugin agents use `mainAgent: false` and `subagent: true` for delegated-only roles and instruct subagents to resolve canonical skills from the active `<skills>` catalog or assignment packet via `read_file`; no installation into the former shared global agent tree.
 - Planner/reviewer tools: `read_file`, `search_web`; executor adds `write_file`, `edit_file`, `run_command`. Model is `inherit`.
 - No MCP, hooks, global instructions, credentials, model/approval/telemetry settings, workspace settings, or ignore-rule changes.
 
@@ -11,7 +11,11 @@ Authored native plugin metadata is not native registration evidence. A custom ta
 
 The three role names and procedures remain, while primary-agent eligibility changes for hosts honoring the metadata. Neither the Git workflows nor companions are automatic orchestration stages. Native discovery and behavior of the 17-skill package remain unverified.
 
-## Delegated-only package checks
+## Package validation on agy 1.5.9
+
+On Linux/WSL2, after updating `plugin.json` metadata (`displayName`, `description`) and `harnesses/agy/agents/leanflow-*.md` prompts, a disposable isolated-home installation with `--with-agents` wrote 69 files, and **agy 1.5.9** `agy plugin validate <target> --strict --json` exited zero reporting `skills: 17`, `agents: 3`, zero hooks/MCP servers/rules/sidecars, zero warnings or errors, and one informational `no logo` note on `plugin.json`. This is static plugin parsing, not project or UI discovery, primary-selection enforcement, or worker dispatch.
+
+## Historical delegated-only package checks (agy 1.5.0)
 
 On Linux/WSL2, the existing installer suite passed (27 tests, zero failures or skips). A separate disposable isolated-home installation's dry-run left the target absent; the installed role bytes matched source, manifest hashes matched, and the explicit eligibility booleans, inherited model and tool declarations were present.
 
