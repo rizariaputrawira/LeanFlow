@@ -150,7 +150,13 @@ function readBundle(options) {
     }
   }
   if (options.harness === 'agy') {
-    bundle.set('plugin.json', Buffer.from(`${JSON.stringify({ name: 'leanflow', version: '0.1.0' }, null, 2)}\n`));
+    const metadata = {
+      name: 'leanflow',
+      displayName: 'LeanFlow',
+      version: '0.1.0',
+      description: 'Seven main workflow skills, ten model-invokable supporting skills, and optional delegated-only role bindings for coding assistants.',
+    };
+    bundle.set('plugin.json', Buffer.from(`${JSON.stringify(metadata, null, 2)}\n`));
   }
   return bundle;
 }
